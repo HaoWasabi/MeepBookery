@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Admin Dashboard - Meep Bookery</title>
+ <style>
+ * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+
+ /* Sidebar */
+ .sidebar { position: fixed; top: 0; left: 0; width: 250px; height: 100%; background-color: #333; color: #fff; padding: 20px; }
+ .sidebar .logo { font-size: 24px; font-weight: bold; margin-bottom: 30px; }
+ .sidebar ul { list-style: none; }
+ .sidebar ul li { margin-bottom: 20px; }
+ .sidebar ul li a { color: #fff; text-decoration: none; font-size: 16px; transition: color 0.3s; }
+ .sidebar ul li a:hover { color: #e74c3c; }
+
+ /* Main Content */
+ .main-content { margin-left: 250px; padding: 20px; }
+ .main-content h1 { font-size: 32px; color: #333; margin-bottom: 20px; }
+ .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+ .card { background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+ .card h3 { font-size: 20px; color: #333; margin-bottom: 10px; }
+ .card p { font-size: 16px; color: #666; }
+ .card a { color: #e74c3c; text-decoration: none; margin-top: 10px; display: inline-block; }
+ .card a:hover { text-decoration: underline; }
+ </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">Meep Bookery Admin</div>
+        <ul>
+            <li><a href="admin.html">Dashboard</a></li>
+            <li><a href="admin-products.html">Manage Products</a></li>
+            <li><a href="admin-orders.html">Manage Orders</a></li>
+            <li><a href="admin-users.html">Manage Users</a></li>
+            <li><a href="admin-reports.html">Manage Reports</a></li>
+            <li><a href="admin-statistics.html">Manage Statistics</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </ul>
+    </div>
+
+ <!-- Main Content -->
+ <div class="main-content">
+ <h1>Admin Dashboard</h1>
+ <div class="dashboard">
+ <div class="card">
+ <h3>Products</h3>
+ <p>Total: 150</p>
+ <a href="admin-products.html">View Products</a>
+ </div>
+ <div class="card">
+ <h3>Orders</h3>
+ <p>Pending: 10 | Completed: 200</p>
+ <a href="admin-orders.html">View Orders</a>
+ </div>
+ <div class="card">
+ <h3>Users</h3>
+ <p>Total: 500</p>
+ <a href="admin-users.html">View Users</a>
+ </div>
+ <div class="card">
+ <h3>Revenue</h3>
+ <p>This Month: $12,345</p>
+ <a href="#">View Report</a>
+ </div>
+ </div>
+ </div>
+</body>
+</html>
