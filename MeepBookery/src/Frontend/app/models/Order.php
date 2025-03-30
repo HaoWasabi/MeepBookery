@@ -111,4 +111,67 @@ class Order
             return [];
         }
     }
+    public function getOrdersByCustomer($userId, $startDate, $endDate)
+    {
+        try {
+            $query = "
+                SELECT o.OrderID, o.OrderDate, o.TotalAmount
+                FROM `Order` o
+                WHERE o.UserID = ? AND DATE(o.OrderDate) BETWEEN ? AND ?
+                ORDER BY o.OrderDate DESC
+            ";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$userId, $startDate, $endDate]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy đơn hàng của khách hàng: " . $e->getMessage());
+            return [];
+        }
+    }
+    public function getOrderById($orderId)
+    {
+        try {
+            // Lấy thông tin đơn hàng + User
+            $stmt = $this->conn->prepare("
+                SELECT 
+                    o.OrderID, o.OrderDate, o.Status, o.TotalAmount,
+                    u.UserID, u.Name AS UserName, u.Email, u.Phone,
+                    a.Address, a.City, a.District, a.Ward,
+                    pm.Name AS PaymentMethod
+                FROM `Order` o
+                JOIN User u ON o.UserID = u.UserID
+                JOIN Address a ON o.AddressID = a.AddressID
+                JOIN PaymentMethod pm ON o.PaymentMethodID = pm.PaymentMethodID
+                WHERE o.OrderID = ?
+            ");
+            $stmt->execute([$orderId]);
+            $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$order) {
+                return null; // Không tìm thấy đơn hàng
+            }
+
+            // Lấy danh sách sản phẩm trong đơn hàng
+            $stmt = $this->conn->prepare("
+                SELECT 
+                    od.ProductID, b.Name AS ProductName, 
+                    od.Quantity, od.Price 
+                FROM OrderDetail od
+                JOIN Book b ON od.ProductID = b.BookID
+                WHERE od.OrderID = ?
+            ");
+            $stmt->execute([$orderId]);
+            $orderDetails = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Gộp thông tin đơn hàng và chi tiết đơn hàng
+            $order['OrderDetails'] = $orderDetails;
+
+            return $order;
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy đơn hàng theo ID: " . $e->getMessage());
+            return null;
+        }
+    }
+   
 }

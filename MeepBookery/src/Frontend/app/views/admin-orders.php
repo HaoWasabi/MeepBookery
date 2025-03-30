@@ -99,7 +99,7 @@
     <div class="sidebar">
         <div class="logo">Meep Bookery Admin</div>
         <ul>
-            <li><a href="admin.html">Dashboard</a></li>
+            <li><a href="/orders">Dashboard</a></li>
             <li><a href="admin-products.html">Manage Products</a></li>
             <li><a href="admin-orders.html">Manage Orders</a></li>
             <li><a href="admin-users.html">Manage Users</a></li>

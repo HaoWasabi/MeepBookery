@@ -39,7 +39,7 @@ class OrderController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $orderId = $_POST['orderId'];
             $status = $_POST['status'];
-    
+
             if ($this->orderModel->updateOrderStatus($orderId, $status)) {
                 echo json_encode(["message" => "Cập nhật trạng thái thành công"]);
             } else {
@@ -48,7 +48,7 @@ class OrderController
             exit();
         }
     }
-    
+
 
     // Lọc đơn hàng theo tiêu chí
     public function filterOrders()
@@ -62,5 +62,11 @@ class OrderController
         $orders = $this->orderModel->filterOrders($status, $startDate, $endDate, $city, $district);
         require_once __DIR__ . '/../views/admin-orders.php';  // ✅ Sửa đường dẫn
 
+    }
+    public function getOrderDetailById()
+    {
+        $orderId = intval($_GET['orderId']);
+        $orderData = $this->orderModel->getOrderById($orderId);
+        require_once __DIR__ . '/../views/orderdetail.php';
     }
 }

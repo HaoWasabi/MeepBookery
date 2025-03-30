@@ -1,57 +1,42 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách đơn hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Danh sách đơn hàng</h2>
 
-    <?php if (isset($_GET['success'])): ?>
-        <p style="color: green;">Thao tác thành công!</p>
-    <?php elseif (isset($_GET['error'])): ?>
-        <p style="color: red;">Thao tác thất bại!</p>
-    <?php endif; ?>
-
-    <form action="/orders/filter" method="GET">
-        <label>Trạng thái:</label>
-        <select name="status">
-            <option value="">Tất cả</option>
-            <option value="pending">Chờ xác nhận</option>
-            <option value="confirmed">Đã xác nhận</option>
-            <option value="delivered_success">Giao thành công</option>
-            <option value="canceled">Đã hủy</option>
-        </select>
-
-        <label>Từ ngày:</label>
-        <input type="date" name="startDate">
-        <label>Đến ngày:</label>
-        <input type="date" name="endDate">
-
-        <label>Thành phố:</label>
-        <input type="text" name="city">
-
-        <label>Quận/Huyện:</label>
-        <input type="text" name="district">
-
-        <button type="submit">Lọc</button>
-    </form>
-
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Ngày đặt</th>
-            <th>Trạng thái</th>
-            <th>Địa chỉ</th>
-        </tr>
-        <?php foreach ($orders as $order): ?>
-        <tr>
-            <td><?= $order['OrderID'] ?></td>
-            <td><?= $order['OrderDate'] ?></td>
-            <td><?= $order['Status'] ?></td>
-            <td><?= $order['Address'] ?>, <?= $order['District'] ?>, <?= $order['City'] ?></td>
-        </tr>
-        <?php endforeach; ?>
+<body class="container mt-5">
+    <h2 class="text-center mb-4">Danh sách đơn hàng</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Mã đơn hàng</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền (VNĐ)</th>
+                <th>Chi tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($orders as $order): ?>
+                <tr>
+                    <td><?php echo $order['OrderID']; ?></td>
+                    <td><?php echo $order['OrderDate']; ?></td>
+                    <td><?php echo number_format($order['TotalAmount'], 2); ?></td>
+                    <td>
+                        <a href="/satictic/orderdetail?orderId=<?php echo $order['OrderID']; ?>"
+                            class="btn btn-warning btn-sm">
+                            Xem chi tiết
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
     </table>
+    <a href="/statistic"
+        class="btn btn-secondary mt-3">Quay lại</a>
 </body>
+
 </html>
