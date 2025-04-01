@@ -16,6 +16,7 @@
                 <th>Mã đơn hàng</th>
                 <th>Ngày đặt</th>
                 <th>Tổng tiền (VNĐ)</th>
+                <th>Trạng thái</th>
                 <th>Chi tiết</th>
             </tr>
         </thead>
@@ -25,6 +26,7 @@
                     <td><?php echo $order['OrderID']; ?></td>
                     <td><?php echo $order['OrderDate']; ?></td>
                     <td><?php echo number_format($order['TotalAmount'], 2); ?></td>
+                    <td><?php echo $order['Status']; ?></td>
                     <td>
                         <a href="/satictic/orderdetail?orderId=<?php echo $order['OrderID']; ?>"
                             class="btn btn-warning btn-sm">

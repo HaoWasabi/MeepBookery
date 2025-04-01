@@ -33,7 +33,7 @@ class StatisticsController {
        }
 
        // Lấy danh sách đơn hàng của khách hàng
-       $orders = $this->orderModel->getOrdersByCustomer($userId, $startDate, $endDate);
+       $orders = $this->orderModel->getOrdersOfCustomerBetweenStartAndEnd($userId, $startDate, $endDate);
 
        // Gọi view để hiển thị dữ liệu
        require_once __DIR__ . '/../views/orderlist.php';

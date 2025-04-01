@@ -71,6 +71,24 @@ class Order
             return [];
         }
     }
+    public function getAllOrderOfCustomer($userId)
+    {
+        try {
+            $stmt = $this->conn->prepare("
+            SELECT o.*, a.Address, a.City, a.District, a.Ward ,u.Name,o.Status
+            FROM `Order` o
+            JOIN Address a ON o.AddressID = a.AddressID
+            JOIN User u on u.AddressID=O.AddressId
+            Where o.UserID = ?
+            ORDER BY o.OrderDate DESC
+        ");
+            $stmt->execute([$userId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy danh sách đơn hàng: " . $e->getMessage());
+            return [];
+        }
+    }
 
     // 4. Hàm lọc đơn hàng theo tiêu chí
     public function filterOrders($status = null, $startDate = null, $endDate = null, $city = null, $district = null)
@@ -112,13 +130,13 @@ class Order
             return [];
         }
     }
-    public function getOrdersByCustomer($userId, $startDate, $endDate)
+    public function getOrdersOfCustomerBetweenStartAndEnd($userId, $startDate, $endDate)
     {
         try {
             $query = "
-                SELECT o.OrderID, o.OrderDate, o.TotalAmount
+                SELECT o.OrderID, o.OrderDate, o.TotalAmount,o.Status
                 FROM `Order` o
-                WHERE o.UserID = ? AND DATE(o.OrderDate) BETWEEN ? AND ?
+                WHERE o.UserID = ? AND o.status='delivered_success' and DATE(o.OrderDate) BETWEEN ? AND ?
                 ORDER BY o.OrderDate DESC
             ";
 

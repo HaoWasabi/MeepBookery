@@ -147,4 +147,16 @@ class OrderController
         $orderData = $this->orderModel->getOrderById($orderId);
         require_once __DIR__ . '/../views/orderdetail.php';
     }
+    public function getOrdersByCustomerId() {
+        // Lấy tham số từ URL
+        $userId = isset($_GET['userId']) ? intval($_GET['userId']) : 0;
+        if ($userId == 0) {
+            die("Thiếu tham số đầu vào.");
+        }
+ 
+        // Lấy danh sách đơn hàng của khách hàng
+        $orders = $this->orderModel->getAllOrderOfCustomer($userId);
+        // Gọi view để hiển thị dữ liệu
+        require_once __DIR__ . '/../views/orderlist.php';
+     }
 }
