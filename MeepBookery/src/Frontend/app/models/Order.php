@@ -25,7 +25,8 @@ class Order
             INSERT INTO `Order` (UserID, TotalAmount, AddressID, PaymentMethodID) 
             VALUES (?, ?, ?, ?)
         ");
-            return $stmt->execute([$userId, $totalAmount, $addressId, $paymentMethodId]);
+            $stmt->execute([$userId, $totalAmount, $addressId, $paymentMethodId]);
+            return $this->conn->lastInsertId();
         } catch (PDOException $e) {
             error_log("Lỗi tạo đơn hàng: " . $e->getMessage());
             return false;
@@ -173,5 +174,4 @@ class Order
             return null;
         }
     }
-   
 }

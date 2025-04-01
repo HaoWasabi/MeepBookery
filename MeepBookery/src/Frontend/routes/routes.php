@@ -21,6 +21,11 @@ if ($_SERVER["REQUEST_URI"] === "/orders") {
    
 }elseif  (strpos($_SERVER["REQUEST_URI"], "/satictic/orderdetail") === 0) {
     $orderController->getOrderDetailById();
+} elseif ($_SERVER["REQUEST_URI"] === "/checkout") {
+    $orderController->checkout();
+}
+elseif ($_SERVER["REQUEST_URI"] === "/process_checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
+    $orderController->processCheckout();
 }
 else {
     // Hiển thị lỗi nếu route không khớp

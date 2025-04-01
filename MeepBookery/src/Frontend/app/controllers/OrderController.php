@@ -1,13 +1,20 @@
 <?php
 require_once __DIR__ . '/../models/Order.php';
-
+require_once __DIR__ . '/../models/Address.php';
+require_once __DIR__ . '/../models/PaymentMethod.php';
+require_once __DIR__ . '/../models/OrderDetail.php';
 class OrderController
 {
     private $orderModel;
-
+    private $addressModel;
+    private $paymentMethodModel;
+    private $orderDetailModel;
     public function __construct()
     {
         $this->orderModel = new Order();
+        $this->addressModel = new Address();
+        $this->paymentMethodModel = new PaymentMethod();
+        $this->orderDetailModel = new OrderDetail();
     }
 
     // Hiển thị danh sách đơn hàng
@@ -16,23 +23,6 @@ class OrderController
         $orders = $this->orderModel->getAllOrders();
         require_once __DIR__ . '/../views/admin-orders.php';  // ✅ Đúng
     }
-
-    // Tạo đơn hàng mới
-    public function create()
-    {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $userId = $_POST['userId'];
-            $totalAmount = $_POST['totalAmount'];
-            $addressId = $_POST['addressId'];
-            $paymentMethodId = $_POST['paymentMethodId'];
-
-            if ($this->orderModel->createOrder($userId, $totalAmount, $addressId, $paymentMethodId)) {
-                header("Location: /orders");
-            }
-            exit();
-        }
-    }
-
     // Cập nhật trạng thái đơn hàng
     public function updateStatus()
     {
@@ -66,6 +56,94 @@ class OrderController
     public function getOrderDetailById()
     {
         $orderId = intval($_GET['orderId']);
+        $orderData = $this->orderModel->getOrderById($orderId);
+        require_once __DIR__ . '/../views/orderdetail.php';
+    }
+    public function createSession()
+    {
+        session_start();
+        unset($_SESSION['cart']);
+        unset($_SESSION['UserID']);
+        // Tạo session giả nếu chưa tồn tại
+        if (!isset($_SESSION['UserID'])) {
+            $_SESSION['UserID'] = 5; // Giả sử UserID là 1
+        }
+
+        // Tạo giỏ hàng giả nếu chưa có
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = [
+                [
+                    'product_id' => 3,
+                    'quantity' => 2,
+                    'price' => 150000
+                ],
+                [
+                    'product_id' => 4,
+                    'quantity' => 1,
+                    'price' => 200000
+                ]
+            ];
+        }
+    }
+    public function checkout()
+    {
+        $this->createSession(); // Tạo session giả nếu chưa có
+
+        if (!isset($_SESSION['UserID']) || empty($_SESSION['cart'])) {
+            header("Location:/login");
+            exit();
+        }
+        $userId = $_SESSION['UserID'];
+        $address = $this->addressModel->getUserAddress($userId);
+        // Lấy danh sách phương thức thanh toán
+        $paymentMethods = $this->paymentMethodModel->getAllPaymentMethods();
+        require_once __DIR__ . '/../views/checkout.php';  // ✅ Sửa đường dẫn
+    }
+    public function processCheckout()
+    {
+        $this->createSession(); // Tạo session giả nếu chưa có
+
+        if (!isset($_SESSION['UserID']) || empty($_SESSION['cart'])) {
+            header("Location:/login");
+            exit();
+        }
+
+        $userId = $_SESSION['UserID'];
+        $addressId = 0;
+        $paymentMethodId = $_POST['payment_method_id'];
+
+        // Nếu người dùng nhập địa chỉ mới, lưu vào DB và lấy ID mới
+
+        if (!empty($_POST['new_address'])) {
+            $Address = $_POST['new_address'];
+            $Ward = $_POST['new_ward'];
+            $District = $_POST['new_district'];
+            $City = $_POST['new_city'];
+            // Lưu địa chỉ mới vào database
+            $addressId = $this->addressModel->create($Address, $City, $District, $Ward);
+        } else {
+            $addressId = $_POST['address_id']; // Dùng địa chỉ hiện có
+        }
+
+        // Tính tổng tiền đơn hàng
+        $totalAmount = array_reduce($_SESSION['cart'], function ($sum, $item) {
+            return $sum + ($item['quantity'] * $item['price']);
+        }, 0);
+
+        // Lưu đơn hàng vào database
+        $orderId = $this->orderModel->createOrder($userId, $totalAmount, $addressId, $paymentMethodId);
+        if (!$orderId) {
+            die("Lỗi khi tạo đơn hàng!");
+        }
+
+        // Lưu chi tiết đơn hàng
+        foreach ($_SESSION['cart'] as $item) {
+            $this->orderDetailModel->createOrderDetail($orderId, $item['product_id'], $item['quantity'], $item['price']);
+        }
+
+        // Xóa giỏ hàng sau khi đặt hàng thành công
+        unset($_SESSION['cart']);
+
         $orderData = $this->orderModel->getOrderById($orderId);
         require_once __DIR__ . '/../views/orderdetail.php';
     }

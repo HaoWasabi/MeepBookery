@@ -164,7 +164,7 @@
                         <td><?= $order['Name'] ?></td>
                         <td><?= $order['TotalAmount'] ?></td>
                         <td><?= $order['OrderDate'] ?></td>
-                        <td><?= $order['Address'] ?>, <?= $order['District'] ?>, <?= $order['City'] ?></td>
+                        <td><?= $order['Address'] ?>,<?= $order['District'] ?>,<?= $order['District'] ?>, <?= $order['City'] ?></td>
                         <td><?= $order['Status'] ?></td>
                         <td>
                         <td>
