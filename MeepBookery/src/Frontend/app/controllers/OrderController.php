@@ -14,7 +14,7 @@ class OrderController
     public function index()
     {
         $orders = $this->orderModel->getAllOrders();
-        require_once __DIR__ . '/../views/admin-orders.php';  // ✅ Đúng
+        // require_once __DIR__ . '/../views/admin-orders.php';  // ✅ Đúng
     }
 
     // Tạo đơn hàng mới

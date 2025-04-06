@@ -41,8 +41,10 @@ class Order
             $stmt->execute([$orderId]);
             $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$order) return false;
-            if ($order['Status'] === 'delivered_success' && $newStatus === 'canceled') return false;
+            if (!$order)
+                return false;
+            if ($order['Status'] === 'delivered_success' && $newStatus === 'canceled')
+                return false;
 
             // Cập nhật trạng thái đơn hàng
             $stmt = $this->conn->prepare("UPDATE `Order` SET Status = ? WHERE OrderID = ?");
@@ -173,5 +175,5 @@ class Order
             return null;
         }
     }
-   
+
 }

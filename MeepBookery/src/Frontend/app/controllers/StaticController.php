@@ -10,7 +10,7 @@ class StatisticsController {
     }
 
     public function index() {
-        require_once __DIR__ . '/../views/statistics_form.php';  // ✅ Đúng
+        // require_once __DIR__ . '/../views/statistics_form.php';  // ✅ Đúng
     }
 
     public function showStatistics() {

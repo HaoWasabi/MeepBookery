@@ -169,17 +169,20 @@
                         <td>
                         <td>
                             <?php if ($order['Status'] === 'pending'): ?>
-                                <button class="btn btn-success btn-sm" onclick="changeStatus(<?= $order['OrderID'] ?>, 'confirmed')">
+                                <button class="btn btn-success btn-sm"
+                                    onclick="changeStatus(<?= $order['OrderID'] ?>, 'confirmed')">
                                     <i class="fas fa-check"></i> Xác nhận
                                 </button>
                             <?php elseif ($order['Status'] === 'confirmed'): ?>
-                                <button class="btn btn-primary btn-sm" onclick="changeStatus(<?= $order['OrderID'] ?>, 'delivered_success')">
+                                <button class="btn btn-primary btn-sm"
+                                    onclick="changeStatus(<?= $order['OrderID'] ?>, 'delivered_success')">
                                     <i class="fas fa-truck"></i> Giao hàng
                                 </button>
                             <?php endif; ?>
 
                             <?php if ($order['Status'] !== 'delivered_success' && $order['Status'] !== 'canceled'): ?>
-                                <button class="btn btn-danger btn-sm" onclick="changeStatus(<?= $order['OrderID'] ?>, 'canceled')">
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="changeStatus(<?= $order['OrderID'] ?>, 'canceled')">
                                     <i class="fas fa-times"></i> Hủy
                                 </button>
                             <?php endif; ?>
@@ -213,12 +216,12 @@
         function changeStatus(orderId, newStatus) {
             if (confirm("Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng?")) {
                 fetch('http://localhost:8000/orders/update-status', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: 'orderId=' + orderId + '&status=' + newStatus
-                    })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'orderId=' + orderId + '&status=' + newStatus
+                })
                     .then(response => response.json()) // ✅ Đọc JSON thay vì text
                     .then(data => {
                         alert(data.message);
