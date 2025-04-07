@@ -1,3 +1,15 @@
+<?php
+require_once __DIR__ . '/../controllers/BookController.php';
+
+// Gọi phương thức để xemxem danh sách sách
+$bookController = new BookController();
+$books = $bookController->getAllBooks();
+if (!$books) {
+    echo("No books found.");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +24,7 @@
         .header { position: fixed; top: 0; width: 100%; background-color: #fff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); z-index: 1000; }
         .header .logo { font-size: 28px; font-weight: bold; color: #333; }
         .header .nav ul { list-style: none; display: flex; }
-        .header .nav ul li { margin: 0 20px; }
+        .header .nav ul  li { margin: 0 20px; }
         .header .nav ul li a { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s; }
         .header .nav ul li a:hover { color: #e74c3c; }
         .header .icons { display: flex; align-items: center; }
@@ -64,6 +76,7 @@
         .product-item p { color: #e74c3c; font-weight: bold; font-size: 18px; }
         .product-item .add-to-cart { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); padding: 8px 20px; background-color: #e74c3c; color: #fff; text-decoration: none; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
         .product-item:hover .add-to-cart { bottom: 10px; opacity: 1; }
+        .product-item { display: block !important; } /* !!!: Ensure all items are displayed by default */
 
         /* Pagination */
         .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; font-size: 14px; color: #666; }
@@ -84,7 +97,7 @@
         <div class="logo">Meep Bookery</div>
         <nav class="nav">
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="user-home.html">Home</a></li>
                 <li><a href="#">Shop</a></li>
                 <li><a href="#">Blog</a></li>
                 <li><a href="#">Contact</a></li>
@@ -158,52 +171,14 @@
         <div class="products-content">
             <h2>Featured Products</h2>
             <div class="product-grid" id="product-grid">
-                <!-- Sample Products -->
-                <div class="product-item" data-category="comedy" data-size="s" data-price="19.99">
-                    <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/190-home_default/hummingbird-printed-t-shirt.jpg" alt="Book 1">
-                    <h3>Hummingbird Printed T-Shirt</h3>
-                    <p>$19.99</p>
-                    <a href="product-detail.html" class="add-to-cart">Show Info</a>
+                <?php foreach ($books as $book): ?>
+                <div class="product-item" data-category="<?php echo $book['CategoryID']; ?>" data-size="<?php echo $book['Size']; ?>" data-price="<?php echo $book['Price']; ?>">
+                    <img src="<?php echo $book['ImageURL']; ?>" alt="<?php echo $book['Name']; ?>" />
+                    <h3><?php echo $book['Name']; ?></h3>
+                    <p>$<?php echo number_format($book['Price'], 2); ?></p>
+                    <a href="user-bookdetail.php?id=<?= htmlspecialchars($book['BookID']) ?>" class="add-to-cart">Show Info</a>
                 </div>
-                <div class="product-item" data-category="sci-fi" data-size="m" data-price="24.99">
-                    <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/159-home_default/brown-bear-printed-sweater.jpg" alt="Book 2">
-                    <h3>Brown Bear Printed Sweater</h3>
-                    <p>$24.99</p>
-                    <a href="product-detail.html" class="add-to-cart">Show Info</a>
-                </div>
-                <div class="product-item" data-category="romance" data-size="l" data-price="15.99">
-                    <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/161-home_default/the-best-is-yet-to-come-framed-poster.jpg" alt="Book 3">
-                    <h3>The Best is Yet to Come Framed Poster</h3>
-                    <p>$15.99</p>
-                    <a href="product-detail.html" class="add-to-cart">Show Info</a>
-                </div>
-                <div class="product-item" data-category="comedy" data-size="m" data-price="29.99">
-                    <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/190-home_default/hummingbird-printed-t-shirt.jpg" alt="Book 4">
-                    <h3>Another Comedy Book</h3>
-                    <p>$29.99</p>
-                    <a href="product-detail.html" class="add-to-cart">Show Info</a>
-                </div>
-                <div class="product-item" data-category="sci-fi" data-size="s" data-price="34.99">
-                    <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/159-home_default/brown-bear-printed-sweater.jpg" alt="Book 5">
-                    <h3>Another Sci-fi Book</h3>
-                    <p>$34.99</p>
-                    <a href="product-detail.html" class="add-to-cart">Show Info</a>
-                </div>
-                <div class="product-item" data-category="romance" data-size="l" data-price="12.99">
-                    <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/161-home_default/the-best-is-yet-to-come-framed-poster.jpg" alt="Book 6">
-                    <h3>Another Romance Book</h3>
-                    <p>$12.99</p>
-                    <a href="product-detail.html" class="add-to-cart">Show Info</a>
-                </div>
-            </div>
-            <!-- Pagination -->
-            <div class="pagination" id="pagination">
-                <div class="info" id="pagination-info">Showing 1-3 of 6 item(s)</div>
-                <div class="pages" id="pagination-pages">
-                    <a href="#" data-page="1" class="active">1</a>
-                    <a href="#" data-page="2">2</a>
-                    <a href="#" data-page="2">→</a>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -217,170 +192,13 @@
     <!-- Swiper JS -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>
-        // Swiper initialization
-        var swiper = new Swiper('.swiper-container', {
+         // Swiper initialization
+         var swiper = new Swiper('.swiper-container', {
             loop: true,
             autoplay: { delay: 5000, disableOnInteraction: false, },
             pagination: { el: '.swiper-pagination', clickable: true, },
             navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev', },
         });
-
-        // Advanced Search, Filter, and Price Range Logic
-        const products = Array.from(document.querySelectorAll('.product-item'));
-        const searchInput = document.querySelector('#search-input');
-        const searchButton = document.querySelector('#search-button');
-        const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
-        const sizeCheckboxes = document.querySelectorAll('input[name="size"]');
-        const priceMinInput = document.querySelector('#price-min-input');
-        const priceMaxInput = document.querySelector('#price-max-input');
-        const priceMinDisplay = document.querySelector('#price-min');
-        const priceMaxDisplay = document.querySelector('#price-max');
-        const rangeFill = document.querySelector('#range-fill');
-        const productGrid = document.querySelector('#product-grid');
-        const paginationInfo = document.querySelector('#pagination-info');
-        const paginationPages = document.querySelector('#pagination-pages');
-
-        const itemsPerPage = 3; // Số sản phẩm mỗi trang
-        let currentPage = 1;
-        let filteredProducts = products;
-
-        // Price Range Logic
-        function updatePriceRange() {
-            let minPrice = parseFloat(priceMinInput.value);
-            let maxPrice = parseFloat(priceMaxInput.value);
-
-            // Ensure minPrice is always less than maxPrice
-            if (minPrice > maxPrice) {
-                [minPrice, maxPrice] = [maxPrice, minPrice];
-                priceMinInput.value = minPrice;
-                priceMaxInput.value = maxPrice;
-            }
-
-            // Update display
-            priceMinDisplay.textContent = `$${minPrice.toFixed(2)}`;
-            priceMaxDisplay.textContent = `$${maxPrice.toFixed(2)}`;
-
-            // Update range fill
-            const minPercent = (minPrice / 50) * 100;
-            const maxPercent = (maxPrice / 50) * 100;
-            rangeFill.style.left = `${minPercent}%`;
-            rangeFill.style.width = `${maxPercent - minPercent}%`;
-
-            filterProducts();
-        }
-
-        priceMinInput.addEventListener('input', updatePriceRange);
-        priceMaxInput.addEventListener('input', updatePriceRange);
-
-        // Function to filter and search products
-        function filterProducts(scrollToGrid = false) {
-            const searchTerm = searchInput.value.toLowerCase();
-            const selectedCategories = Array.from(categoryCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            const selectedSizes = Array.from(sizeCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-            const minPrice = parseFloat(priceMinInput.value);
-            const maxPrice = parseFloat(priceMaxInput.value);
-
-            filteredProducts = products.filter(product => {
-                const name = product.querySelector('h3').textContent.toLowerCase();
-                const category = product.getAttribute('data-category');
-                const size = product.getAttribute('data-size');
-                const price = parseFloat(product.getAttribute('data-price'));
-
-                // Search by name
-                const matchesSearch = name.includes(searchTerm);
-
-                // Filter by category
-                const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
-
-                // Filter by size
-                const matchesSize = selectedSizes.length === 0 || selectedSizes.includes(size);
-
-                // Filter by price
-                const matchesPrice = price >= minPrice && price <= maxPrice;
-
-                return matchesSearch && matchesCategory && matchesSize && matchesPrice;
-            });
-
-            // Update pagination and display
-            currentPage = 1;
-            updateProductDisplay();
-
-            // Scroll to product grid if requested
-            if (scrollToGrid) {
-                productGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
-        // Function to update product display with pagination
-        function updateProductDisplay() {
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const totalItems = filteredProducts.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-            // Hide all products
-            products.forEach(product => product.classList.remove('visible'));
-
-            // Show products for the current page
-            const productsToShow = filteredProducts.slice(start, end);
-            productsToShow.forEach(product => product.classList.add('visible'));
-
-            // Update pagination info
-            const showingEnd = Math.min(end, totalItems);
-            paginationInfo.textContent = `Showing ${start + 1}-${showingEnd} of ${totalItems} item(s)`;
-
-            // Update pagination links
-            paginationPages.innerHTML = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const pageLink = document.createElement('a');
-                pageLink.href = '#';
-                pageLink.setAttribute('data-page', i);
-                pageLink.textContent = i;
-                if (i === currentPage) pageLink.classList.add('active');
-                paginationPages.appendChild(pageLink);
-            }
-            if (totalPages > 1) {
-                const nextLink = document.createElement('a');
-                nextLink.href = '#';
-                nextLink.setAttribute('data-page', currentPage + 1);
-                nextLink.textContent = '→';
-                if (currentPage === totalPages) nextLink.style.display = 'none';
-                paginationPages.appendChild(nextLink);
-            }
-        }
-
-        // Event listeners for search and filters
-        searchButton.addEventListener('click', () => filterProducts(true)); // Scroll when clicking search button
-        searchInput.addEventListener('input', () => filterProducts(false)); // No scroll on input
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                filterProducts(true); // Scroll when pressing Enter
-            }
-        });
-        categoryCheckboxes.forEach(cb => cb.addEventListener('change', () => filterProducts(false)));
-        sizeCheckboxes.forEach(cb => cb.addEventListener('change', () => filterProducts(false)));
-
-        // Event listener for pagination
-        paginationPages.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (e.target.tagName === 'A') {
-                const page = parseInt(e.target.getAttribute('data-page'));
-                if (!isNaN(page)) {
-                    currentPage = page;
-                    updateProductDisplay();
-                    // Optionally scroll to product grid on pagination click
-                    productGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-        });
-
-        // Initial display
-        updatePriceRange();
-        filterProducts();
-    </script>
+</script>
 </body>
 </html>

@@ -1,3 +1,16 @@
+<?php
+// Gọi phương thức để xemxem danh sách sách
+require_once __DIR__ . '/../controllers/BookController.php';
+$bookController = new BookController();
+$bookId = $_GET['id'] ?? 1; // Lấy ID từ URL, mặc định là 1 nếu không có ID
+$book = $bookController->getBookById($bookId); // Lấy thông tin sách theo ID
+if (!$book) {
+    echo "<p>Book not found.</p>";
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -209,7 +222,7 @@
         <div class="logo">Meep Bookery</div>
         <nav class="nav">
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="user-home.php">Home</a></li>
                 <li><a href="#">Shop</a></li>
                 <li><a href="#">Blog</a></li>
                 <li><a href="#">Contact</a></li>
@@ -228,25 +241,26 @@
     <!-- Product Detail -->
     <section class="product-detail">
         <div class="product-images">
-            <img src="https://demo3leotheme.b-cdn.net/prestashop/leo_bookery_demo/190-home_default/hummingbird-printed-t-shirt.jpg" alt="The Adventure Begins">
+            <img src="<?= htmlspecialchars($book['ImageURL'])?>" alt="Book Image">
         </div>
         <div class="product-info">
-            <h1>The Adventure Begins Framed Poster</h1>
-            <div class="price">$39.00</div>
-            <div class="description">
-                <p>Start your journey with this beautifully framed poster. Perfect for adventure lovers!</p>
+            <h1><?= htmlspecialchars($book['Name'])?></h1>
+            <div class="price"><?= htmlspecialchars($book['Price']) ?> đồng</div>
+            <div class="options">
+                <b class="size">Language:</b>
+                <p><?= htmlspecialchars($book['Language']) ?></p>
             </div>
             <div class="options">
-                <label for="size">Size:</label>
-                <select id="size">
-                    <option value="40x60cm">40x60cm</option>
-                    <option value="50x70cm">50x70cm</option>
-                    <option value="60x90cm">60x90cm</option>
-                </select>
+                <b class="size">Author:</b>
+                <p><?= htmlspecialchars($book['Author']) ?></p>
             </div>
-            <div class="quantity">
-                <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" value="1" min="1">
+            <div class="options">
+                <b class="size">Publisher:</b>
+                <p><?= htmlspecialchars($book['Publisher']) ?></p>
+            </div>
+            <div class="options">
+                <b class="size">Release date:</b>
+                <p><?= htmlspecialchars($book['ReleaseDate']) ?></p>
             </div>
             <a href="#" class="add-to-cart">Add to Cart</a>
         </div>
@@ -260,12 +274,15 @@
             <button onclick="openTab('reviews')">Reviews (0)</button>
         </div>
         <div id="description" class="tab-content active">
-            <p>This framed poster captures the essence of adventure with stunning visuals and high-quality printing. Ideal for decorating your living space or gifting to a fellow explorer.</p>
+            <p><?= htmlspecialchars($book['Description']) ?></p>
         </div>
         <div id="additional" class="tab-content">
-            <p><strong>Dimensions:</strong> 40x60cm, 50x70cm, 60x90cm<br>
-               <strong>Material:</strong> Premium paper with wooden frame<br>
-               <strong>Weight:</strong> 1.2kg</p>
+            <p>
+                <strong>Dimensions: </strong><?= htmlspecialchars($book['Dimensions']) ?><br>
+                <strong>Format: </strong><?= htmlspecialchars($book['Format']) ?><br>
+                <strong>Weight: </strong><?= htmlspecialchars($book['Weight']) ?> kg<br>
+                <strong>Length: </strong><?= htmlspecialchars($book['Length']) ?> cm<br>
+            </p>
         </div>
         <div id="reviews" class="tab-content">
             <p>No reviews yet. Be the first to review this product!</p>

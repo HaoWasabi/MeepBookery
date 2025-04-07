@@ -21,31 +21,26 @@ class BookController
     public function createBook()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $bookId = $_POST['bookId'];
-            $name = $_POST['name'];
-            $description = $_POST['description'];
-            $price = $_POST['price'];
-            $stock = $_POST['stock'];
-            $imageURL = $_POST['imageURL'];
-            $categoryId = $_POST['categoryId'];
-            $length = $_POST['length'];
-            $weight = $_POST['weight'];
-            $dimensions = $_POST['dimensions'];
-            $language = $_POST['language'];
-            $format = $_POST['format'];
-            $publisher = $_POST['publisher'];
-            $releaseDate = $_POST['releaseDate'];
-            $status = $_POST['status'];
-
-            if ($this->bookModel->createBook($bookId, $name, $description, $price, $stock, $imageURL, $categoryId, $length, $weight, $dimensions, $language, $format, $publisher, $releaseDate, $status)) {
-                header("Location: /books"); // Chuyển hướng về trang danh sách đơn hàng
-                echo ("Thêm thành công");
-            } else {
-                echo ("Thêm thất bại");
-            }
-            exit();
+            $name = $_POST['name'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $price = $_POST['price'] ?? 0;
+            $stock = $_POST['stock'] ?? 0;
+            $imageURL = $_POST['imageURL'] ?? '';
+            $categoryId = $_POST['categoryId'] ?? 0;
+            $length = $_POST['length'] ?? 0;
+            $weight = $_POST['weight'] ?? 0;
+            $dimensions = $_POST['dimensions'] ?? '';
+            $language = $_POST['language'] ?? '';
+            $format = $_POST['format'] ?? '';
+            $author = $_POST['author'] ?? '';
+            $publisher = $_POST['publisher'] ?? '';
+            $releaseDate = $_POST['releaseDate'] ?? '';
+            $status = $_POST['status'] ?? 0;
+    
+            return $this->bookModel->createBook($name, $description, $price, $stock, $imageURL, $categoryId, $length, $weight, $dimensions, $language, $format, $author, $publisher, $releaseDate, $status);
         }
     }
+    
 
     // Cập nhật sách
     public function updateBook()
@@ -63,17 +58,12 @@ class BookController
             $dimensions = $_POST['dimensions'];
             $language = $_POST['language'];
             $format = $_POST['format'];
+            $author = $_POST['author'];
             $publisher = $_POST['publisher'];
             $releaseDate = $_POST['releaseDate'];
             $status = $_POST['status'];
 
-            if ($this->bookModel->updateBook($bookId, $name, $description, $price, $stock, $imageURL, $categoryId, $length, $weight, $dimensions, $language, $format, $publisher, $releaseDate, $status)) {
-                header("Location: /books"); // Chuyển hướng về trang danh sách đơn hàng
-                echo("Cập nhật thành công");
-            } else {
-                echo("Cập nhật thất bại");
-            }
-            exit();
+            return $this->bookModel->updateBook($bookId, $name, $description, $price, $stock, $imageURL, $categoryId, $length, $weight, $dimensions, $language, $format, $author, $publisher, $releaseDate, $status);
         }
     }
 
@@ -83,13 +73,17 @@ class BookController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $bookId = $_POST['bookId'];
 
-            if ($this->bookModel->deleteBook($bookId)) {
-                header("Location: /books"); // Chuyển hướng về trang danh sách đơn hàng
-                echo ("Xóa thành công");
-            } else {
-                echo ("Xóa thất bại");
-            }
-            exit();
+            return $this->bookModel->deleteBook($bookId);
+        }
+    }
+
+    // Hủy xóa sách
+    public function undeleteBook()
+    {
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $bookId = $_POST['bookId'];
+
+            return $this->bookModel->undeleteBook($bookId);
         }
     }
 
@@ -103,3 +97,6 @@ class BookController
         return $this->bookModel->getBookById($bookId);
     }
 }
+
+?>
+

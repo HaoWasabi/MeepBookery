@@ -1,19 +1,14 @@
 <?php
     require_once __DIR__ . '/../controllers/BookController.php';
     $bookController = new BookController();
-    $message = ""; // Biến lưu thông báo kết quả thêm sách
+    $message = ""; 
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Gọi phương thức createBook() từ BookController
-        ob_start();
-        $bookController->createBook();
-        $output = ob_get_clean();
-
-        // Kiểm tra nếu có JSON phản hồi
-        $response = json_decode($output, true);
-        if (isset($response['message'])) {
-            $message = $response['message'];
-        }
+        $result = $bookController->createBook();
+        $message = $result ? "Thêm sách thành công!" : "Thêm sách thất bại!";
+        echo "<script>alert('" . addslashes($message) . "');</script>";
+        header("Location: admin-books.php");
+        exit;
     }
 ?>
 
@@ -61,25 +56,17 @@
     <div class="main-content">
         <h1>Add New Book</h1>
 
-        <!-- Hiển thị thông báo -->
-        <?php if (!empty($message)) : ?>
-            <div class="message <?= strpos($message, 'thành công') !== false ? 'success' : 'error' ?>">
-                <?= htmlspecialchars($message) ?>
-            </div>
-        <?php endif; ?>
-
-        <form class="form" method="POST" action="admin-add-book.php">
+        <form class="form" method="POST">
             <label for="name">Book Name</label>
             <input type="text" name="name" id="name" required>
 
             <label for="description">Description</label>
-            <textarea name="description" id="description" rows="3" required></textarea>
+            <textarea name="description" id="description" rows="3"></textarea>
 
             <label for="price">Price</label>
             <input type="number" name="price" id="price" step="0.01" required>
 
-            <label for="stock">Stock</label>
-            <input type="number" name="stock" id="stock" required>
+            <input type="hidden" name="stock" id="stock" value="1">
 
             <label for="imageURL">Image URL</label>
             <input type="text" name="imageURL" id="imageURL" required>
@@ -102,6 +89,9 @@
             <label for="format">Format</label>
             <input type="text" name="format" id="format" required>
 
+            <label for="author">Author</label>
+            <input type="text" name="author" id="author" required>
+
             <label for="publisher">Publisher</label>
             <input type="text" name="publisher" id="publisher" required>
 
@@ -111,11 +101,14 @@
             <label for="status">Status</label>
             <select name="status" id="status">
                 <option value="1">Available</option>
-                <option value="0">Out of Stock</option>
+                <option value="2">Hide</option>
+                <option value="0">Deleted</option>
             </select>
 
             <button type="submit">Add Book</button>
         </form>
     </div>
+
 </body>
 </html>
+
