@@ -28,16 +28,13 @@ if ($_SERVER["REQUEST_URI"] === "/orders") {
     $orderController->getOrdersByCustomerId();
 } elseif ($_SERVER["REQUEST_URI"] === "/category"  && $_SERVER["REQUEST_METHOD"] === "GET") {
     $categoryController->index();
-}
-elseif ($_SERVER["REQUEST_URI"] === "/category/delete"  && $_SERVER["REQUEST_METHOD"] === "DELETE") {
+} elseif (strpos($_SERVER["REQUEST_URI"], "/category/delete") === 0) {
     $categoryController->delete();
-}elseif ($_SERVER["REQUEST_URI"] === "/category/create" && $_SERVER["REQUEST_METHOD"] === "POST") {
-   $categoryController->create();
-}
-elseif (strpos($_SERVER["REQUEST_URI"], "/category/edit") === 0) {
+} elseif ($_SERVER["REQUEST_URI"] === "/category/create") {
+    $categoryController->create();
+} elseif (strpos($_SERVER["REQUEST_URI"], "/category/edit") === 0) {
     $categoryController->edit();
-}
- else {
+} else {
     // Hiển thị lỗi nếu route không khớp
     http_response_code(404);
     echo "404 Not Found - Đường dẫn không hợp lệ: " . htmlspecialchars($_SERVER["REQUEST_URI"]);
