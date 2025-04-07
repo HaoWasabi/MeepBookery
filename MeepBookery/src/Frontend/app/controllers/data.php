@@ -35,9 +35,34 @@ $categories = [
         'name' => 'Tiểu thuyết'
     ],
     [
-        'id' => 3,
-        'name' => 'Sách học ngoại ngữ'
-    ]
+        'id' => 4,
+        'name' => 'Kỹ năng sống'
+    ],
+    [
+        'id' => 5,
+        'name' => 'Văn học Việt Nam'
+    ],
+    [
+        'id' => 6,
+        'name' => 'Văn học nước ngoài'
+    ],
+    [
+        'id' => 7,
+        'name' => 'Văn học Nhật Bản'
+    ],
+    [
+        'id' => 8,
+        'name' => 'Kỹ năng giao tiếp'
+    ],
+    [
+        'id' => 9,
+        'name' => 'Lịch sử - Khoa học'
+    ],
+    [
+        'id' => 10,
+        'name' => 'Kinh tế tài chính'
+    ],
+
 ];
 
 
@@ -1773,6 +1798,7 @@ $books = [
 ];
 
 $data = [
+    'users' => $users,
     'payment_methods' => $payment_methods,
     'categories' => $categories,
     'best_seller_books' => $best_seller_books,

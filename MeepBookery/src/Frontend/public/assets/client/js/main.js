@@ -1,4 +1,9 @@
+import { createBookCard } from "./bookcard.js";
+import { initAutoNumericInput, showSweetAlert, showToast } from "./util.js";
+
 document.addEventListener('DOMContentLoaded', () => {
+    let isInitialPageLoad = true; // Dùng để tránh việc cuộn trang
+    // xuống danh sách sản phẩm ngay lần đầu tiên
     const swiper = new Swiper('.swiper-container', {
         loop: true,
         autoplay: {
@@ -16,8 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         speed: 1000,
     });
 
-
-
     // Update cart UI when page loads
     updateCartInterface();
 
@@ -30,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const searchTerm = searchInput.value.trim();
 
             // Always redirect to shop.php, with or without search term
-            let url = 'shop.php';
+            let url = '/shop';
             if (searchTerm) {
                 url += '?search=' + encodeURIComponent(searchTerm);
             }
@@ -53,444 +56,339 @@ document.addEventListener('DOMContentLoaded', () => {
                     categoryItems.forEach(i => i.classList.remove('active'));
                     // Add active to current item
                     item.classList.add('active');
-                    // Update dropdown button text
-                    document.getElementById('categoryDropdown').textContent = itemCategory;
+                    // Don't update the dropdown button text to keep it as "Danh mục"
                 }
             });
         }
     };
 
-    // Call function to highlight active category
+    // // Call function to highlight active category
     highlightActiveCategory();
 
-    // Set active navigation menu based on current URL
-    const setActiveNavigation = () => {
-        const currentPath = window.location.pathname;
-        const navItems = document.querySelectorAll('.nav-menu .nav-item');
 
-        // Remove all active classes first
-        navItems.forEach(item => item.classList.remove('active'));
+    // Hiển thị sách bán chạy và sách nếu ở trang home
+    if (document.getElementById('featured-books-container')) {
+        let bestSellerBooksHtml = '';
 
-        // Set active class based on path
-        if (currentPath.includes('products')) {
-            document.querySelector('.nav-menu .nav-item:nth-child(2)').classList.add('active');
-        } else if (currentPath.includes('about') || currentPath.includes('gioi-thieu')) {
-            document.querySelector('.nav-menu .nav-item:nth-child(3)').classList.add('active');
-        } else if (currentPath.includes('contact') || currentPath.includes('lien-he')) {
-            document.querySelector('.nav-menu .nav-item:nth-child(4)').classList.add('active');
-        } else {
-            // Default to home
-            document.querySelector('.nav-menu .nav-item:nth-child(1)').classList.add('active');
-        }
-    };
+        // Filter only active books (include ones with stock=0 to show "out of stock")
+        const availableBestSellers = bestSellerBooks.filter(book => book.status === 1);
 
-    // Call the function to set active menu
-    setActiveNavigation();
-
-    // Hiển thị sách bán chạy
-    let bestSellerBooksHtml = '';
-
-    // Filter only active books (include ones with stock=0 to show "out of stock")
-    const availableBestSellers = bestSellerBooks.filter(book => book.status === 1);
-
-    availableBestSellers.forEach(book => {
-        bestSellerBooksHtml += createBookCard(book);
-    });
-
-    document.getElementById('featured-books-container').innerHTML = bestSellerBooksHtml;
-
-    // Khởi tạo phân trang với paginationjs
-    // Filter only active books (include ones with stock=0 to show "out of stock")
-    const availableBooks = allBooks.filter(book => book.status === 1);
-
-    $('#pagination-container').pagination({
-        dataSource: availableBooks,
-        pageSize: 8,
-        autoHidePrevious: true,
-        autoHideNext: true,
-        prevText: '<i class="fas fa-chevron-left"></i>',
-        nextText: '<i class="fas fa-chevron-right"></i>',
-        pageRange: 2,
-        hideOnlyOnePage: true,
-        callback: (data, pagination) => {
-            // Render HTML
-            let html = '';
-
-            data.forEach(book => {
-                html += createBookCard(book);
-            });
-
-            $('#books-container').html(html);
-
-            // Scroll to pagination position if navigating pages
-            if (pagination.pageNumber >= 1) {
-                $('html, body').animate({
-                    scrollTop: $('#books-container').offset().top - 100
-                }, 200);
-            }
-        },
-        locator: 'items'
-    });
-
-    // Kiểm tra nếu đang ở trang shop
-    if (!document.getElementById('shop-products-container')) return;
-
-    // Set active navigation
-    document.querySelector('.nav-menu .nav-item:nth-child(2)').classList.add('active');
-
-    // Price slider initialization
-    const priceSlider = document.getElementById('price-range-slider');
-    const minPriceInput = document.getElementById('min-price');
-    const maxPriceInput = document.getElementById('max-price');
-    const priceMinLabel = document.querySelector('.price-min');
-    const priceMaxLabel = document.querySelector('.price-max');
-
-    // Get min and max price from all books
-    const prices = allBooks.map(book => parseFloat(book.price.replace(/[^0-9]/g, '')));
-    // const minPrice = Math.min(...prices);
-    const minPrice = 0;
-    const maxPrice = Math.max(...prices);
-
-    // Set initial values for inputs
-    minPriceInput.value = minPrice;
-    maxPriceInput.value = maxPrice;
-
-    // Hàm định dạng tiền tệ
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
-
-    // Hàm định dạng số cho tooltip
-    const formatNumber = (value) => {
-        return new Intl.NumberFormat('vi-VN', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
-
-    // Định dạng input giá theo tiền tệ khi nhập xong
-    const formatPriceInput = (input) => {
-        // Tạo phần tử hiển thị giá định dạng nếu chưa có
-        let displayElement = input.nextElementSibling;
-        if (!displayElement || !displayElement.classList.contains('price-display')) {
-            displayElement = document.createElement('div');
-            displayElement.className = 'price-display';
-            input.parentNode.appendChild(displayElement);
-        }
-
-        // Lưu giá trị số (dùng cho tính toán)
-        const numericValue = parseInt(input.value);
-        if (!isNaN(numericValue)) {
-            // Hiển thị giá trị định dạng
-            displayElement.textContent = formatCurrency(numericValue);
-            // Hiển thị phần tử định dạng
-            displayElement.style.display = 'block';
-            // Ẩn input số
-            input.classList.add('has-price-display');
-        } else {
-            // Ẩn phần tử định dạng nếu giá trị không hợp lệ
-            displayElement.style.display = 'none';
-            // Hiện lại input
-            input.classList.remove('has-price-display');
-        }
-    };
-
-    // Thêm sự kiện cho các input giá
-    document.querySelectorAll('.price-input').forEach(input => {
-        // Khi click vào hiển thị giá, ẩn nó đi và hiển thị input
-        input.parentNode.addEventListener('click', function (e) {
-            const displayElement = this.querySelector('.price-display');
-            if (displayElement && e.target === displayElement) {
-                displayElement.style.display = 'none';
-                input.classList.remove('has-price-display');
-                input.focus();
-            }
+        availableBestSellers.forEach(book => {
+            bestSellerBooksHtml += createBookCard(book);
         });
 
-        // Khi blur, định dạng giá
-        input.addEventListener('blur', function () {
-            formatPriceInput(this);
-        });
+        document.getElementById('featured-books-container').innerHTML = bestSellerBooksHtml;
 
-        // Khi nhấn Enter, định dạng giá
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                this.blur();
-            }
-        });
-    });
+        // Khởi tạo phân trang với paginationjs
+        // Filter only active books (include ones with stock=0 to show "out of stock")
+        const availableBooks = allBooks.filter(book => book.status === 1);
 
-    // Initialize noUiSlider
-    noUiSlider.create(priceSlider, {
-        start: [minPrice, maxPrice],
-        connect: true,
-        step: 1,
-        range: {
-            'min': minPrice,
-            'max': maxPrice
-        },
-        format: {
-            to: function (value) {
-                return Math.round(value);
-            },
-            from: function (value) {
-                return Number(value);
-            }
-        },
-        tooltips: [
-            {
-                to: function (value) {
-                    return formatNumber(value);
-                }
-            },
-            {
-                to: function (value) {
-                    return formatNumber(value);
-                }
-            }
-        ]
-    });
-
-    // Khởi tạo labels min-max
-    priceMinLabel.textContent = formatCurrency(minPrice);
-    priceMaxLabel.textContent = formatCurrency(maxPrice);
-
-    // Set the initial values
-    priceSlider.noUiSlider.on('update', function (values, handle) {
-        const value = Math.round(values[handle]);
-        const minValue = Math.round(values[0]);
-        const maxValue = Math.round(values[1]);
-
-        // Update labels
-        document.querySelector('.price-min').textContent = formatCurrency(minValue);
-        document.querySelector('.price-max').textContent = formatCurrency(maxValue);
-
-        // Update input fields
-        if (handle === 0) {
-            document.getElementById('min-price').value = minValue;
-        } else {
-            document.getElementById('max-price').value = maxValue;
-        }
-    });
-
-    // Apply filter when slider stops
-    priceSlider.noUiSlider.on('change', function (values) {
-        const minValue = Math.round(values[0]);
-        const maxValue = Math.round(values[1]);
-        updateSlider(minValue, maxValue);
-    });
-
-    // Populate category filter
-    const categories = [...new Set(allBooks.map(book => book.category))];
-    const categorySelect = document.getElementById('category-filter');
-    categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categorySelect.appendChild(option);
-    });
-
-    // Filter and display products
-    let filteredBooks = [...allBooks];
-    let currentPage = 1;
-    const booksPerPage = 8;
-
-    function applyFilters() {
-        const searchTerm = document.getElementById('search-term').value.toLowerCase();
-        const selectedCategory = document.getElementById('category-filter').value;
-        const minPrice = parseFloat(document.getElementById('min-price').value);
-        const maxPrice = parseFloat(document.getElementById('max-price').value);
-        const sortBy = document.getElementById('sort-by').value;
-
-        // Get min and max price from all books for comparison
-        const prices = allBooks.map(book => parseFloat(book.price.replace(/[^0-9]/g, '')));
-        const initialMinPrice = 0;
-        const initialMaxPrice = Math.max(...prices);
-
-        // Filter books
-        filteredBooks = allBooks.filter(book => {
-            // Filter by status (active books)
-            if (book.status !== 1) return false;
-
-            // Filter by search term
-            if (searchTerm &&
-                !book.name.toLowerCase().includes(searchTerm)
-                // && !book.author.toLowerCase().includes(searchTerm)
-            ) {
-                return false;
-            }
-
-            // Filter by category
-            if (selectedCategory && book.category !== selectedCategory) {
-                return false;
-            }
-
-            // Filter by price
-            const bookPrice = parseFloat(book.price.replace(/[^0-9]/g, ''));
-            if (bookPrice < minPrice || bookPrice > maxPrice) {
-                return false;
-            }
-
-            return true;
-        });
-
-        // Sort books
-        switch (sortBy) {
-            case 'price-asc':
-                filteredBooks.sort((a, b) =>
-                    parseFloat(a.price.replace(/[^0-9]/g, '')) -
-                    parseFloat(b.price.replace(/[^0-9]/g, '')));
-                break;
-
-            case 'price-desc':
-                filteredBooks.sort((a, b) =>
-                    parseFloat(b.price.replace(/[^0-9]/g, '')) -
-                    parseFloat(a.price.replace(/[^0-9]/g, '')));
-                break;
-
-            case 'name-asc':
-                filteredBooks.sort((a, b) => a.name.localeCompare(b.name));
-                break;
-
-            case 'name-desc':
-                filteredBooks.sort((a, b) => b.name.localeCompare(a.name));
-                break;
-
-            default:
-                // Default sorting (no specific sort)
-                break;
-        }
-
-        // Show/hide clear filters button
-        const clearFiltersBtn = document.getElementById('clear-filters');
-        if (searchTerm ||
-            selectedCategory ||
-            minPrice > initialMinPrice ||
-            maxPrice < initialMaxPrice ||
-            sortBy !== 'default') {
-            clearFiltersBtn.style.display = 'inline-block';
-        } else {
-            clearFiltersBtn.style.display = 'none';
-        }
-
-        // Update result count
-        document.getElementById('result-count').textContent = `${filteredBooks.length} sản phẩm`;
-
-        // Reinitialize pagination
-        initPagination();
-    }
-
-    // Initialize pagination
-    function initPagination() {
-        $('#shop-pagination-container').pagination({
-            dataSource: filteredBooks,
-            pageSize: booksPerPage,
+        $('#pagination-container').pagination({
+            dataSource: availableBooks,
+            pageSize: 8,
             autoHidePrevious: true,
             autoHideNext: true,
             prevText: '<i class="fas fa-chevron-left"></i>',
             nextText: '<i class="fas fa-chevron-right"></i>',
             pageRange: 2,
-            callback: function (data, pagination) {
+            hideOnlyOnePage: true,
+            callback: (data, pagination) => {
                 // Render HTML
                 let html = '';
 
-                if (data.length === 0) {
-                    html = `
-                        <div class="col-12 py-5 text-center no-results-container">
-                            <div class="no-results">
-                                <img src="../../img/product-not-found.png" alt="Không tìm thấy sản phẩm" class="img-fluid mb-4 no-results-img">
-                                <h3>Oops! Không tìm thấy cuốn sách nào phù hợp!</h3>
-                                <p class="text-muted">Chúng tôi đã tìm khắp kệ mà vẫn không thấy!</p>
-                                <p class="mt-2 fun-quote">Hãy kiểm tra lại từ khóa hoặc thử tìm cách khác nhé!</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    data.forEach(book => {
-                        html += window.createBookCard(book);
-                    });
-                }
+                data.forEach(book => {
+                    html += createBookCard(book);
+                });
 
-                $('#shop-products-container').html(html);
+                $('#books-container').html(html);
 
-                // Scroll to shop section when changing pages
-                if (pagination.pageNumber >= 1) {
+                // Scroll to pagination position if navigating pages
+                if (pagination.pageNumber >= 1 && !isInitialPageLoad) {
                     $('html, body').animate({
-                        scrollTop: $('.shop-controls').offset().top - 120
+                        scrollTop: $('#books-container').offset().top - 100
                     }, 200);
                 }
+
+                // Update the flag after the first page load
+                isInitialPageLoad = false;
+            },
+            locator: 'items'
+        });
+
+    }
+    // Kiểm tra nếu đang ở trang shop
+    if (document.getElementById('shop-products-container')) {
+        // Price slider initialization
+        const priceSlider = document.getElementById('price-range-slider');
+        const priceMinLabel = document.querySelector('.price-min');
+        const priceMaxLabel = document.querySelector('.price-max');
+
+        const minPriceInput = initAutoNumericInput('#min-price');
+        const maxPriceInput = initAutoNumericInput('#max-price');
+
+        // Get max price from all books
+        const prices = allBooks.map(book => parseFloat(book.price.replace(/[^0-9]/g, '')));
+        const minPrice = 0;
+        const maxPrice = Math.max(...prices);
+
+        // Set initial values for inputs
+        minPriceInput.set(minPrice);
+        maxPriceInput.set(maxPrice);
+
+        // Hàm định dạng tiền tệ
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        };
+
+        // Hàm định dạng số cho tooltip
+        const formatNumber = (value) => {
+            return new Intl.NumberFormat('vi-VN', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        };
+
+        // Initialize noUiSlider
+        noUiSlider.create(priceSlider, {
+            start: [minPrice, maxPrice],
+            connect: true,
+            step: 1,
+            range: {
+                'min': minPrice,
+                'max': maxPrice
+            },
+            format: {
+                to: function (value) {
+                    return Math.round(value);
+                },
+                from: function (value) {
+                    return Number(value);
+                }
+            },
+            tooltips: [
+                {
+                    to: function (value) {
+                        return formatNumber(value);
+                    }
+                },
+                {
+                    to: function (value) {
+                        return formatNumber(value);
+                    }
+                }
+            ]
+        });
+
+        // Khởi tạo labels min-max
+        priceMinLabel.textContent = formatCurrency(minPrice);
+        priceMaxLabel.textContent = formatCurrency(maxPrice);
+
+        // Set the initial values
+        priceSlider.noUiSlider.on('update', function (values, handle) {
+            const value = Math.round(values[handle]);
+            const minValue = Math.round(values[0]);
+            const maxValue = Math.round(values[1]);
+
+            // Update input fields
+            if (handle === 0) {
+                minPriceInput.set(minValue);
+            } else {
+                maxPriceInput.set(maxValue);
             }
         });
+
+        // Apply filter when slider stops
+        priceSlider.noUiSlider.on('change', function (values) {
+            const minValue = Math.round(values[0]);
+            const maxValue = Math.round(values[1]);
+            updateSlider(minValue, maxValue);
+        });
+
+        // Filter and display products
+        let filteredBooks = [...allBooks];
+        let currentPage = 1;
+        const booksPerPage = 8;
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-term').value.toLowerCase();
+            const selectedCategory = document.getElementById('category-filter').value;
+            const minPrice = parseFloat(minPriceInput.getNumber());
+            const maxPrice = parseFloat(maxPriceInput.getNumber());
+            const sortBy = document.getElementById('sort-by').value;
+
+            // Get min and max price from all books for comparison
+            const prices = allBooks.map(book => parseFloat(book.price.replace(/[^0-9]/g, '')));
+            const initialMinPrice = 0;
+            const initialMaxPrice = Math.max(...prices);
+
+            // Filter books
+            filteredBooks = allBooks.filter(book => {
+                // Filter by status (active books)
+                if (book.status !== 1) return false;
+
+                // Filter by search term
+                if (searchTerm &&
+                    !book.name.toLowerCase().includes(searchTerm)
+                ) {
+                    return false;
+                }
+
+                // Filter by category
+                if (selectedCategory && book.category !== selectedCategory) {
+                    return false;
+                }
+
+                // Filter by price
+                const bookPrice = parseFloat(book.price.replace(/[^0-9]/g, ''));
+                if (bookPrice < minPrice || bookPrice > maxPrice) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Sort books
+            switch (sortBy) {
+                case 'price-asc':
+                    filteredBooks.sort((a, b) =>
+                        parseFloat(a.price.replace(/[^0-9]/g, '')) -
+                        parseFloat(b.price.replace(/[^0-9]/g, '')));
+                    break;
+
+                case 'price-desc':
+                    filteredBooks.sort((a, b) =>
+                        parseFloat(b.price.replace(/[^0-9]/g, '')) -
+                        parseFloat(a.price.replace(/[^0-9]/g, '')));
+                    break;
+
+                case 'name-asc':
+                    filteredBooks.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+
+                case 'name-desc':
+                    filteredBooks.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+
+                default:
+                    // Default sorting (no specific sort)
+                    break;
+            }
+
+            // Show/hide clear filters button
+            const clearFiltersBtn = document.getElementById('clear-filters');
+            if (searchTerm ||
+                selectedCategory ||
+                minPrice > initialMinPrice ||
+                maxPrice < initialMaxPrice ||
+                sortBy !== 'default') {
+                clearFiltersBtn.style.display = 'inline-block';
+            } else {
+                clearFiltersBtn.style.display = 'none';
+            }
+
+            // Update result count
+            document.getElementById('result-count').textContent = `${filteredBooks.length} sản phẩm`;
+
+            // Reinitialize pagination
+            initPagination();
+        }
+
+        // Initialize pagination
+        function initPagination() {
+            $('#shop-pagination-container').pagination({
+                dataSource: filteredBooks,
+                pageSize: booksPerPage,
+                autoHidePrevious: true,
+                autoHideNext: true,
+                prevText: '<i class="fas fa-chevron-left"></i>',
+                nextText: '<i class="fas fa-chevron-right"></i>',
+                pageRange: 2,
+                callback: function (data, pagination) {
+                    // Render HTML
+                    let html = '';
+
+                    if (data.length === 0) {
+                        html = `
+                    <div class="col-12 py-5 text-center no-results-container">
+                        <div class="no-results">
+                            <img src="../../img/product-not-found.png" alt="Không tìm thấy sản phẩm" class="img-fluid mb-4 no-results-img">
+                            <h3>Oops! Không tìm thấy cuốn sách nào phù hợp!</h3>
+                            <p class="text-muted">Chúng tôi đã tìm khắp kệ mà vẫn không thấy!</p>
+                            <p class="mt-2 fun-quote">Hãy kiểm tra lại từ khóa hoặc thử tìm cách khác nhé!</p>
+                        </div>
+                    </div>
+                `;
+                    } else {
+                        data.forEach(book => {
+                            html += createBookCard(book);
+                        });
+                    }
+
+                    $('#shop-products-container').html(html);
+
+                    // Scroll to shop section when changing pages
+                    if (pagination.pageNumber >= 1) {
+                        $('html, body').animate({
+                            scrollTop: $('.shop-controls').offset().top - 120
+                        }, 200);
+                    }
+                }
+            });
+        }
+
+        // Cập nhật giá trị slider khi thay đổi giá trị input
+        const updateSlider = (minValue, maxValue) => {
+            if (minValue === undefined || maxValue === undefined) {
+                minValue = parseFloat(minPriceInput.getNumber()) || 0;
+                maxValue = parseFloat(maxPriceInput.getNumber()) || maxPrice;
+            }
+
+            // Cập nhật giá trị slider
+            if (priceSlider && priceSlider.noUiSlider) {
+                priceSlider.noUiSlider.set([minValue, maxValue]);
+            }
+        };
+
+        // Apply filters button
+        document.getElementById('apply-filter').addEventListener('click', function () {
+            applyFilters();
+        });
+
+        // Apply filter when inputs change
+        document.getElementById('min-price').addEventListener('change', function () {
+            const minValue = parseFloat(this.value);
+            const maxValue = parseFloat(document.getElementById('max-price').value);
+            updateSlider(minValue, maxValue);
+            // applyFilters();
+        });
+
+        document.getElementById('max-price').addEventListener('change', function () {
+            const minValue = parseFloat(document.getElementById('min-price').value);
+            const maxValue = parseFloat(this.value);
+            updateSlider(minValue, maxValue);
+            // applyFilters();
+        });
+
+        // Clear filters button
+        document.getElementById('clear-filters').addEventListener('click', function () {
+            document.getElementById('search-term').value = '';
+            document.getElementById('category-filter').value = '';
+            minPriceInput.set(0);
+            maxPriceInput.set(maxPrice);
+
+            // Clear slider and apply filters
+            priceSlider.noUiSlider.set([0, maxPrice]);
+            applyFilters();
+        });
+
+        // Apply initial filter
+        applyFilters();
     }
-
-    // Cập nhật giá trị slider khi thay đổi giá trị input
-    const updateSlider = (minValue, maxValue) => {
-        if (minValue === undefined || maxValue === undefined) {
-            minValue = parseFloat(document.getElementById('min-price').value) || 0;
-            maxValue = parseFloat(document.getElementById('max-price').value) || maxPrice;
-        }
-
-        // Cập nhật giá trị slider
-        if (priceSlider && priceSlider.noUiSlider) {
-            priceSlider.noUiSlider.set([minValue, maxValue]);
-        }
-
-        // Cập nhật giá trị input
-        document.getElementById('min-price').value = minValue;
-        document.getElementById('max-price').value = maxValue;
-
-        // Cập nhật labels
-        document.querySelector('.price-min').textContent = formatCurrency(minValue);
-        document.querySelector('.price-max').textContent = formatCurrency(maxValue);
-
-        // Áp dụng bộ lọc sau khi thay đổi slider
-        // applyFilters();
-    };
-
-    // Apply filters button
-    document.getElementById('apply-filter').addEventListener('click', function () {
-        applyFilters();
-    });
-
-    // Apply filter when inputs change
-    document.getElementById('min-price').addEventListener('change', function () {
-        const minValue = parseFloat(this.value);
-        const maxValue = parseFloat(document.getElementById('max-price').value);
-        updateSlider(minValue, maxValue);
-    });
-
-    document.getElementById('max-price').addEventListener('change', function () {
-        const minValue = parseFloat(document.getElementById('min-price').value);
-        const maxValue = parseFloat(this.value);
-        updateSlider(minValue, maxValue);
-    });
-
-    // Clear all filters
-    document.getElementById('clear-filters').addEventListener('click', function () {
-        document.getElementById('search-term').value = '';
-        document.getElementById('category-filter').value = '';
-        document.getElementById('sort-by').value = 'default';
-
-        // Reset price range slider
-        if (priceSlider && priceSlider.noUiSlider) {
-            updateSlider(minPrice, maxPrice);
-        }
-
-        applyFilters();
-    });
-
-    // Sort by change
-    document.getElementById('sort-by').addEventListener('change', function () {
-        applyFilters();
-    });
-
-    // Initialize on page load
-    applyFilters();
 });
 
 // Add event listener for logout button - Modified to use standard link
@@ -511,242 +409,6 @@ $(document).on('click', '#logoutBtn', function (e) {
         }
     });
 });
-
-// Biến theo dõi toast hiện tại
-let toastTimeout = null;
-
-/**
- * Hiển thị thông báo dạng toast
- * @param {string} message - Nội dung thông báo
- * @param {object} options - Tùy chọn (type, title, duration, position)
- * @returns {string} ID của toast để có thể tham chiếu sau này
- */
-const showToast = (message, options = {}) => {
-    // Clear previous toast timeout if exists
-    if (toastTimeout !== null) {
-        clearTimeout(toastTimeout);
-    }
-
-    // Default options
-    const defaults = {
-        type: 'success', // success, error, warning, info
-        title: 'Thông báo',
-        duration: 3000,
-        position: 'top-right' // top-right, top-left, bottom-left, bottom-right
-    };
-
-    // Merge default options with provided options
-    const settings = { ...defaults, ...options };
-
-    // For backward compatibility
-    if (options === true) {
-        settings.type = 'error';
-        settings.title = 'Thông báo';
-    } else if (typeof options === 'string') {
-        settings.title = options;
-    }
-
-    // Create toast container if it doesn't exist
-    if (!$('#toastContainer').length) {
-        $('body').append(`
-            <div class="toast-container position-fixed p-3" id="toastContainer"></div>
-        `);
-    }
-
-    // Set position
-    const toastContainer = $('#toastContainer');
-    toastContainer.removeClass('top-0 bottom-0 start-0 end-0');
-    switch (settings.position) {
-        case 'top-right':
-            toastContainer.addClass('top-0 end-0');
-            break;
-        case 'top-left':
-            toastContainer.addClass('top-0 start-0');
-            break;
-        case 'bottom-left':
-            toastContainer.addClass('bottom-0 start-0');
-            break;
-        default: // bottom-right
-            toastContainer.addClass('bottom-0 end-0');
-            break;
-    }
-
-    // Generate unique ID for this toast
-    const toastId = 'toast-' + new Date().getTime();
-
-    // Set color scheme based on type
-    let headerClass = 'bg-info';
-    let icon = 'fa-info-circle';
-
-    switch (settings.type) {
-        case 'success':
-            headerClass = 'bg-success';
-            icon = 'fa-check-circle';
-            break;
-        case 'error':
-            headerClass = 'bg-danger';
-            icon = 'fa-times-circle';
-            break;
-        case 'warning':
-            headerClass = 'bg-warning';
-            icon = 'fa-exclamation-triangle';
-            break;
-    }
-
-    // Determine animation based on position
-    let animationIn = '';
-
-    if (settings.position.includes('top')) {
-        animationIn = 'animate__fadeInDown';
-    } else {
-        animationIn = 'animate__fadeInUp';
-    }
-
-    if (settings.position.includes('left')) {
-        animationIn = 'animate__fadeInLeft';
-    } else if (settings.position.includes('right')) {
-        animationIn = 'animate__fadeInRight';
-    }
-
-    // Remove any existing toasts
-    $('#toastContainer .toast').each(function () {
-        $(this).remove();
-    });
-
-    // Append toast to container
-    toastContainer.append(`
-        <div id="${toastId}" class="toast show animate__animated ${animationIn} animate__faster" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header ${headerClass} text-white">
-                <i class="fas ${icon} me-2"></i>
-                <strong class="me-auto">${settings.title}</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">${message}</div>
-        </div>
-    `);
-
-    // Determine exit animation based on position
-    let animationOut = '';
-
-    if (settings.position.includes('top')) {
-        animationOut = 'animate__fadeOutUp';
-    } else {
-        animationOut = 'animate__fadeOutDown';
-    }
-
-    if (settings.position.includes('left')) {
-        animationOut = 'animate__fadeOutLeft';
-    } else if (settings.position.includes('right')) {
-        animationOut = 'animate__fadeOutRight';
-    }
-
-    // Function to handle toast removal with animation
-    const removeToastWithAnimation = (toastElement) => {
-        $(toastElement)
-            .removeClass(animationIn)
-            .addClass(animationOut)
-            .on('animationend', function () {
-                $(this).remove();
-            });
-    };
-
-    // Set timeout to auto-hide the toast
-    toastTimeout = setTimeout(() => {
-        removeToastWithAnimation($(`#${toastId}`));
-        toastTimeout = null;
-    }, settings.duration);
-
-    // Enable manual closing
-    $(`#${toastId} .btn-close`).on('click', function () {
-        removeToastWithAnimation($(`#${toastId}`));
-
-        if (toastTimeout !== null) {
-            clearTimeout(toastTimeout);
-            toastTimeout = null;
-        }
-    });
-
-    return toastId;
-};
-
-/**
- * Hiển thị thông báo sử dụng SweetAlert2
- * @param {string} message - Nội dung thông báo
- * @param {object} options - Tùy chọn (icon, title, confirmButtonText, ...)
- * @returns {Promise} Promise từ SweetAlert2 để có thể xử lý kết quả
- */
-const showSweetAlert = (message, options = {}) => {
-    // Default options
-    const defaults = {
-        icon: 'success', // success, error, warning, info, question
-        title: 'Thông báo',
-        confirmButtonText: 'Đồng ý',
-        confirmButtonColor: '#e74c3c',
-        cancelButtonColor: '#6c757d',
-        focusConfirm: false,
-        returnFocus: false,
-    };
-
-    // Merge default options with provided options
-    const settings = { ...defaults, ...options };
-
-    // Add the message to the settings
-    settings.text = message;
-
-    // Special case for confirmation dialogs
-    if (options.showCancelButton) {
-        if (!settings.cancelButtonText) {
-            settings.cancelButtonText = 'Hủy';
-        }
-    }
-
-    // Return the SweetAlert2 promise for further handling if needed
-    return Swal.fire(settings);
-};
-
-/**
- * Hàm tạo HTML cho card sách - khai báo toàn cục để có thể sử dụng ở mọi nơi
- * @param {object} book - Đối tượng sách cần hiển thị
- * @returns {string} HTML cho card sách
- */
-window.createBookCard = (book) => {
-    const isOutOfStock = book.stock === 0;
-
-    return `
-        <div class="col-md-3 col-sm-6">
-            <div class="book-card ${isOutOfStock ? 'out-of-stock' : ''}">
-                ${isOutOfStock ? '<div class="out-of-stock-label">Tạm hết hàng</div>' : ''}
-                <div class="book-img-container">
-                    <a href="product-detail.php?id=${book.id}" title="${book.name}">
-                        <img src="${book.image}" alt="${book.name}" class="book-img">
-                    </a>
-                    ${isOutOfStock ? '<div class="book-img-overlay"></div>' : ''}
-                    
-                    </div>
-                <div class="book-info">
-                    <h3 class="book-title">
-                        <a href="product-detail.php?id=${book.id}" title="${book.name}">${book.name}</a>
-                    </h3>
-                    <p class="book-category">${book.category}</p>
-                    <p class="book-author">${book.author}</p>
-                    <p class="book-price">${book.price} ₫</p>
-
-                    <!-- Hover action buttons -->
-                    <div class="book-hover-actions">
-                        <button class="action-btn buy-now-btn" data-book-id="${book.id}" ${isOutOfStock ? 'disabled' : ''} title="Mua ngay">
-                            <span class="btn-icon"><i class="fas fa-bolt"></i></span>
-                            <span class="btn-text">Mua ngay</span>
-                        </button>
-                        <button class="action-btn add-cart-btn" data-book-id="${book.id}" ${isOutOfStock ? 'disabled' : ''} title="Thêm vào giỏ hàng">
-                            <span class="btn-icon"><i class="fas fa-cart-plus"></i></span>
-                            <span class="btn-text">Thêm vào giỏ</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-};
 
 // Add event listeners for the hover action buttons
 $(document).on('click', '.add-cart-btn', function (e) {
@@ -772,7 +434,7 @@ $(document).on('click', '.buy-now-btn', function (e) {
         // Redirect to product detail or checkout
         if (added) {
             setTimeout(() => {
-                window.location.href = 'product-detail.php?id=' + bookId;
+                window.location.href = '/product-detail?id=' + bookId;
             }, 300);
         }
     }
@@ -804,7 +466,7 @@ $(document).ready(() => {
         $('#cartTotalItems').text(`${cart.totalItems} sản phẩm`);
 
         // Also update global cart interface
-        updateCartInterface();
+        // updateCartInterface(); // Removing this to avoid circular updates
     };
 
     // Update a single cart item's quantity and price in the UI
@@ -863,6 +525,9 @@ $(document).ready(() => {
         }));
 
         localStorage.setItem('cart', JSON.stringify(minimalCart));
+
+        // Ensure global cart interface is updated with latest data
+        updateCartInterface();
     };
 
     // Load cart from browser local storage
@@ -951,11 +616,11 @@ $(document).ready(() => {
                     <div class="card border-0 rounded-0 border-bottom cart-item">
                         <div class="card-body p-3">
                             <div class="d-flex">
-                                <a href="product-detail.php?id=${item.id}" class="cart-item-img-link">
+                                <a href="/product-detail?id=${item.id}" class="cart-item-img-link">
                                     <img src="${item.image}" alt="${item.name}" class="cart-item-img me-3">
                                 </a>
                                 <div class="flex-grow-1">
-                                    <a href="product-detail.php?id=${item.id}" class="cart-item-name">
+                                    <a href="/product-detail?id=${item.id}" class="cart-item-name">
                                         <h6 class="card-title mb-1">${item.name}</h6>
                                     </a>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -1273,7 +938,7 @@ $(document).ready(() => {
 /**
  * Cập nhật giỏ hàng dựa trên dữ liệu lưu trữ cục bộ
  */
-const updateCartInterface = () => {
+window.updateCartInterface = () => {
     // Get cart items from localStorage
     const savedCart = localStorage.getItem('cart');
     let cartCount = 0;

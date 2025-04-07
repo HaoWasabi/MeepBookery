@@ -29,7 +29,7 @@
 
             <!-- Search Bar -->
             <div class="search-wrapper flex-grow-1">
-                <form action="shop.php" method="GET" id="searchForm">
+                <form action="/shop" method="GET" id="searchForm">
                     <div class="input-group">
                         <div class="dropdown">
                             <button class="category-toggle dropdown-toggle" type="button" id="categoryDropdown"
@@ -37,11 +37,10 @@
                                 Danh mục
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                                <li><a class="dropdown-item active" href="shop.php" data-category-id="">Tất cả danh
+                                <li><a class="dropdown-item active" href="/shop" data-category-id="">Tất cả danh
                                         mục</a></li>
                                 <?php foreach ($categories as $category): ?>
-                                    <li><a class="dropdown-item"
-                                            href="shop.php?category=<?= urlencode($category['name']); ?>"
+                                    <li><a class="dropdown-item" href="/shop?category=<?= urlencode($category['name']); ?>"
                                             data-category-id="<?= $category['id']; ?>"><?= $category['name']; ?></a>
                                     </li>
                                 <?php endforeach; ?>
@@ -64,7 +63,7 @@
                     if (isset($_SESSION['UserID'])) {
                         // User is logged in - show user info and dropdown
                         $userName = isset($_SESSION['Name']) ? explode(' ', $_SESSION['Name'])[0] : 'User';
-                        ?>
+                    ?>
                         <a href="#" class="btn btn-danger account-btn logged-in-btn">
                             <div class="btn-icon">
                                 <i class="fas fa-user"></i>
@@ -75,24 +74,24 @@
                         </a>
                         <div class="account-popup account-menu-dropdown">
                             <div class="account-popup-buttons">
-                                <a href="profile.php" class="account-popup-link my-account">
+                                <a href="/my-account" class="account-popup-link my-account">
                                     <i class="fas fa-user"></i>
                                     Tài khoản của tôi
                                 </a>
-                                <a href="order-history.php" class="account-popup-link my-orders">
+                                <a href="/order-history" class="account-popup-link my-orders">
                                     <i class="fas fa-clipboard-list"></i>
                                     Đơn hàng của tôi
                                 </a>
-                                <a href="logout" class="account-popup-link logout" id="logoutBtn">
+                                <a href="/logout" class="account-popup-link logout" id="logoutBtn">
                                     <i class="fas fa-sign-out-alt"></i>
                                     Đăng xuất
                                 </a>
                             </div>
                         </div>
-                        <?php
+                    <?php
                     } else {
                         // User is not logged in - show login/register buttons
-                        ?>
+                    ?>
                         <a href="#" class="btn btn-danger account-btn">
                             <div class="btn-icon">
                                 <i class="fas fa-user"></i>
@@ -115,7 +114,7 @@
                                 </a>
                             </div>
                         </div>
-                        <?php
+                    <?php
                     }
                     ?>
                 </div>
@@ -137,59 +136,65 @@
 </header>
 
 <!-- Navigation Menu -->
-<nav class="main-navigation">
-    <div class="container">
-        <ul class="nav-menu">
-            <?php
-            // Xác định trang hiện tại từ REQUEST_URI
-            $current_page = $_SERVER['REQUEST_URI'];
+<?php if ($show_nav): ?>
+    <nav class="main-navigation">
+        <div class="container">
+            <ul class="nav-menu">
+                <?php
+                // Xác định trang hiện tại từ REQUEST_URI
+                $current_page = $_SERVER['REQUEST_URI'];
 
-            // Tạo các class active dựa trên URI hiện tại
-            $home_active = (strpos($current_page, 'index') !== false || $current_page === '/' || $current_page === '') ? 'active' : '';
-            $products_active = (strpos($current_page, 'shop') !== false) ? 'active' : '';
-            $about_active = (strpos($current_page, 'about-us') !== false) ? 'active' : '';
-            $contact_active = (strpos($current_page, 'contact-us') !== false) ? 'active' : '';
-            ?>
-            <li class="nav-item <?php echo $home_active; ?>">
-                <a href="/" class="nav-link">
-                    <div class="nav-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="nav-text">
-                        Trang chủ
-                    </div>
-                </a>
-            </li>
-            <li class="nav-item <?php echo $products_active; ?>">
-                <a href="/shop" class="nav-link">
-                    <div class="nav-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="nav-text">
-                        Sản phẩm
-                    </div>
-                </a>
-            </li>
-            <li class="nav-item <?php echo $about_active; ?>">
-                <a href="/about-us" class="nav-link">
-                    <div class="nav-icon">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div class="nav-text">
-                        Giới thiệu
-                    </div>
-                </a>
-            </li>
-            <li class="nav-item <?php echo $contact_active; ?>">
-                <a href="/contact-us" class="nav-link">
-                    <div class="nav-icon">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                    <div class="nav-text">
-                        Liên hệ
-                    </div>
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+                // Tạo các class active dựa trên URI hiện tại
+                $home_active = (strpos($current_page, 'index') !== false || $current_page === '/' || $current_page === '') ? 'active' : '';
+                $products_active = (strpos($current_page, 'shop') !== false) ? 'active' : '';
+                $about_active = (strpos($current_page, 'about-us') !== false) ? 'active' : '';
+                $contact_active = (strpos($current_page, 'contact-us') !== false) ? 'active' : '';
+                ?>
+                <li class="nav-item <?php echo $home_active; ?>">
+                    <a href="/" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="nav-text">
+                            Trang chủ
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item <?php echo $products_active; ?>">
+                    <a href="/shop" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="nav-text">
+                            Sản phẩm
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item <?php echo $about_active; ?>">
+                    <a href="/about-us" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="nav-text">
+                            Giới thiệu
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item <?php echo $contact_active; ?>">
+                    <a href="/contact-us" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="nav-text">
+                            Liên hệ
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+<?php endif; ?>
+
+<?php if (!isset($_SESSION['UserID'])): ?>
+    <?php require_once 'auth-modal.php'; ?>
+<?php endif; ?>

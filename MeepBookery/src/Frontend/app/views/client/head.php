@@ -3,7 +3,7 @@
 <title><?= isset($page_title) ? $page_title : 'MeepBookery' ?></title>
 
 <!-- Favicon -->
-<link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,21 +14,18 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Swiper CSS -->
-<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css">
 
 <!-- NoUiSlider CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.5.0/nouislider.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css" />
 
 <!-- AOS CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
 
 <!-- Pagination CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.min.css" />
 
 <!-- Animate.css for animations -->
@@ -55,7 +52,6 @@
 
 <!-- Custom CSS -->
 <link rel="stylesheet" href="../../assets/client/css/style.css" />
-<link rel="stylesheet" href="../../assets/client/css/auth-modal.css" />
 <link rel="stylesheet" href="../../assets/client/css/cart-offcanvas.css" />
 
 <!-- jQuery -->
@@ -80,5 +76,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
 
 <!-- Custom JS files -->
-<script src="../../assets/client/js/auth.js"></script>
-<script src="../../assets/client/js/main.js"></script>
+<script type="module" src="../../assets/client/js/main.js"></script>
+
+<!-- Autonumeric - Input Number -->
+<script src="https://cdn.jsdelivr.net/npm/autonumeric@4.6.0"></script>
+
+
+<?php require_once 'scripts.php'; ?>
+
+<?php if (!isset($_SESSION['UserID'])): ?>
+    <script type="module" src="../../assets/client/js/auth.js"></script>
+    <link rel="stylesheet" href="../../assets/client/css/auth-modal.css" />
+<?php endif; ?>

@@ -1,3 +1,5 @@
+import { showSweetAlert } from "./util.js";
+
 $(document).ready(() => {
     // Initialize AOS
     AOS.init({
@@ -387,14 +389,15 @@ $(document).ready(() => {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {
-                        // Reload trang sau khi SweetAlert đóng
+                        // window.location.href = '/';
                         location.reload();
                     });
                 } else {
 
                     showSweetAlert(response.message, {
                         icon: 'error',
-                        title: 'Đăng nhập thất bại'
+                        title: 'Đăng nhập thất bại',
+                        confirmButtonText: 'Đã hiểu'
                     });
 
                     // Reset button
@@ -407,7 +410,8 @@ $(document).ready(() => {
             error: function (xhr, status, error) {
                 showSweetAlert('Có lỗi xảy ra khi xử lý yêu cầu', {
                     icon: 'error',
-                    title: 'Lỗi hệ thống'
+                    title: 'Lỗi hệ thống',
+                    confirmButtonText: 'Đã hiểu'
                 });
 
                 // Reset button
@@ -461,6 +465,7 @@ $(document).ready(() => {
                     showSweetAlert(response.message, {
                         icon: 'success',
                         title: 'Đăng ký thành công',
+                        confirmButtonText: 'Đã hiểu',
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {
@@ -471,7 +476,8 @@ $(document).ready(() => {
 
                     showSweetAlert(response.message, {
                         icon: 'error',
-                        title: 'Đăng ký thất bại'
+                        title: 'Đăng ký thất bại',
+                        confirmButtonText: 'Đã hiểu'
                     });
 
                     // Reset button
@@ -506,4 +512,5 @@ $(document).ready(() => {
         $('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
         // Không reset biến tương tác để giữ trạng thái giữa các lần mở form
     });
+
 });

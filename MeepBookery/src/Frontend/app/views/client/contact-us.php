@@ -1,7 +1,7 @@
 <!-- $title = "Liên hệ - MeepBookery"; -->
 
 <!-- Contact Banner -->
-<section class="contact-banner py-5 bg-light">
+<section class="contact-banner py-3 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -14,7 +14,7 @@
 </section>
 
 <!-- Contact Information -->
-<section class="contact-info py-5">
+<section class="contact-info py-3">
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8 text-center" data-aos="fade-up">
@@ -58,7 +58,7 @@
 </section>
 
 <!-- Contact Form and Map -->
-<section class="contact-form-map py-5 bg-light">
+<section class="contact-form-map py-3 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
@@ -127,7 +127,7 @@
 </section>
 
 <!-- Working Hours -->
-<section class="working-hours py-5">
+<section class="working-hours py-4">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center" data-aos="fade-up">
@@ -172,7 +172,7 @@
 </section>
 
 <!-- FAQ Section -->
-<section class="faq-section py-5 bg-light">
+<section class="faq-section py-4 bg-light">
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8 text-center" data-aos="fade-up">

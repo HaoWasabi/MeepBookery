@@ -21,6 +21,15 @@ class AuthController extends BaseController
 
         $user = $this->authModel->login($email, $password);
 
+        // Kiểm tra nếu là tài khoản admin
+        if ($this->authModel->isAdmin($user)) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Email hoặc mật khẩu không chính xác'
+            ]);
+            return;
+        }
+
         // Kiểm tra nếu là lỗi
         if (isset($user['error'])) {
             $message = match ($user['error']) {

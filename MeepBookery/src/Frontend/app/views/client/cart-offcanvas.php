@@ -17,11 +17,11 @@
                 </div>
             </div>
             <div class="d-grid gap-2">
-                <a href="cart.php" class="btn btn-view-cart">
+                <a href="/cart" class="btn btn-view-cart">
                     <span class="btn-icon"><i class="fas fa-shopping-cart"></i></span>
                     <span class="btn-text">Xem giỏ hàng</span>
                 </a>
-                <a href="checkout.php" class="btn btn-checkout">
+                <a href="#" class="btn btn-checkout">
                     <span class="btn-icon"><i class="fas fa-credit-card"></i></span>
                     <span class="btn-text">Thanh toán</span>
                 </a>
@@ -40,5 +40,20 @@
     </div>
 </template>
 
-<!-- Toast Container -->
-<div class="toast-container position-fixed p-3 bottom-0 end-0" id="toastContainer"></div>
+<script type="module">
+    import {
+        showSweetAlert
+    } from '/assets/client/js/util.js';
+    document.querySelector('.btn-checkout').addEventListener('click', () => {
+        <?php if (!isset($_SESSION['UserID'])): ?>
+            showSweetAlert('Vui lòng đăng nhập để mua hàng', {
+                icon: 'warning',
+                title: 'Đăng nhập',
+                confirmButtonText: 'Đăng nhập'
+            });
+        <?php else : ?>
+            // Redirect to checkout page
+            window.location.href = '/checkout';
+        <?php endif; ?>
+    });
+</script>

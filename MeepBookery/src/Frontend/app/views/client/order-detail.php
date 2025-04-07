@@ -1,13 +1,31 @@
+<?php
+// Lấy ID từ URL
+$order_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+//Tạm thời sài dữ liệu giả :v
+// Lấy thông tin order từ data
+
+$user = $users[0];
+
+$order = null;
+foreach ($orders as $o) {
+    if ($o['id'] == $order_id) {
+        $order = $o;
+        break;
+    }
+}
+
+?>
+
 <!-- Chi tiết đơn hàng - MeepBookery -->
-<?php $order = $orders[0] ?>
 
 <!-- Order Detail Banner -->
-<section class="order-detail-banner py-5 bg-light">
+<section class="order-detail-banner bg-light">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="order-detail-banner-content text-center">
-                    <h1 class="order-detail-title mb-4">Chi tiết đơn hàng #<?php echo $order['id']; ?></h1>
+                    <h1 class="order-detail-title mb-4 ">Chi tiết đơn hàng #<?php echo $order['id']; ?></h1>
                 </div>
             </div>
         </div>
@@ -137,15 +155,15 @@
                         <?php
                         $totalItems = count($order['details']);
                         $initialDisplay = 4; // Số sản phẩm hiển thị ban đầu khi dùng chế độ đóng/mở
-                        
+
                         // Nếu có 10 sản phẩm trở xuống, hiển thị kiểu đóng/mở (nếu có >= 5 sản phẩm)
                         if ($totalItems <= 10) {
                             $useCollapseMode = $totalItems >= 5;
-                            ?>
+                        ?>
                             <div class="list-group list-group-flush">
                                 <?php foreach ($order['details'] as $index => $item):
                                     $displayClass = ($useCollapseMode && $index >= $initialDisplay) ? 'item-hidden d-none' : '';
-                                    ?>
+                                ?>
                                     <div class="list-group-item product-item <?php echo $displayClass; ?>">
                                         <div class="d-flex align-items-center">
                                             <div class="item-number"><?php echo $index + 1; ?></div>
@@ -193,10 +211,10 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <?php
+                        <?php
                             // Nếu có nhiều hơn 10 sản phẩm, hiển thị kiểu cuộn
                         } else {
-                            ?>
+                        ?>
                             <div class="list-group list-group-flush scrollable-items">
                                 <?php foreach ($order['details'] as $index => $item): ?>
                                     <div class="list-group-item product-item">
@@ -309,7 +327,7 @@
                 <!-- Actions -->
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <a href="order-history.php" class="btn btn-outline-secondary w-100 mb-2">
+                        <a href="/order-history" class="btn btn-outline-secondary w-100 mb-2">
                             <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách đơn hàng
                         </a>
                         <?php if ($order['status'] == 'pending'): ?>
@@ -461,13 +479,13 @@
 
 <!-- Custom JavaScript -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Handle "Other reason" logic for cancellation
         const cancelReasonSelect = document.getElementById('cancelReason');
         const otherReasonContainer = document.getElementById('otherReasonContainer');
 
         if (cancelReasonSelect) {
-            cancelReasonSelect.addEventListener('change', function () {
+            cancelReasonSelect.addEventListener('change', function() {
                 if (this.value === '6') {
                     otherReasonContainer.style.display = 'block';
                 } else {
@@ -479,7 +497,7 @@
         // Handle cancel order submission
         const confirmCancelOrderBtn = document.getElementById('confirmCancelOrder');
         if (confirmCancelOrderBtn) {
-            confirmCancelOrderBtn.addEventListener('click', function () {
+            confirmCancelOrderBtn.addEventListener('click', function() {
                 const form = document.getElementById('cancelOrderForm');
                 const cancelReason = document.getElementById('cancelReason');
 
@@ -527,7 +545,7 @@
         const showLessBtn = document.getElementById('showLessBtn');
 
         if (showMoreBtn) {
-            showMoreBtn.addEventListener('click', function () {
+            showMoreBtn.addEventListener('click', function() {
                 document.querySelectorAll('.item-hidden').forEach(item => {
                     item.classList.remove('d-none');
                 });
@@ -538,7 +556,7 @@
         }
 
         if (showLessBtn) {
-            showLessBtn.addEventListener('click', function () {
+            showLessBtn.addEventListener('click', function() {
                 document.querySelectorAll('.item-hidden').forEach(item => {
                     item.classList.add('d-none');
                 });
@@ -549,7 +567,9 @@
                 // Cuộn lên đầu danh sách sản phẩm
                 const listGroup = document.querySelector('.list-group');
                 if (listGroup) {
-                    listGroup.scrollIntoView({ behavior: 'smooth' });
+                    listGroup.scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 }
             });
         }

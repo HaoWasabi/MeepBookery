@@ -2,7 +2,6 @@
 <html lang="vi">
 
 <?php require_once 'head.php'; ?>
-<?php require_once 'scripts.php'; ?>
 
 <body>
     <?php require_once 'header.php'; ?>
@@ -19,7 +18,6 @@
     </main>
 
     <?php require_once 'footer.php'; ?>
-    <?php require_once 'auth-modal.php'; ?>
 
 </body>
 

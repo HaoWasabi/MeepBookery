@@ -1,7 +1,7 @@
 <!-- "Giới thiệu - MeepBookery"; -->
 
 <!-- About Us Banner -->
-<section class="about-banner py-5 bg-light">
+<section class="about-banner py-2 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">

@@ -1,7 +1,7 @@
 <?php require_once 'slider.php'; ?>
 
 <!-- Featured Books Section -->
-<div class="featured-books py-5">
+<div class="featured-books">
     <div class="container">
         <h2 class="section-title">Sách Bán Chạy</h2>
         <div class="row" id="featured-books-container">

@@ -331,6 +331,17 @@ body {
     font-weight: 500;
 }
 
+.book-category a.category-link {
+    color: #e74c3c;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.book-category a.category-link:hover {
+    color: #c0392b;
+    text-decoration: underline;
+}
+
 .book-author {
     font-size: 16px;
     color: #666;
@@ -684,7 +695,7 @@ body {
 
 
 .featured-books {
-    margin-bottom: 40px;
+    /* margin-bottom: 40px; */
 }
 
 .section-title {
@@ -1486,35 +1497,10 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-/* Styling cho phần hiển thị giá */
-.price-display {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #fff;
-    padding: 0.25rem 0.5rem;
-    font-size: 16px;
-    line-height: 1.5;
-    display: none;
-    border-radius: 0 0.2rem 0.2rem 0;
-    font-weight: 500;
-    color: #333;
-    cursor: text;
-    z-index: 5;
-    border: 1px solid #ced4da;
-}
-
+/* Styling cho phần hiển thị giá oử shop filter form*/
 .input-group {
     position: relative;
 }
-
-input.has-price-display {
-    color: transparent;
-    caret-color: transparent;
-}
-
 
 /* Styling cho phần hiển thị không tìm thấy sản phẩm */
 .no-results-container {
@@ -1654,159 +1640,6 @@ input.has-price-display {
 
     .add-cart-btn:active {
         background-color: #fdf1f0;
-    }
-}
-
-/* Product Detail Page Styles */
-.product-title {
-    font-size: 2rem;
-    color: #333;
-    font-weight: 700;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.5rem;
-}
-
-.product-image-container {
-    position: relative;
-    background-color: #f9f9f9;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.product-main-image {
-    max-height: 400px;
-    object-fit: contain;
-}
-
-.out-of-stock-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-}
-
-.out-of-stock-badge {
-    background-color: #e74c3c;
-    color: white;
-    padding: 0.5rem 1.5rem;
-    font-size: 1.2rem;
-    font-weight: 700;
-    border-radius: 0.25rem;
-    transform: rotate(-10deg);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.product-info-container {
-    background-color: #f9f9f9;
-    border-radius: 0.5rem;
-    height: 100%;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.product-category {
-    font-size: 0.9rem;
-    padding: 0.3rem 0.8rem;
-}
-
-.product-author {
-    font-size: 1.1rem;
-}
-
-.product-price {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #e74c3c;
-}
-
-.price-value::after {
-    content: " ₫";
-}
-
-.purchase-options {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed #ddd;
-}
-
-/* Quantity Input Styling */
-.input-group .form-control {
-    height: calc(2rem + 8px);
-}
-
-.input-group .btn {
-    padding: 0.25rem 0.75rem;
-}
-
-/* Tab Content Styling */
-.product-tabs .nav-tabs .nav-link {
-    color: #555;
-    font-weight: 500;
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
-}
-
-.product-tabs .nav-tabs .nav-link.active {
-    color: #e74c3c;
-    font-weight: 700;
-    border-top: 3px solid #e74c3c;
-}
-
-.tab-content {
-    background-color: #fff;
-}
-
-.tab-pane {
-    min-height: 200px;
-}
-
-/* Table styling for product details */
-.tab-pane .table {
-    margin-bottom: 0;
-}
-
-.tab-pane .table th {
-    width: 40%;
-    color: #666;
-    font-weight: 600;
-}
-
-.tab-pane .table td {
-    color: #333;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .product-title {
-        font-size: 1.5rem;
-    }
-
-    .product-image-container {
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .purchase-options .row {
-        flex-direction: column;
-    }
-
-    .purchase-options .col-md-3 {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-
-    .purchase-options .col-md-9 {
-        width: 100%;
     }
 }
 

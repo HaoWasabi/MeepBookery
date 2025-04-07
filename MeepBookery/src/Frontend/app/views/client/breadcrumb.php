@@ -3,7 +3,7 @@
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
 
                 <?php if (isset($breadcrumbs) && is_array($breadcrumbs)): ?>
                     <?php foreach ($breadcrumbs as $index => $crumb): ?>

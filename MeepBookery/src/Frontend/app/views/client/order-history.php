@@ -1,21 +1,9 @@
 <!-- Đơn hàng - MeepBookery -->
-
-<!-- Order History Banner -->
-<section class="order-history-banner py-5 bg-light">
+<section class="order-history-section">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="order-history-banner-content text-center">
-                    <h1 class="order-title mb-4">Lịch sử đơn hàng</h1>
-                </div>
-            </div>
+        <div class="col-lg-12">
+            <h1 class="order-title text-center mb-4">Lịch sử đơn hàng</h1>
         </div>
-    </div>
-</section>
-
-<!-- Order History Section -->
-<section class="order-history-section py-5">
-    <div class="container">
         <!-- Search & Filter -->
         <div class="order-filter-container mb-4">
             <div class="card shadow-sm">
@@ -139,7 +127,7 @@
                                             <?php echo $order['address'] . ', ' . $order['ward'] . ', ' . $order['district'] . ', ' . $order['city']; ?>
                                         </td>
                                         <td>
-                                            <a href="order-detail.php?id=<?php echo $order['id']; ?>"
+                                            <a href="/order-detail?id=<?= urlencode($order['id']) ?>"
                                                 class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-eye"></i> Chi tiết
                                             </a>
@@ -169,12 +157,11 @@
                         </ul>
                     </nav>
                 <?php else: ?>
-                    <div class="text-center py-5">
-                        <img src="../../img/empty-order.jpg" alt="Empty Orders" class="img-fluid mb-3"
-                            style="max-width: 500px;">
+                    <div class="text-center">
+                        <img src="../../img/empty-order.jpg" alt="Empty Orders" class="img-fluid" style="max-width: 20%;">
                         <h4>Bạn chưa có đơn hàng nào</h4>
                         <p class="text-muted">Hãy khám phá các sản phẩm của chúng tôi và đặt hàng ngay!</p>
-                        <a href="shop.php" class="btn btn-danger mt-3">
+                        <a href="/shop" class="btn btn-danger mt-3">
                             <i class="fas fa-shopping-cart me-2"></i> Mua sắm ngay
                         </a>
                     </div>
@@ -225,12 +212,8 @@
     </div>
 </section>
 
-<!-- Custom CSS -->
-<style>
-    .order-history-banner {
-        background-color: #f8f9fa;
-    }
 
+<style>
     .help-icon {
         font-size: 1.5rem;
         width: 50px;
@@ -258,9 +241,10 @@
     }
 </style>
 
-<!-- Custom JavaScript for Date Range Filter -->
+<!-- Date Range Filter -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
+
         // Set default date range (last 30 days)
         const today = new Date();
         const thirtyDaysAgo = new Date(today);
@@ -271,11 +255,23 @@
         document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
 
         // Reset button handler
-        document.querySelector('button[type="reset"]').addEventListener('click', function () {
-            setTimeout(function () {
+        document.querySelector('button[type="reset"]').addEventListener('click', function() {
+            setTimeout(function() {
                 document.getElementById('endDate').valueAsDate = today;
                 document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
             }, 10);
+        });
+
+        // Cuộn đến phần order-history-section khi trang tải
+        $(document).ready(function() {
+            const windowHeight = $(window).height();
+            const $section = $('.order-history-section');
+
+            if ($section.length) {
+                $('html, body').animate({
+                    scrollTop: $section.offset().top - (windowHeight * 0.15)
+                }, 0);
+            }
         });
     });
 </script>

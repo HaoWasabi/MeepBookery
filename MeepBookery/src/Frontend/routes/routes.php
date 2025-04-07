@@ -1,4 +1,7 @@
 <?php
+
+define('ROOT_PATH', dirname(__DIR__));
+
 require_once "../app/controllers/OrderController.php";
 require_once "../app/controllers/StaticController.php";
 require_once "../app/controllers/ClientController.php";
@@ -15,9 +18,10 @@ $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // Client routes
 if ($requestUri === "/" || $requestUri === "/index" || $requestUri === "/index.php") {
     $clientController->index();
-} elseif ($requestUri === "/shop" || $requestUri === "/shop.php") {
+    // } elseif ($requestUri === "/shop" || $requestUri === "/shop.php") {
+} elseif (preg_match("/^\/shop/", $requestUri)) {
     $clientController->shop();
-} elseif ($requestUri === "/product-detail" || $requestUri === "/product-detail.php") {
+} elseif (preg_match("/^\/product-detail/", $requestUri)) {
     $clientController->productDetail();
 } elseif ($requestUri === "/cart" || $requestUri === "/cart.php") {
     $clientController->cart();
@@ -31,6 +35,8 @@ if ($requestUri === "/" || $requestUri === "/index" || $requestUri === "/index.p
     $clientController->aboutUs();
 } elseif ($requestUri === "/contact-us" || $requestUri === "/contact-us.php") {
     $clientController->contactUs();
+} elseif ($requestUri === "/my-account" || $requestUri === "/my-account.php") {
+    $clientController->myAccount();
 }
 
 // Auth routes
@@ -38,16 +44,16 @@ elseif ($requestUri === "/login") {
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $authController->login();
     } else {
-        // Redirect to home page with login modal
-        header('Location: index.php?auth=login');
+        // Redirect to home page
+        header('Location: /');
         exit();
     }
 } elseif ($requestUri === "/register") {
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $authController->register();
     } else {
-        // Redirect to home page with register modal
-        header('Location: index.php?auth=register');
+        // Redirect to home page
+        header('Location: /');
         exit();
     }
 } elseif ($requestUri === "/logout" || $requestUri) {
@@ -73,6 +79,5 @@ elseif ($requestUri === "/login") {
 //     $orderController->getOrderDetailById();
 // }
 else {
-    // Sử dụng trang 404 tùy chỉnh thay vì hiển thị thông báo lỗi đơn giản
     $clientController->notFound();
 }
