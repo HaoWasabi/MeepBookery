@@ -19,38 +19,63 @@ class Category
 
     public function getAll()
     {
-        $query = "SELECT * FROM " . $this->table;
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT * FROM " . $this->table;
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi lấy tất cả danh mục: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function getById($id)
     {
-        $query = "SELECT * FROM " . $this->table . " WHERE CategoryID = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $query = "SELECT * FROM " . $this->table . " WHERE CategoryID = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi lấy danh mục theo ID: " . $e->getMessage());
+            return null;
+        }
     }
 
     public function create($name, $description)
     {
-        $query = "INSERT INTO " . $this->table . " (Name, Description) VALUES (?, ?)";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$name, $description]);
+        try {
+            $query = "INSERT INTO " . $this->table . " (Name, Description) VALUES (?, ?)";
+            $stmt = $this->conn->prepare($query);
+            return $stmt->execute([$name, $description]);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi tạo danh mục: " . $e->getMessage());
+            return false;
+        }
     }
 
-    public function update($id,$name, $description)
+    public function update($id, $name, $description)
     {
-        $query = "UPDATE " . $this->table . " SET Name = ?, Description = ? WHERE CategoryID = ?";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$name, $description, $id]);
+        try {
+            $query = "UPDATE " . $this->table . " SET Name = ?, Description = ? WHERE CategoryID = ?";
+            $stmt = $this->conn->prepare($query);
+            return $stmt->execute([$name, $description, $id]);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi cập nhật danh mục: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function delete($id)
     {
-        $query = "DELETE FROM " . $this->table . " WHERE id = ?";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$id]);
+        try {
+            $query = "DELETE FROM " . $this->table . " WHERE CategoryID = ?";
+            $stmt = $this->conn->prepare($query);
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi xóa danh mục: " . $e->getMessage());
+            return false;
+        }
     }
 }
