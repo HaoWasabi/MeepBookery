@@ -16,10 +16,16 @@ class PaymentMethod
             die("Không thể kết nối đến cơ sở dữ liệu.");
         }
     }
-    public function getAllPaymentMethods() {
-        $query = "SELECT PaymentMethodID, Name FROM " . $this->table;
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function getAllPaymentMethods()
+    {
+        try {
+            $query = "SELECT PaymentMethodID, Name FROM " . $this->table;
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi lấy tất cả phương thức thanh toán: " . $e->getMessage());
+            return [];
+        }
     }
 }
