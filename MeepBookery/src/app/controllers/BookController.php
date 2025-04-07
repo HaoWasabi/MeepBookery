@@ -91,10 +91,20 @@ class BookController
     {
         return $this->bookModel->getAllBooks();
     }
+
+    public function getAllAvailableBooks()
+    {
+        return $this->bookModel->getAllAvailableBooks();
+    }
     
     public function getBookById($bookId)
     {
         return $this->bookModel->getBookById($bookId);
+    }
+
+    public function getAvailableBookById($bookId)
+    {
+        return $this->bookModel->getAvailableBookById($bookId);
     }
 }
 

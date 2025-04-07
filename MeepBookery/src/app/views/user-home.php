@@ -3,7 +3,7 @@ require_once __DIR__ . '/../controllers/BookController.php';
 
 // Gọi phương thức để xemxem danh sách sách
 $bookController = new BookController();
-$books = $bookController->getAllBooks();
+$books = $bookController->getAllAvailableBooks();
 if (!$books) {
     echo("No books found.");
     exit;

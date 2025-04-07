@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../controllers/BookController.php';
 $bookController = new BookController();
 $bookId = $_GET['id'] ?? 1; // Lấy ID từ URL, mặc định là 1 nếu không có ID
-$book = $bookController->getBookById($bookId); // Lấy thông tin sách theo ID
+$book = $bookController->getAvailableBookById($bookId); // Lấy thông tin sách theo ID
 if (!$book) {
     echo "<p>Book not found.</p>";
     exit;

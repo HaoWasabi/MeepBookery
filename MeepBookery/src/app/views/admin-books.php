@@ -93,7 +93,25 @@
                     <td><img src="<?= htmlspecialchars($book['ImgURL']) ?>" alt="Book Image"></td>
                     <td><?= htmlspecialchars($book['Name']) ?></td>
                     <td><?= htmlspecialchars($book['Price']) ?></td>
-                    <td><?= htmlspecialchars($book['Status']) ?></td>
+                    <td>
+                        <?php
+                            $statusText = '';
+                            switch ($book['Status']) {
+                                case 1:
+                                    $statusText = 'Available';
+                                    break;
+                                case 2:
+                                    $statusText = 'Hide';
+                                    break;
+                                case 0:
+                                    $statusText = 'Deleted';
+                                    break;
+                                default:
+                                    $statusText = 'Unknown';
+                            }
+                            echo $statusText;
+                        ?>
+                    </td>
                     <td>
                         <a href="admin-update-book.php?id=<?= htmlspecialchars($book['BookID']) ?>" class="action-button edit-button">Edit</a>
                         <form method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa sách này?');">

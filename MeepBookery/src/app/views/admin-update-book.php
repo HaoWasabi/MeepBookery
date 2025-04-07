@@ -7,6 +7,8 @@
         $result = $bookController->updateBook();
         $message = $result ? "Sửa sách thành công!" : "Sửa sách thất bại!";
         echo "<script>alert('" . addslashes($message) . "');</script>";
+        header("Location: admin-books.php");
+        exit;
     }
 
     $bookId = $_GET['id'] ?? 1;
@@ -77,7 +79,11 @@
             <input type="text" id="image" name="imageURL" value="<?php echo htmlspecialchars($book['ImageURL'] ?? ''); ?>" required>
             
             <label for="categoryId">Category ID</label>
-            <input type="number" name="categoryId" id="categoryId" value="<?php echo htmlspecialchars($book['CategoryID'] ?? ''); ?>" required>
+            <select name="categoryId" id="categoryId" required value="<?php echo htmlspecialchars($book['CategoryID'] ?? ''); ?>">
+                <option value="1" <?php echo ($book['CategoryID'] ?? '') == 1 ? 'selected' : ''; ?>>1</option>
+                <option value="2" <?php echo ($book['CategoryID'] ?? '') == 2 ? 'selected' : ''; ?>>2</option>
+                <option value="3" <?php echo ($book['CategoryID'] ?? '') == 3 ? 'selected' : ''; ?>>3</option>
+            </select>
 
             <label for="length">Length</label>
             <input type="text" id="length" name="length" value="<?php echo htmlspecialchars($book['Length'] ?? ''); ?>" required>

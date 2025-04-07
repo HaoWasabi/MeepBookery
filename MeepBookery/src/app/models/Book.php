@@ -76,12 +76,33 @@ class Book
         }
     }
 
+    public function getAllAvailableBooks()
+    {
+        try {
+            $stmt = $this->conn->query("SELECT * FROM Book WHERE Status = 1 ORDER BY BookID DESC");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy danh sách sách: " . $e->getMessage());
+            return [];
+        }
+    }
 
-    // Lấy thông tin sách theo ID
     public function getBookById($bookID)
     {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM Book WHERE BookID = ?  AND Status <> 0");
+            $stmt->execute([$bookID]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy thông tin sách: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function getAvailableBookById($bookID)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM Book WHERE BookID = ?  AND Status = 1");
             $stmt->execute([$bookID]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

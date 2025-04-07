@@ -72,7 +72,11 @@
             <input type="text" name="imageURL" id="imageURL" required>
 
             <label for="categoryId">Category ID</label>
-            <input type="number" name="categoryId" id="categoryId" required>
+            <select name="categoryId" id="categoryId">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
 
             <label for="length">Length</label>
             <input type="number" name="length" id="length">
