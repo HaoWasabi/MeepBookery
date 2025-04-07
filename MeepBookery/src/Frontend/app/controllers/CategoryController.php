@@ -13,7 +13,7 @@ class CategoryController
     public function index()
     {
         $category = $this->categoryModel->getAll();
-        require_once "require_once __DIR__ . '/../views/admin-category.php";
+        require_once __DIR__ . '/../views/admin-category.php';
     }
 
     public function create()
@@ -22,11 +22,11 @@ class CategoryController
             $name = $_POST["name"];
             $description = $_POST["description"];
             if ($this->categoryModel->create($name, $description)) {
-                header("Location: /");
+                header("Location: /category");
                 exit;
             }
         }
-        require_once "require_once __DIR__ . '/../views/admin-category0-update-create.php";
+        require_once __DIR__ . '/../views/admin-category0-update-create.php';
     }
 
     public function edit()
@@ -41,11 +41,11 @@ class CategoryController
             $name = $_POST["name"];
             $description = $_POST["description"];
             if ($this->categoryModel->update($id, $name, $description)) {
-                header("Location: /");
+                header("Location: /category");
                 exit;
             }
         }
-        require_once "require_once __DIR__ . '/../views/admin-category0-update-create.php";
+        require_once __DIR__ . '/../views/admin-category0-update-create.php';
     }
 
     public function delete()
@@ -54,11 +54,13 @@ class CategoryController
         if ($id === null) {
             header("Location: /category");
             exit;
-        }  
-        
+        }
+
         if ($this->categoryModel->delete($id)) {
             header("Location: /category");
             exit;
         }
+        header("Location: /category");
+        exit;
     }
 }
