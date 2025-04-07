@@ -976,6 +976,7 @@ footer .list-unstyled li {
 }
 
 .account-popup-link.my-account,
+.account-popup-link.my-cart,
 .account-popup-link.my-orders,
 .account-popup-link.logout {
     padding: 12px 16px;
@@ -984,11 +985,8 @@ footer .list-unstyled li {
     transition: all 0.2s ease;
 }
 
-.account-popup-link.my-account {
-    color: #333;
-    background-color: #f8f9fa;
-}
-
+.account-popup-link.my-account,
+.account-popup-link.my-cart,
 .account-popup-link.my-orders {
     color: #333;
     background-color: #f8f9fa;
@@ -1000,7 +998,8 @@ footer .list-unstyled li {
 }
 
 .account-popup-link.my-account:hover,
-.account-popup-link.my-orders:hover {
+.account-popup-link.my-cart:hover,
+.account-popup-link.my-orders:hover{
     background-color: #e9ecef;
 }
 

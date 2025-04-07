@@ -1,3 +1,4 @@
+
 <!-- Shop page -->
 <div class="container mt-4 mb-5">
     <div class="row">
@@ -14,9 +15,8 @@
                                 <label for="search-term" class="form-label">Tên sách</label>
                                 <input type="text" class="form-control" id="search-term" placeholder="Nhập tên sách..."
                                     <?php if (isset($_GET['search'])): ?>
-                                        value="<?php echo $_GET['search']; ?>"
-                                    <?php endif; ?>
-                                >
+                                    value="<?php echo $_GET['search']; ?>"
+                                    <?php endif; ?>>
                             </div>
 
                             <div class="mb-3">
@@ -24,9 +24,9 @@
                                 <select class="form-select" id="category-filter">
                                     <option value="">Tất cả thể loại</option>
                                     <?php foreach ($categories as $category): ?>
-                                    <option value="<?= $category['name']; ?>" <?= isset($_GET['category']) && $_GET['category'] == $category['name'] ? 'selected' : ''; ?>>
-                                        <?= $category['name']; ?>
-                                    </option>
+                                        <option value="<?= $category['name']; ?>" <?= isset($_GET['category']) && $_GET['category'] == $category['name'] ? 'selected' : ''; ?>>
+                                            <?= $category['name']; ?>
+                                        </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -43,14 +43,14 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-text">Từ</span>
+                                            <!-- <span class="input-group-text">Từ</span> -->
                                             <input type="text" class="form-control price-input" id="min-price"
                                                 min="0">
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-text">Đến</span>
+                                            <!-- <span class="input-group-text">Đến</span> -->
                                             <input type="text" class="form-control price-input" id="max-price"
                                                 min="0">
                                         </div>

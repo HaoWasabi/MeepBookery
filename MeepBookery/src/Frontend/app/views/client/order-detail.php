@@ -25,7 +25,7 @@ foreach ($orders as $o) {
         <div class="row">
             <div class="col-lg-12">
                 <div class="order-detail-banner-content text-center">
-                    <h1 class="order-detail-title mb-4 ">Chi tiết đơn hàng #<?php echo $order['id']; ?></h1>
+                    <h1 class="order-detail-title mb-2 ">Chi tiết đơn hàng #<?php echo $order['id']; ?></h1>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@ foreach ($orders as $o) {
 </section>
 
 <!-- Order Detail Section -->
-<section class="order-detail-section py-5">
+<section class="order-detail-section py-3">
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
@@ -478,7 +478,11 @@ foreach ($orders as $o) {
 </style>
 
 <!-- Custom JavaScript -->
-<script>
+<script type="module">
+    import {
+        showSweetAlert
+    } from '/assets/client/js/util.js';
+
     document.addEventListener('DOMContentLoaded', function() {
         // Handle "Other reason" logic for cancellation
         const cancelReasonSelect = document.getElementById('cancelReason');
@@ -534,7 +538,7 @@ foreach ($orders as $o) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Redirect back to order history
-                        window.location.href = 'order-history.php';
+                        window.location.href = '/order-history';
                     }
                 });
             });

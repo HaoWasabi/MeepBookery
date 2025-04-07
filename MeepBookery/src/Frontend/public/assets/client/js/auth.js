@@ -1,13 +1,7 @@
 import { showSweetAlert } from "./util.js";
 
 $(document).ready(() => {
-    // Initialize AOS
-    AOS.init({
-        duration: 400,
-        easing: 'ease-in-out',
-        once: true,
-        disable: 'mobile'
-    });
+
 
     // Re-initialize AOS when modal opens
     $('#authModal').on('shown.bs.modal', () => {

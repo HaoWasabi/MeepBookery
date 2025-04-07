@@ -78,6 +78,10 @@
                                     <i class="fas fa-user"></i>
                                     Tài khoản của tôi
                                 </a>
+                                <a href="/cart" class="account-popup-link my-cart">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Giỏ hàng của tôi
+                                </a>
                                 <a href="/order-history" class="account-popup-link my-orders">
                                     <i class="fas fa-clipboard-list"></i>
                                     Đơn hàng của tôi

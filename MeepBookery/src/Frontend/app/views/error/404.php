@@ -4,7 +4,7 @@
         <h2 class="mb-4">Ồ! Trang không tìm thấy</h2>
         <p class="lead mb-4">Trang bạn đang tìm kiếm có thể đã bị xóa, chuyển đi nơi khác hoặc tạm thời không truy cập
             được.</p>
-        <a href="index.php" class="btn btn-danger">
+        <a href="/" class="btn btn-danger">
             <i class="fas fa-home me-2"></i>Về trang chủ
         </a>
     </div>

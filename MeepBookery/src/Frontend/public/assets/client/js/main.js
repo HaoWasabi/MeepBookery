@@ -1,25 +1,34 @@
 import { createBookCard } from "./bookcard.js";
-import { initAutoNumericInput, showSweetAlert, showToast } from "./util.js";
+import { initAutoNumericInput, removeDiacritics, showSweetAlert, showToast } from "./util.js";
+
+// Initialize AOS
+AOS.init({
+    duration: 400,
+    easing: 'ease-in-out',
+    once: true,
+    disable: 'mobile'
+});
+
+
+const swiper = new Swiper('.swiper-container', {
+    loop: true,
+    autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+    },
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    speed: 1000,
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     let isInitialPageLoad = true; // Dùng để tránh việc cuộn trang
-    // xuống danh sách sản phẩm ngay lần đầu tiên
-    const swiper = new Swiper('.swiper-container', {
-        loop: true,
-        autoplay: {
-            delay: 5000,
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        speed: 1000,
-    });
 
     // Update cart UI when page loads
     updateCartInterface();
@@ -56,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     categoryItems.forEach(i => i.classList.remove('active'));
                     // Add active to current item
                     item.classList.add('active');
-                    // Don't update the dropdown button text to keep it as "Danh mục"
                 }
             });
         }
@@ -70,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('featured-books-container')) {
         let bestSellerBooksHtml = '';
 
-        // Filter only active books (include ones with stock=0 to show "out of stock")
         const availableBestSellers = bestSellerBooks.filter(book => book.status === 1);
 
         availableBestSellers.forEach(book => {
@@ -80,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('featured-books-container').innerHTML = bestSellerBooksHtml;
 
         // Khởi tạo phân trang với paginationjs
-        // Filter only active books (include ones with stock=0 to show "out of stock")
         const availableBooks = allBooks.filter(book => book.status === 1);
 
         $('#pagination-container').pagination({
@@ -188,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         priceMinLabel.textContent = formatCurrency(minPrice);
         priceMaxLabel.textContent = formatCurrency(maxPrice);
 
-        // Set the initial values
+        // Cập nhật giá trị min, max price input khi slider di chuyển
         priceSlider.noUiSlider.on('update', function (values, handle) {
             const value = Math.round(values[handle]);
             const minValue = Math.round(values[0]);
@@ -233,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Filter by search term
                 if (searchTerm &&
-                    !book.name.toLowerCase().includes(searchTerm)
+                    !book.name.toLowerCase().includes(removeDiacritics(searchTerm))
                 ) {
                     return false;
                 }
@@ -348,7 +354,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 maxValue = parseFloat(maxPriceInput.getNumber()) || maxPrice;
             }
 
-            // Cập nhật giá trị slider
             if (priceSlider && priceSlider.noUiSlider) {
                 priceSlider.noUiSlider.set([minValue, maxValue]);
             }
@@ -361,15 +366,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Apply filter when inputs change
         document.getElementById('min-price').addEventListener('change', function () {
-            const minValue = parseFloat(this.value);
-            const maxValue = parseFloat(document.getElementById('max-price').value);
+            // if(minInput)
+            const minValue = minPriceInput.getNumber()
+            const maxValue = maxPriceInput.getNumber();
             updateSlider(minValue, maxValue);
             // applyFilters();
         });
-
+        
         document.getElementById('max-price').addEventListener('change', function () {
-            const minValue = parseFloat(document.getElementById('min-price').value);
-            const maxValue = parseFloat(this.value);
+            const minValue = minPriceInput.getNumber();
+            const maxValue = maxPriceInput.getNumber();
             updateSlider(minValue, maxValue);
             // applyFilters();
         });
@@ -560,8 +566,7 @@ $(document).ready(() => {
                             }
                         });
                     } else if (Array.isArray(parsedData.items)) {
-                        // Old format: full cart object
-                        // Migrate to new format while loading
+
                         parsedData.items.forEach(item => {
                             // Verify item exists in current books
                             const book = allBooks.find(b => b.id == item.id);

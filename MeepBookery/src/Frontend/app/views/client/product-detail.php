@@ -261,12 +261,28 @@ foreach ($allbooks as $book) {
         // Buy now button
         document.getElementById('buy-now').addEventListener('click', () => {
             <?php if (!isset($_SESSION['UserID'])): ?>
-                showSweetAlert('Vui lòng đăng nhập để mua hàng', {
-                    icon: 'warning',
+                Swal.fire({
                     title: 'Đăng nhập',
-                    confirmButtonText: 'Đăng nhập'
+                    text: 'Vui lòng đăng nhập để tiến hành thanh toán',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Đăng nhập',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show login modal
+                        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+                        authModal.show();
+                        // Set the tab to login
+                        const loginTab = document.querySelector('#authModal [data-bs-target="#login-tab-pane"]');
+                        if (loginTab) {
+                            loginTab.click();
+                        }
+                    }
                 });
-            <?php else :?>
+            <?php else: ?>
 
                 if (!product) return;
 
@@ -282,9 +298,8 @@ foreach ($allbooks as $book) {
                 // Update the cart interface
                 updateCartInterface();
 
-                // Redirect to checkout page
                 if (added) {
-                    window.location.href = '/checkout';
+                    window.location.href = '/cart';
                 }
             <?php endif ?>
         });
