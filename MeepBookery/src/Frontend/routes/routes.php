@@ -1,8 +1,10 @@
 <?php
 require_once "../app/controllers/OrderController.php";
 require_once "../app/controllers/StaticController.php";
+require_once "../app/controllers/CategoryController.php";
 
 $orderController = new OrderController();
+$categoryController = new CategoryController();
 $statictisController = new StatisticsController();
 if ($_SERVER["REQUEST_URI"] === "/orders") {
     $orderController->index();
@@ -24,7 +26,18 @@ if ($_SERVER["REQUEST_URI"] === "/orders") {
     $orderController->processCheckout();
 } elseif (strpos($_SERVER["REQUEST_URI"], "/orderCustomer") === 0) {
     $orderController->getOrdersByCustomerId();
-} else {
+} elseif ($_SERVER["REQUEST_URI"] === "/category"  && $_SERVER["REQUEST_METHOD"] === "GET") {
+    $categoryController->index();
+}
+elseif ($_SERVER["REQUEST_URI"] === "/category/delete"  && $_SERVER["REQUEST_METHOD"] === "DELETE") {
+    $categoryController->delete();
+}elseif ($_SERVER["REQUEST_URI"] === "/category/create" && $_SERVER["REQUEST_METHOD"] === "POST") {
+   $categoryController->create();
+}
+elseif (strpos($_SERVER["REQUEST_URI"], "/category/edit") === 0) {
+    $categoryController->edit();
+}
+ else {
     // Hiển thị lỗi nếu route không khớp
     http_response_code(404);
     echo "404 Not Found - Đường dẫn không hợp lệ: " . htmlspecialchars($_SERVER["REQUEST_URI"]);
