@@ -11,7 +11,7 @@ class AuthController extends BaseController
         $this->authModel = new Auth();
     }
 
-    public function login()
+    public function login($context = 'client')
     {
         $this->requirePost();
 
@@ -22,12 +22,14 @@ class AuthController extends BaseController
         $user = $this->authModel->login($email, $password);
 
         // Kiểm tra nếu là tài khoản admin
-        if ($this->authModel->isAdmin($user)) {
-            $this->responseJson([
-                'success' => false,
-                'message' => 'Email hoặc mật khẩu không chính xác'
-            ]);
-            return;
+        if($context === 'client'){
+            if ($this->authModel->isAdmin($user)) {
+                $this->responseJson([
+                    'success' => false,
+                    'message' => 'Email hoặc mật khẩu không chính xác'
+                ]);
+                return;
+            }
         }
 
         // Kiểm tra nếu là lỗi
@@ -71,7 +73,7 @@ class AuthController extends BaseController
         if ($this->authModel->emailExists($email)) {
             $this->responseJson([
                 'success' => false,
-                'message' => 'Email này đã được sử dụng, vui lòng chọn email khác'
+                'message' => 'Email này đã được sử dụng, vui lòng nhập email khác'
             ]);
             return;
         }
@@ -101,7 +103,7 @@ class AuthController extends BaseController
         }
     }
 
-    public function logout()
+    public function logout($index = '/')
     {
         // Xóa tất cả dữ liệu session
         $_SESSION = array();
@@ -124,6 +126,6 @@ class AuthController extends BaseController
         session_destroy();
 
         // Chuyển hướng về trang chủ
-        $this->redirect('/');
+        $this->redirect($index);
     }
 }

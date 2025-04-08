@@ -14,6 +14,17 @@ $users = [
     ]
 ];
 
+$user = [
+    'id' => 1,
+    'name' => 'John Doe',
+    'email' => 'john@gmail.com',
+    'phone' => '0909090909',
+    'address' => '123 adress',
+    'city' => 'city 1',
+    'district' => 'district 1',
+    'ward' => 'ward 1',
+];
+
 $payment_methods = [
     [
         'id' => 1,
@@ -62,7 +73,6 @@ $categories = [
         'id' => 10,
         'name' => 'Kinh tế tài chính'
     ],
-
 ];
 
 
@@ -72,7 +82,7 @@ $orders = [
         'order_date' => '2024-01-01',
         'total_amount' => '210.000',
         'status' => 'pending',
-        'payment_method' => 'Tiền mặt',
+        'payment_method' => 'Chuyển khoản',
         'address' => '123 adress',
         'city' => 'city 1',
         'district' => 'district 1',
@@ -1799,6 +1809,7 @@ $books = [
 
 $data = [
     'users' => $users,
+    'user' => $user,
     'payment_methods' => $payment_methods,
     'categories' => $categories,
     'best_seller_books' => $best_seller_books,

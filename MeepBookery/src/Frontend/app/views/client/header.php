@@ -39,11 +39,13 @@
                             <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
                                 <li><a class="dropdown-item active" href="/shop" data-category-id="">Tất cả danh
                                         mục</a></li>
-                                <?php foreach ($categories as $category): ?>
-                                    <li><a class="dropdown-item" href="/shop?category=<?= urlencode($category['name']); ?>"
-                                            data-category-id="<?= $category['id']; ?>"><?= $category['name']; ?></a>
-                                    </li>
-                                <?php endforeach; ?>
+                                <?php if(isset($categories) && is_array($categories)): ?>
+                                    <?php foreach ($categories as $category): ?>
+                                        <li><a class="dropdown-item" href="/shop?category=<?= urlencode($category['name']); ?>"
+                                                data-category-id="<?= $category['id']; ?>"><?= $category['name']; ?></a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </ul>
                         </div>
                         <input type="text" name="search" class="form-control" placeholder="Tìm kiếm..."

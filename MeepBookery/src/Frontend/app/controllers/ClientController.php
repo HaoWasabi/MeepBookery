@@ -127,6 +127,7 @@ class ClientController
         $breadcrumbs = [
             ['title' => 'Lỗi 404', 'url' => '#']
         ];
+        $show_nav = false;
 
         // Thiết lập HTTP status code
         http_response_code(404);
@@ -169,6 +170,15 @@ class ClientController
             exit();
         }
     }
+
+/*     private function checkAdmin()
+    {
+        if (!isset($_SESSION['UserID']) || $_SESSION['Role'] !== 'admin') {
+            header('Location: /admin');
+            exit();
+        }
+    } */
+
     private function renderView($viewName)
     {
         ob_start();

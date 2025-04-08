@@ -50,7 +50,7 @@
             </div>
 
             <!-- Continue Shopping Button -->
-            <div class="d-flex">
+            <div class="d-flex mb-4">
                 <a href="/shop" class="btn btn-outline-dark">
                     <i class="fas fa-chevron-left me-2"></i>Tiếp tục mua sắm
                 </a>
@@ -89,7 +89,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Get cart items container elements
         const cartTableBody = document.getElementById('cartTableBody');
         const emptyCartMessage = document.getElementById('emptyCartMessage');
@@ -118,13 +118,16 @@
             }
 
             // Show/hide empty cart message
-            if (cartItems.length === 0) {
+            if (cartItems.length == 0) {
                 emptyCartMessage.style.display = 'block';
                 cartItemsContainer.style.display = 'none';
+                cartItemsContainer.innerHTML = '';
+                clearCartButton.disabled = true;
                 checkoutButton.disabled = true;
             } else {
                 emptyCartMessage.style.display = 'none';
                 cartItemsContainer.style.display = 'block';
+                clearCartButton.disabled = false;
                 checkoutButton.disabled = false;
 
                 // Generate cart items HTML
@@ -199,7 +202,7 @@
         }
 
         // Event delegation for quantity buttons
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             if (e.target.closest('.decrease-qty')) {
                 const row = e.target.closest('tr');
                 const itemId = parseInt(row.dataset.id);
@@ -216,7 +219,7 @@
         });
 
         // Event for input quantity change
-        document.addEventListener('change', function (e) {
+        document.addEventListener('change', function(e) {
             if (e.target.classList.contains('item-qty')) {
                 const row = e.target.closest('tr');
                 const itemId = parseInt(row.dataset.id);
@@ -226,7 +229,7 @@
         });
 
         // Clear cart button
-        clearCartButton.addEventListener('click', function () {
+        clearCartButton.addEventListener('click', function() {
             // Use SweetAlert for confirmation
             Swal.fire({
                 title: 'Xóa giỏ hàng',
@@ -255,7 +258,7 @@
         });
 
         // Checkout button
-        checkoutButton.addEventListener('click', function () {
+        checkoutButton.addEventListener('click', function() {
             <?php if (!isset($_SESSION['UserID'])): ?>
                 // If user is not logged in, show login required message
                 Swal.fire({
