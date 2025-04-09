@@ -1,5 +1,24 @@
 <?php
 session_start();
+// Tạo session giả nếu chưa tồn tại
+if (!isset($_SESSION['UserID'])) {
+    $_SESSION['UserID'] = 5; // Giả sử UserID là 1
+}
+// Tạo giỏ hàng giả nếu chưa có
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [
+        [
+            'product_id' => 3,
+            'quantity' => 2,
+            'price' => 150000
+        ],
+        [
+            'product_id' => 4,
+            'quantity' => 1,
+            'price' => 200000
+        ]
+    ];
+}
 require_once "../app/controllers/OrderController.php";
 require_once "../app/controllers/StaticController.php";
 require_once "../app/controllers/CategoryController.php";

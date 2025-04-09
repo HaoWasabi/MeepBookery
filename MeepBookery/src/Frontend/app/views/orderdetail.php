@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Detail - Meep Bookery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -119,6 +124,19 @@
 </head>
 
 <body>
+    <?php if (isset($_SESSION['checkout_success']) || isset($_SESSION['checkout_error'])): ?>
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+            <div id="liveToast" class="toast align-items-center text-white <?= isset($_SESSION['checkout_success']) ? 'bg-success' : 'bg-danger' ?> border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <?= htmlspecialchars($_SESSION['checkout_success'] ?? $_SESSION['checkout_error']) ?>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <?php unset($_SESSION['checkout_success'], $_SESSION['checkout_error']); ?>
+    <?php endif; ?>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">Meep Bookery Admin</div>
@@ -141,6 +159,7 @@
             <h2>Order Information</h2>
             <p><strong>Customer:</strong> <?php echo htmlspecialchars($orderData['UserName']); ?></p>
             <p><strong>Email:</strong> <?php echo htmlspecialchars($orderData['Email']); ?></p>
+            <p><strong>PaymentMethod:</strong> <?php echo htmlspecialchars($orderData['PaymentMethod']); ?></p>
             <p><strong>Date:</strong> <?php echo htmlspecialchars($orderData['OrderDate']); ?></p>
             <p><strong>Address:</strong>
                 <?php

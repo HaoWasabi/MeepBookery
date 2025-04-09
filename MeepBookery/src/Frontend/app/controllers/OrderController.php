@@ -59,35 +59,9 @@ class OrderController
         $orderData = $this->orderModel->getOrderById($orderId);
         require_once __DIR__ . '/../views/orderdetail.php';
     }
-    public function createSession()
-    {
-        session_start();
-        unset($_SESSION['cart']);
-        unset($_SESSION['UserID']);
-        // Tạo session giả nếu chưa tồn tại
-        if (!isset($_SESSION['UserID'])) {
-            $_SESSION['UserID'] = 5; // Giả sử UserID là 1
-        }
 
-        // Tạo giỏ hàng giả nếu chưa có
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [
-                [
-                    'product_id' => 3,
-                    'quantity' => 2,
-                    'price' => 150000
-                ],
-                [
-                    'product_id' => 4,
-                    'quantity' => 1,
-                    'price' => 200000
-                ]
-            ];
-        }
-    }
     public function checkout()
     {
-        $this->createSession(); // Tạo session giả nếu chưa có
 
         if (!isset($_SESSION['UserID']) || empty($_SESSION['cart'])) {
             header("Location:/login");
@@ -101,7 +75,7 @@ class OrderController
     }
     public function processCheckout()
     {
-        $this->createSession(); // Tạo session giả nếu chưa có
+
 
         if (!isset($_SESSION['UserID']) || empty($_SESSION['cart'])) {
             header("Location:/login");
@@ -143,20 +117,21 @@ class OrderController
 
         // Xóa giỏ hàng sau khi đặt hàng thành công
         unset($_SESSION['cart']);
-
+        $_SESSION['checkout_success'] = "đặt hàng thành công!";
         $orderData = $this->orderModel->getOrderById($orderId);
         require_once __DIR__ . '/../views/orderdetail.php';
     }
-    public function getOrdersByCustomerId() {
+    public function getOrdersByCustomerId()
+    {
         // Lấy tham số từ URL
         $userId = isset($_GET['userId']) ? intval($_GET['userId']) : 0;
         if ($userId == 0) {
             die("Thiếu tham số đầu vào.");
         }
- 
+
         // Lấy danh sách đơn hàng của khách hàng
         $orders = $this->orderModel->getAllOrderOfCustomer($userId);
         // Gọi view để hiển thị dữ liệu
         require_once __DIR__ . '/../views/orderlist.php';
-     }
+    }
 }
