@@ -20,7 +20,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Mô tả</label>
-                <textarea name="description" class="form-control" rows="4"><?= isset($category) ? htmlspecialchars($category['Description']) : '' ?></textarea>
+                <textarea name="description" class="form-control" required rows="4"><?= isset($category) ? htmlspecialchars($category['Description']) : '' ?></textarea>
             </div>
             <button type="submit" class="btn btn-primary"><?= isset($category) ? "Lưu thay đổi" : "Thêm danh mục" ?></button>
             <a href="/category" class="btn btn-secondary">Quay lại</a>

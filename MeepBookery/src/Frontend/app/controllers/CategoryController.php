@@ -22,9 +22,12 @@ class CategoryController
             $name = $_POST["name"];
             $description = $_POST["description"];
             if ($this->categoryModel->create($name, $description)) {
-                header("Location: /category");
-                exit;
+                $_SESSION['category_success'] = "Thêm danh mục thành công!";
+            } else {
+                $_SESSION['category_error'] = "Thêm danh mục thất bại!";
             }
+            header("Location: /category");
+            exit;
         }
         require_once __DIR__ . '/../views/admin-category0-update-create.php';
     }
@@ -41,9 +44,12 @@ class CategoryController
             $name = $_POST["name"];
             $description = $_POST["description"];
             if ($this->categoryModel->update($id, $name, $description)) {
-                header("Location: /category");
-                exit;
+                $_SESSION['category_success'] = "Cập nhật danh mục thành công!";
+            } else {
+                $_SESSION['category_error'] = "Cập nhật danh mục thất bại!";
             }
+            header("Location: /category");
+            exit;
         }
         require_once __DIR__ . '/../views/admin-category0-update-create.php';
     }
@@ -57,8 +63,9 @@ class CategoryController
         }
 
         if ($this->categoryModel->delete($id)) {
-            header("Location: /category");
-            exit;
+            $_SESSION['category_success'] = "Xóa danh mục thành công!";
+        } else {
+            $_SESSION['category_error'] = "Xóa danh mục thất bại!";
         }
         header("Location: /category");
         exit;

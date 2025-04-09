@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once "../app/controllers/OrderController.php";
 require_once "../app/controllers/StaticController.php";
 require_once "../app/controllers/CategoryController.php";
