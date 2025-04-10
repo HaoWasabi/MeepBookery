@@ -2,10 +2,31 @@
 
 define('ROOT_PATH', dirname(__DIR__));
 
+// Tạo session giả nếu chưa tồn tại
+if (!isset($_SESSION['UserID'])) {
+    $_SESSION['UserID'] = 5; // Giả sử UserID là 1
+}
+// Tạo giỏ hàng giả nếu chưa có
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [
+        [
+            'product_id' => 3,
+            'quantity' => 2,
+            'price' => 150000
+        ],
+        [
+            'product_id' => 4,
+            'quantity' => 1,
+            'price' => 200000
+        ]
+    ];
+}
+
 require_once "../app/controllers/OrderController.php";
 require_once "../app/controllers/StaticController.php";
 require_once "../app/controllers/ClientController.php";
 require_once "../app/controllers/AuthController.php";
+require_once "../app/controllers/CategoryController.php";
 
 $orderController = new OrderController();
 $statictisController = new StatisticsController();
@@ -78,4 +99,11 @@ elseif ($requestUri === "/" || $requestUri === "/index") {
 //     $orderController->processCheckout();
 // } elseif (strpos($_SERVER["REQUEST_URI"], "/orderCustomer") === 0) {
 //     $orderController->getOrdersByCustomerId();
-// } else {
+// } elseif ($_SERVER["REQUEST_URI"] === "/category"  && $_SERVER["REQUEST_METHOD"] === "GET") {
+//     $categoryController->index();
+// } elseif (strpos($_SERVER["REQUEST_URI"], "/category/delete") === 0) {
+//     $categoryController->delete();
+// } elseif ($_SERVER["REQUEST_URI"] === "/category/create") {
+//     $categoryController->create();
+// } elseif (strpos($_SERVER["REQUEST_URI"], "/category/edit") === 0) {
+//     $categoryController->edit();

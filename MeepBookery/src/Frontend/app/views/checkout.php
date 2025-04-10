@@ -165,7 +165,13 @@
     </footer>
     <script>
         document.getElementById("changeAddress")?.addEventListener("click", function() {
-            document.getElementById("newAddressFields").style.display = "block";
+            const fields = document.getElementById("newAddressFields");
+            fields.style.display = "block";
+
+            // Lấy các input trong địa chỉ mới và thêm thuộc tính required
+            fields.querySelectorAll("input").forEach(function(input) {
+                input.setAttribute("required", "required");
+            });
         });
     </script>
 </body>
