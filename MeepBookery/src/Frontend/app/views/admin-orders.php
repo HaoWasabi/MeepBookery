@@ -164,9 +164,8 @@
                         <td><?= $order['Name'] ?></td>
                         <td><?= $order['TotalAmount'] ?></td>
                         <td><?= $order['OrderDate'] ?></td>
-                        <td><?= $order['Address'] ?>, <?= $order['District'] ?>, <?= $order['City'] ?></td>
+                        <td><?= $order['Address'] ?>,<?= $order['Ward'] ?>,<?= $order['District'] ?>, <?= $order['City'] ?></td>
                         <td><?= $order['Status'] ?></td>
-                        <td>
                         <td>
                             <?php if ($order['Status'] === 'pending'): ?>
                                 <button class="btn btn-success btn-sm"

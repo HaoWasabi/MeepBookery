@@ -71,3 +71,11 @@ elseif ($requestUri === "/" || $requestUri === "/index") {
 } else {
     $clientController->notFound();
 }
+
+// } elseif ($_SERVER["REQUEST_URI"] === "/checkout") {
+//     $orderController->checkout();
+// } elseif ($_SERVER["REQUEST_URI"] === "/process_checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
+//     $orderController->processCheckout();
+// } elseif (strpos($_SERVER["REQUEST_URI"], "/orderCustomer") === 0) {
+//     $orderController->getOrdersByCustomerId();
+// } else {
