@@ -106,7 +106,23 @@ class BookController
     {
         return $this->bookModel->getAvailableBookById($bookId);
     }
+
+    public function getTopBestSellingBooks($limit = 5)
+    {
+        return $this->bookModel->getTopBestSellingBooks($limit);
+    }
 }
 
-?>
+// $bookController = new BookController();
+// $limit = 4;
+// $topBooks = $bookController->getTopBestSellingBooks($limit);
 
+// if (empty($topBooks)) {
+//     echo "Không có sách nào được bán.";
+// } else {
+//     echo "Top $limit sách bán chạy nhất:<br>";
+// }
+
+// foreach ($topBooks as $book) {
+//     echo "Tên sách: {$book['Name']} - Đã bán: {$book['TotalSold']} lượt<br>";
+// }
