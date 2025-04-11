@@ -87,6 +87,22 @@ class Book
         }
     }
 
+    public function getAllAvailableBooksByCategoryId($categoryID=null)
+    {
+        try {
+            if ($categoryID == null) {
+                $stmt = $this->conn->query("SELECT * FROM Book WHERE Status = 1 ORDER BY BookID DESC");
+            } else {
+                $stmt = $this->conn->prepare("SELECT * FROM Book WHERE CategoryID = ? AND Status = 1 ORDER BY BookID DESC");
+                $stmt->execute([$categoryID]);
+            }
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy danh sách sách theo danh mục: " . $e->getMessage());
+            return [];
+        }
+    }
+
     public function getBookById($bookID)
     {
         try {
@@ -116,17 +132,20 @@ class Book
     {
         try {
             $query = "
-            SELECT 
-                b.*, 
-                SUM(od.Quantity) AS TotalSold,
-                SUM(od.Quantity * od.Price) AS TotalRevenue
-            FROM OrderDetail od
-            INNER JOIN `Order` o ON od.OrderID = o.OrderID
-            INNER JOIN Book b ON od.ProductID = b.BookID
-            WHERE o.Status = 'delivered_success'
-            GROUP BY b.BookID
-            ORDER BY TotalSold DESC
-            LIMIT $limit
+                SELECT 
+                    b.*, 
+                    c.Name AS CategoryName,
+                    c.Description AS CategoryDescription,
+                    SUM(od.Quantity) AS TotalSold,
+                    SUM(od.Quantity * od.Price) AS TotalRevenue
+                FROM OrderDetail od
+                INNER JOIN `Order` o ON od.OrderID = o.OrderID
+                INNER JOIN Book b ON od.ProductID = b.BookID
+                INNER JOIN Category c ON b.CategoryID = c.CategoryID
+                WHERE o.Status = 'delivered_success' -- Sửa thành trạng thái đúng
+                GROUP BY b.BookID
+                ORDER BY TotalSold DESC
+                LIMIT $limit
             ";
             $stmt = $this->conn->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -135,6 +154,7 @@ class Book
             return [];
         }
     }
+    
     
 }
 

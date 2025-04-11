@@ -96,6 +96,11 @@ class BookController
     {
         return $this->bookModel->getAllAvailableBooks();
     }
+
+    public function getAllAvailableBooksByCategoryId($categoryId = null)
+    {
+        return $this->bookModel->getAllAvailableBooksByCategoryId($categoryId);
+    }
     
     public function getBookById($bookId)
     {
@@ -114,6 +119,25 @@ class BookController
 }
 
 // $bookController = new BookController();
+// $books = $bookController->getAllAvailableBooksByCategoryId(); // Lấy danh sách sách theo ID
+
+// if (!$books) {
+//     echo "<p>Không có sách nào trong danh mục này.</p>";
+//     exit;
+// } else {
+//     foreach ($books as $book) {
+//         echo "<h2>{$book['Name']}</h2>";
+//         echo "<p>Thể loại: {$book['CategoryName']}</p>";
+//         echo "<p>Nội dung thể loại: {$book['CategoryDescription']}</p>";
+//         echo "<p>Giá: " . number_format($book['Price'], 0, ',', '.') . "đ</p>";
+//         echo "<p>Đã bán: {$book['TotalSold']} lượt</p>";
+//         echo "<p>Tổng doanh thu: " . number_format($book['TotalRevenue'], 0, ',', '.') . "đ</p>";
+//         echo "<img src='{$book['ImageURL']}' alt='{$book['Name']}' style='width: 200px; height: auto;'>";
+//         echo "<hr>";
+//     }
+// }
+
+// foreach ($books as $book) {      
 // $limit = 4;
 // $topBooks = $bookController->getTopBestSellingBooks($limit);
 
@@ -124,5 +148,9 @@ class BookController
 // }
 
 // foreach ($topBooks as $book) {
-//     echo "Tên sách: {$book['Name']} - Đã bán: {$book['TotalSold']} lượt<br>";
+//     echo "Tên sách: {$book['Name']}<br>";
+//     echo "Thể loại: {$book['CategoryName']}<br>";
+//     echo "Nội dung thể loại: {$book['CategoryDescription']}<br>";
+//     echo "Đã bán: {$book['TotalSold']} lượt<br>";
+//     echo "Tổng doanh thu: " . number_format($book['TotalRevenue'], 0, ',', '.') . "đ<br><br>";
 // }

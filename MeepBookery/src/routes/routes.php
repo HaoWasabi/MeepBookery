@@ -17,6 +17,10 @@ if ($_SERVER["REQUEST_URI"] === "/books" && $_SERVER["REQUEST_METHOD"] === "GET"
     $bookController->deleteBook();
 } elseif ($_SERVER["REQUEST_URI"] === "/books/undelete" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $bookController->undeleteBook();
+} elseif ($_SERVER["REQUEST_URI"] === "/books/available" && $_SERVER["REQUEST_METHOD"] === "GET") {
+    $bookController->getAllAvailableBooks();
+} elseif (preg_match("/^\/books\/category\/(\d+)$/", $_SERVER["REQUEST_URI"], $matches) && $_SERVER["REQUEST_METHOD"] === "GET") {
+    $bookController->getAllAvailableBooksByCategoryId($matches[1]);
 } elseif ($_SERVER["REQUEST_URI"] === "/books/bestselling" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $bookController->getTopBestSellingBooks();
 } elseif (preg_match("/^\/books\/(\d+)$/", $_SERVER["REQUEST_URI"], $matches) && $_SERVER["REQUEST_METHOD"] === "GET") {
