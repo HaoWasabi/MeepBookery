@@ -1,169 +1,143 @@
 <?php
-
-class ClientController
+require_once ROOT_PATH . '/app/models/Category.php';
+require_once ROOT_PATH . '/app/models/Book.php';
+require_once ROOT_PATH . '/app/models/User.php';
+require_once ROOT_PATH . '/app/models/PaymentMethod.php';
+class ClientController extends BaseController
 {
-    private $data;
+    private $data = [];
+    private $categoryModel;
+    private $bookModel;
+    private $userModel;
+    private $orderModel;
+    private $paymentMethodModel;
     public function __construct()
     {
-        // Khởi tạo dữ liệu mẫu chung cho tất cả các trang
+        $this->categoryModel = new Category();
+        $this->bookModel = new Book();
+        $this->userModel = new User();
+        $this->orderModel = new Order();
+        $this->paymentMethodModel = new PaymentMethod();
 
-        require_once ROOT_PATH . '/app/controllers/data.php';
-        $this->data = $data;
+
+        $this->data['categories'] = $this->categoryModel->getAll();
+        $this->data['books'] = $this->bookModel->getAllAvailableBooks();
+        $this->data['bestSellerBooks'] = $this->bookModel->getTopBestSellingBooks(4);
     }
 
     public function index()
     {
-        $page_title = "MeepBookery";
-        $content = $this->renderView('home');
-        $show_breadcrumb = false;
-        $show_nav = true;
-        include('../app/views/client/index.php');
+        $this->renderView('home', 'MeepBookery');
     }
 
     public function shop()
     {
-        $page_title = "Cửa hàng";
-        $content = $this->renderView('shop');
-        $show_breadcrumb = true;
-        $show_nav = true;
-        $breadcrumbs = [
-            ['title' => 'Cửa hàng', 'url' => 'shop']
-        ];
-        include('../app/views/client/index.php');
+        $this->renderView('shop', 'Cửa hàng', true, true, [
+            ['title' => 'Cửa hàng', 'url' => '/shop']
+        ]);
     }
 
     public function productDetail()
     {
-        $page_title = "Chi tiết sản phẩm";
-        $content = $this->renderView('product-detail');
-        $show_breadcrumb = true;
-        $show_nav = false;
-        $breadcrumbs = [
-            ['title' => 'Cửa hàng', 'url' => 'shop'],
+        $this->data['book'] = $this->bookModel->getBookById($_GET['id']);
+        if (!$this->data['book']) {
+            $this->notFound();
+            return;
+        }
+        $this->renderView('product-detail', 'Chi tiết sản phẩm', true, false, [
+            ['title' => 'Cửa hàng', 'url' => '/shop'],
             ['title' => 'Chi tiết sản phẩm', 'url' => '#']
-        ];
-        include('../app/views/client/index.php');
+        ]);
     }
 
     public function cart()
     {
-        $page_title = "Giỏ hàng";
-        $content = $this->renderView('cart');
-        $show_breadcrumb = true;
-        $show_nav = false;
-        $breadcrumbs = [
-            ['title' => 'Giỏ hàng', 'url' => 'cart']
-        ];
-        include('../app/views/client/index.php');
+        $this->renderView('cart', 'Giỏ hàng', true, false, [
+            ['title' => 'Giỏ hàng', 'url' => '/cart']
+        ]);
     }
 
     public function checkout()
     {
-        // $this->checkLogin();
+        $this->checkLogin();
 
-        $page_title = "Thanh toán";
-        $content = $this->renderView('checkout');
-        $show_breadcrumb = true;
-        $show_nav = false;
-        $breadcrumbs = [
-            ['title' => 'Giỏ hàng', 'url' => 'cart'],
-            ['title' => 'Thanh toán', 'url' => 'checkout']
-        ];
-        include('../app/views/client/index.php');
+        $this->data['user'] = $this->userModel->getUserById($_SESSION['UserID']);
+
+        // Get payment methods
+        require_once ROOT_PATH . '/app/models/PaymentMethod.php';
+
+        $this->data['payment_methods'] = $this->paymentMethodModel->getAllPaymentMethods();
+
+        $this->renderView('checkout', 'Thanh toán', true, false, [
+            ['title' => 'Giỏ hàng', 'url' => '/cart'],
+            ['title' => 'Thanh toán', 'url' => '/cart/checkout']
+        ]);
     }
 
     public function orderHistory()
     {
         $this->checkLogin();
 
-        $page_title = "Lịch sử đơn hàng";
-        $content = $this->renderView('order-history');
-        $show_breadcrumb = true;
-        $show_nav = false;
-        $breadcrumbs = [
-            ['title' => 'Tài khoản', 'url' => 'my-account'],
-            ['title' => 'Lịch sử đơn hàng', 'url' => 'order-history']
-        ];
-        include('../app/views/client/index.php');
+        $this->data['orders'] = $this->orderModel->getFilteredOrdersOfCustomer($_SESSION['UserID']);
+
+        $this->renderView('order-history', 'Lịch sử đơn hàng', true, false, [
+            ['title' => 'Tài khoản', 'url' => '/my-account'],
+            ['title' => 'Lịch sử đơn hàng', 'url' => '/my-account/order-history']
+        ]);
     }
 
     public function orderDetail()
     {
         $this->checkLogin();
 
-        $page_title = "Chi tiết đơn hàng";
-        $content = $this->renderView('order-detail');
-        $show_breadcrumb = true;
-        $show_nav = false;
-        $breadcrumbs = [
-            ['title' => 'Tài khoản', 'url' => 'my-account'],
-            ['title' => 'Lịch sử đơn hàng', 'url' => 'order-history'],
-            ['title' => 'Chi tiết đơn hàng', 'url' => '#']
-        ];
-        include('../app/views/client/index.php');
+        $this->data['order'] = $this->orderModel->getOrderById($_GET['id'], $_SESSION['UserID']);
+
+        if (!$this->data['order']) {
+            $this->notFound();
+            return;
+        }
+
+        $this->renderView('order-detail', 'Chi tiết đơn hàng', true, false, [
+            ['title' => 'Tài khoản', 'url' => '/my-account'],
+            ['title' => 'Lịch sử đơn hàng', 'url' => '/my-account/order-history'],
+            ['title' => 'Chi tiết đơn hàng #' . $this->data['order']['OrderID'], 'url' => '#']
+        ]);
     }
 
     public function myAccount()
     {
         $this->checkLogin();
 
-        $page_title = "Tài khoản";
-        $content = $this->renderView('my-account');
-        $show_breadcrumb = true;
-        $show_nav = false;
-        $breadcrumbs = [
-            ['title' => 'Tài khoản', 'url' => 'my-account']
-        ];
-        include('../app/views/client/index.php');
+        $this->data['user'] = $this->userModel->getUserById($_SESSION['UserID']);
+
+        $this->renderView('my-account', 'Tài khoản của tôi', true, false, [
+            ['title' => 'Tài khoản', 'url' => '/my-account']
+        ]);
     }
 
-    // Hiển thị trang lỗi 404
-    public function notFound()
-    {
-        $page_title = "404 - Trang không tìm thấy";
-        $content = $this->renderView('../error/404');
-
-        $show_breadcrumb = false;
-        $breadcrumbs = [
-            ['title' => 'Lỗi 404', 'url' => '#']
-        ];
-        $show_nav = false;
-
-        // Thiết lập HTTP status code
-        http_response_code(404);
-
-        include('../app/views/client/index.php');
-    }
-
-    // Hiển thị trang giới thiệu
     public function aboutUs()
     {
-        $page_title = "Giới thiệu";
-        $content = $this->renderView('about-us');
-        $show_breadcrumb = true;
-        $show_nav = true;
-        $breadcrumbs = [
+        $this->renderView('about-us', 'Giới thiệu', true, true, [
             ['title' => 'Giới thiệu', 'url' => '/about-us']
-        ];
-
-        include('../app/views/client/index.php');
+        ]);
     }
 
-    // Hiển thị trang liên hệ
     public function contactUs()
     {
-        $page_title = "Liên hệ";
-        $content = $this->renderView('contact-us');
-        $show_breadcrumb = true;
-        $show_nav = true;
-        $breadcrumbs = [
+        $this->renderView('contact-us', 'Liên hệ', true, true, [
             ['title' => 'Liên hệ', 'url' => '/contact-us']
-        ];
-
-        include('../app/views/client/index.php');
+        ]);
     }
 
-    private function checkLogin()
+    public function notFound()
+    {
+        http_response_code(404);
+        $this->renderView('../error/404', '404 - Trang không tìm thấy', false, false, [
+            ['title' => 'Lỗi 404', 'url' => '#']
+        ]);
+    }
+
+    private function checkLogin(): void
     {
         if (!isset($_SESSION['UserID'])) {
             header('Location: /');
@@ -171,20 +145,38 @@ class ClientController
         }
     }
 
-/*     private function checkAdmin()
+    public function syncCart()
     {
-        if (!isset($_SESSION['UserID']) || $_SESSION['Role'] !== 'admin') {
-            header('Location: /admin');
-            exit();
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            $this->responseJson(['success' => false, 'message' => 'Invalid request method']);
+            return;
         }
-    } */
 
-    private function renderView($viewName)
-    {
-        ob_start();
-        extract($this->data);
-        require_once ROOT_PATH . "/app/views/client/scripts.php";
-        include("../app/views/client/{$viewName}.php");
-        return ob_get_clean();
+        // Lấy dữ liệu từ request
+        $data = $this->getRequestData();
+
+        if (!isset($data['cart']) || !is_array($data['cart'])) {
+            $this->responseJson(['success' => false, 'message' => 'Invalid cart data']);
+            return;
+        }
+
+        // Lưu giỏ hàng vào session
+        $_SESSION['cart'] = $data['cart'];
+
+        // Trả về thành công
+        $this->responseJson(['success' => true, 'message' => 'Cart synced to session']);
     }
+    private function renderView($viewName, $page_title, $show_breadcrumb = false, $show_nav = true, $breadcrumbs = [])
+    {
+        extract($this->data);
+
+        // Bắt đầu bộ nhớ đệm và include view con
+        ob_start();
+        include(ROOT_PATH . "/app/views/client/{$viewName}.php");
+        $content = ob_get_clean();
+
+        // Sau đó include layout chính
+        include(ROOT_PATH . '/app/views/client/index.php');
+    }
+
 }

@@ -23,11 +23,13 @@
                                 <label for="category-filter" class="form-label">Thể loại</label>
                                 <select class="form-select" id="category-filter">
                                     <option value="">Tất cả thể loại</option>
-                                    <?php foreach ($categories as $category): ?>
-                                        <option value="<?= $category['name']; ?>" <?= isset($_GET['category']) && $_GET['category'] == $category['name'] ? 'selected' : ''; ?>>
-                                            <?= $category['name']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                    <?php if (isset($categories) && is_array($categories)): ?>
+                                        <?php foreach ($categories as $category): ?>
+                                            <option value="<?= $category['Name']; ?>" <?= isset($_GET['category']) && $_GET['category'] == $category['Name'] ? 'selected' : ''; ?>>
+                                                <?= $category['Name']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
 

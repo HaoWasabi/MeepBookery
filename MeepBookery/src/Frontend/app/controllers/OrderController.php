@@ -3,7 +3,9 @@ require_once __DIR__ . '/../models/Order.php';
 require_once __DIR__ . '/../models/Address.php';
 require_once __DIR__ . '/../models/PaymentMethod.php';
 require_once __DIR__ . '/../models/OrderDetail.php';
-class OrderController
+require_once __DIR__ . '/BaseController.php';
+
+class OrderController extends BaseController
 {
     private $orderModel;
     private $addressModel;
@@ -30,7 +32,9 @@ class OrderController
             $orderId = $_POST['orderId'];
             $status = $_POST['status'];
 
-            if ($this->orderModel->updateOrderStatus($orderId, $status)) {
+            $userId = $_POST['userId'] ?? null;
+
+            if ($this->orderModel->updateOrderStatus($orderId, $status, $userId)) {
                 echo json_encode(["message" => "Cập nhật trạng thái thành công"]);
             } else {
                 echo json_encode(["message" => "Cập nhật thất bại"]);
@@ -101,11 +105,10 @@ class OrderController
     }
     public function processCheckout()
     {
-        $this->createSession(); // Tạo session giả nếu chưa có
-
+        // Kiểm tra đăng nhập và giỏ hàng
         if (!isset($_SESSION['UserID']) || empty($_SESSION['cart'])) {
-            header("Location:/login");
-            exit();
+            $this->responseJson(['success' => false, 'message' => 'Vui lòng đăng nhập và thêm sản phẩm vào giỏ hàng']);
+            return;
         }
 
         $userId = $_SESSION['UserID'];
@@ -113,7 +116,6 @@ class OrderController
         $paymentMethodId = $_POST['payment_method_id'];
 
         // Nếu người dùng nhập địa chỉ mới, lưu vào DB và lấy ID mới
-
         if (!empty($_POST['new_address'])) {
             $Address = $_POST['new_address'];
             $Ward = $_POST['new_ward'];
@@ -133,7 +135,8 @@ class OrderController
         // Lưu đơn hàng vào database
         $orderId = $this->orderModel->createOrder($userId, $totalAmount, $addressId, $paymentMethodId);
         if (!$orderId) {
-            die("Lỗi khi tạo đơn hàng!");
+            $this->responseJson(['success' => false, 'message' => 'Lỗi khi tạo đơn hàng']);
+            return;
         }
 
         // Lưu chi tiết đơn hàng
@@ -144,19 +147,25 @@ class OrderController
         // Xóa giỏ hàng sau khi đặt hàng thành công
         unset($_SESSION['cart']);
 
-        $orderData = $this->orderModel->getOrderById($orderId);
-        require_once __DIR__ . '/../views/orderdetail.php';
+        // Trả về thông tin đơn hàng
+        $this->responseJson([
+            'success' => true,
+            'message' => 'Đặt hàng thành công',
+            'orderId' => $orderId
+        ]);
     }
-    public function getOrdersByCustomerId() {
+
+    public function getOrdersByCustomerId()
+    {
         // Lấy tham số từ URL
         $userId = isset($_GET['userId']) ? intval($_GET['userId']) : 0;
         if ($userId == 0) {
             die("Thiếu tham số đầu vào.");
         }
- 
+
         // Lấy danh sách đơn hàng của khách hàng
         $orders = $this->orderModel->getAllOrderOfCustomer($userId);
         // Gọi view để hiển thị dữ liệu
         require_once __DIR__ . '/../views/orderlist.php';
-     }
+    }
 }

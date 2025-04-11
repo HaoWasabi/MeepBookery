@@ -37,6 +37,7 @@ body {
 /* Search bar styling */
 .search-wrapper {
     max-width: 800px;
+    max-height: 50px;
 }
 
 .search-wrapper .input-group {
@@ -572,6 +573,7 @@ body {
 .swiper-container {
     width: 100%;
     height: auto;
+
     margin-bottom: 30px;
     position: relative;
     overflow: hidden;
@@ -999,7 +1001,7 @@ footer .list-unstyled li {
 
 .account-popup-link.my-account:hover,
 .account-popup-link.my-cart:hover,
-.account-popup-link.my-orders:hover{
+.account-popup-link.my-orders:hover {
     background-color: #e9ecef;
 }
 

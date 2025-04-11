@@ -37,12 +37,12 @@
                                 Danh mục
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                                <li><a class="dropdown-item active" href="/shop" data-category-id="">Tất cả danh
+                                <li><a class="dropdown-item" href="/shop" data-category-id="">Tất cả danh
                                         mục</a></li>
-                                <?php if(isset($categories) && is_array($categories)): ?>
+                                <?php if (isset($categories) && is_array($categories)): ?>
                                     <?php foreach ($categories as $category): ?>
-                                        <li><a class="dropdown-item" href="/shop?category=<?= urlencode($category['name']); ?>"
-                                                data-category-id="<?= $category['id']; ?>"><?= $category['name']; ?></a>
+                                        <li><a class="dropdown-item" href="/shop?category=<?= urlencode($category['Name']); ?>"
+                                                data-category-id="<?= $category['CategoryID']; ?>"><?= $category['Name']; ?></a>
                                         </li>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -64,8 +64,13 @@
                     // Check if user is logged in
                     if (isset($_SESSION['UserID'])) {
                         // User is logged in - show user info and dropdown
-                        $userName = isset($_SESSION['Name']) ? explode(' ', $_SESSION['Name'])[0] : 'User';
-                    ?>
+                        $userName = 'User';
+                        if (isset($_SESSION['Name'])) {
+                            $parts = explode(' ', $_SESSION['Name']);
+                            $userName = end($parts);
+                        }
+
+                        ?>
                         <a href="#" class="btn btn-danger account-btn logged-in-btn">
                             <div class="btn-icon">
                                 <i class="fas fa-user"></i>
@@ -84,7 +89,7 @@
                                     <i class="fas fa-shopping-cart"></i>
                                     Giỏ hàng của tôi
                                 </a>
-                                <a href="/order-history" class="account-popup-link my-orders">
+                                <a href="/my-account/order-history" class="account-popup-link my-orders">
                                     <i class="fas fa-clipboard-list"></i>
                                     Đơn hàng của tôi
                                 </a>
@@ -94,10 +99,10 @@
                                 </a>
                             </div>
                         </div>
-                    <?php
+                        <?php
                     } else {
                         // User is not logged in - show login/register buttons
-                    ?>
+                        ?>
                         <a href="#" class="btn btn-danger account-btn">
                             <div class="btn-icon">
                                 <i class="fas fa-user"></i>
@@ -120,7 +125,7 @@
                                 </a>
                             </div>
                         </div>
-                    <?php
+                        <?php
                     }
                     ?>
                 </div>

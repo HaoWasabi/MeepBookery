@@ -3,7 +3,6 @@ require_once __DIR__ . '/BaseModel.php';
 
 class Auth extends BaseModel
 {
-    // 1. Kiểm tra thông tin đăng nhập
     public function login($email, $password)
     {
         try {
@@ -36,28 +35,24 @@ class Auth extends BaseModel
         }
     }
 
-
-    // 2. Đăng ký người dùng mới
-    public function register($fullName, $email, $password, $role = 'user')
+    public function register($fullName, $email, $password, $phone = null, $role = 'user')
     {
         try {
             // Mã hóa mật khẩu trước khi lưu
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
             // Thêm người dùng vào bảng user
-            $stmt = $this->conn->prepare("INSERT INTO user (Name, Email, Password, Role) VALUES (?, ?, ?, ?)");
-            return $stmt->execute([$fullName, $email, $hashedPassword, $role]);
+            $stmt = $this->conn->prepare("INSERT INTO user (Name, Email, Password, Phone, Role) VALUES (?, ?, ?, ?, ?)");
+            return $stmt->execute([$fullName, $email, $hashedPassword, $phone, $role]);
         } catch (PDOException $e) {
             error_log("Lỗi đăng ký: " . $e->getMessage());
             return false;
         }
     }
-
-    // 3. Lấy thông tin người dùng theo ID
     public function getUserById($userId)
     {
         try {
-            $stmt = $this->conn->prepare("SELECT UserID, Name, Email, Role FROM user WHERE UserID = ?");
+            $stmt = $this->conn->prepare("SELECT UserID, Name, Email, Phone, Role FROM user WHERE UserID = ?");
             $stmt->execute([$userId]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -66,13 +61,11 @@ class Auth extends BaseModel
         }
     }
 
-    // 4. Kiểm tra xem người dùng có phải là admin hay không
+    //Kiểm tra xem người dùng có phải là admin hay không
     public function isAdmin($user)
     {
         return isset($user['Role']) && $user['Role'] === 'admin';
     }
-
-    // 5. Kiểm tra xem email đã tồn tại chưa
     public function emailExists($email)
     {
         try {
@@ -82,6 +75,18 @@ class Auth extends BaseModel
             return $count > 0;
         } catch (PDOException $e) {
             error_log("Lỗi kiểm tra email: " . $e->getMessage());
+            return false;
+        }
+    }
+    public function phoneExists($phone)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT COUNT(*) FROM user WHERE Phone = ?");
+            $stmt->execute([$phone]);
+            $count = $stmt->fetchColumn();
+            return $count > 0;
+        } catch (PDOException $e) {
+            error_log("Lỗi kiểm tra số điện thoại: " . $e->getMessage());
             return false;
         }
     }

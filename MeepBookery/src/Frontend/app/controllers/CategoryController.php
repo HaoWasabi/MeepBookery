@@ -13,7 +13,7 @@ class CategoryController
     public function index()
     {
         $category = $this->categoryModel->getAll();
-        require_once __DIR__ . '/../views/admin-category.php';
+        // require_once __DIR__ . '/../views/admin-category.php';
     }
 
     public function create()

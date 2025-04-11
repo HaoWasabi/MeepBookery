@@ -51,7 +51,7 @@
 
             <!-- Continue Shopping Button -->
             <div class="d-flex mb-4">
-                <a href="/shop" class="btn btn-outline-dark">
+                <a href="/shop" class="btn btn-outline-dark" id="shoppingBtn">
                     <i class="fas fa-chevron-left me-2"></i>Tiếp tục mua sắm
                 </a>
             </div>
@@ -89,80 +89,79 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get cart items container elements
-        const cartTableBody = document.getElementById('cartTableBody');
-        const emptyCartMessage = document.getElementById('emptyCartMessage');
-        const cartItemsContainer = document.getElementById('cartItemsContainer');
-        const cartSummaryCount = document.getElementById('cartSummaryCount');
-        const subtotalElement = document.getElementById('subtotal');
-        const totalElement = document.getElementById('total');
-        const checkoutButton = document.getElementById('checkoutButton');
-        const clearCartButton = document.getElementById('clearCart');
+    // Get cart items container elements
+    const cartTableBody = document.getElementById('cartTableBody');
+    const emptyCartMessage = document.getElementById('emptyCartMessage');
+    const cartItemsContainer = document.getElementById('cartItemsContainer');
+    const cartSummaryCount = document.getElementById('cartSummaryCount');
+    const subtotalElement = document.getElementById('subtotal');
+    const totalElement = document.getElementById('total');
+    const checkoutButton = document.getElementById('checkoutButton');
+    const clearCartButton = document.getElementById('clearCart');
 
-        // Function to update cart UI
-        function updateCartUI() {
-            // Get cart data from localStorage
-            const savedCart = localStorage.getItem('cart');
-            let cartItems = [];
+    // Function to update cart UI
+    function updateCartUI() {
+        // Get cart data from localStorage
+        const savedCart = localStorage.getItem('cart');
+        let cartItems = [];
 
-            if (savedCart) {
-                try {
-                    const parsedData = JSON.parse(savedCart);
-                    if (Array.isArray(parsedData)) {
-                        cartItems = parsedData;
-                    }
-                } catch (error) {
-                    console.error('Error parsing cart data:', error);
+        if (savedCart) {
+            try {
+                const parsedData = JSON.parse(savedCart);
+                if (Array.isArray(parsedData)) {
+                    cartItems = parsedData;
                 }
+            } catch (error) {
+                console.error('Error parsing cart data:', error);
             }
+        }
 
-            // Show/hide empty cart message
-            if (cartItems.length == 0) {
-                emptyCartMessage.style.display = 'block';
-                cartItemsContainer.style.display = 'none';
-                cartItemsContainer.innerHTML = '';
-                clearCartButton.disabled = true;
-                checkoutButton.disabled = true;
-            } else {
-                emptyCartMessage.style.display = 'none';
-                cartItemsContainer.style.display = 'block';
-                clearCartButton.disabled = false;
-                checkoutButton.disabled = false;
+        // Show/hide empty cart message
+        if (cartItems.length == 0) {
+            emptyCartMessage.style.display = 'block';
+            cartItemsContainer.style.display = 'none';
+            clearCartButton.disabled = true;
+            checkoutButton.disabled = true;
+            document.getElementById('shoppingBtn').style.display = 'none';
+        } else {
+            emptyCartMessage.style.display = 'none';
+            cartItemsContainer.style.display = 'block';
+            clearCartButton.disabled = false;
+            checkoutButton.disabled = false;
 
-                // Generate cart items HTML
-                let html = '';
-                let totalItems = 0;
-                let totalPrice = 0;
+            // Generate cart items HTML
+            let html = '';
+            let totalItems = 0;
+            let totalPrice = 0;
 
-                cartItems.forEach(item => {
-                    // Find book details from allBooks array
-                    const book = allBooks.find(b => b.id == item.id);
+            cartItems.forEach(item => {
+                // Find book details from allBooks array
+                const book = allBooks.find(b => b.BookID == item.id);
 
-                    if (book) {
-                        const price = parseFloat(book.price.toString().replace(/[^\d]/g, ''));
-                        const itemTotal = price * item.quantity;
-                        totalItems += item.quantity;
-                        totalPrice += itemTotal;
+                if (book) {
+                    const price = parseFloat((book.Price).toLocaleString('vi-VN'));
+                    const itemTotal = price * item.quantity;
+                    totalItems += item.quantity;
+                    totalPrice += itemTotal;
 
-                        // Check if book is in stock
-                        const isOutOfStock = book.stock <= 0;
-                        const stockWarning = book.stock < 10 ?
-                            `<div class="text-danger small">Chỉ còn ${book.stock} sản phẩm</div>` : '';
+                    // Check if book is in stock
+                    const isOutOfStock = book.Stock <= 0;
+                    const stockWarning = book.Stock < 10 ?
+                        `<div class="text-danger small">Chỉ còn ${book.Stock} sản phẩm</div>` : '';
 
-                        html += `
-                    <tr data-id="${book.id}">
+                    html += `
+                    <tr data-id="${book.BookID}">
                         <td>
-                            <a href="/product-detail?id=${book.id}">
-                                <img src="${book.image}" alt="${book.name}" class="img-fluid" 
+                            <a href="/product-detail?id=${book.BookID}">
+                                <img src="${book.ImageURL}" alt="${book.Name}" class="img-fluid" 
                                     style="max-width: 80px; max-height: 120px;">
                             </a>
                         </td>
                         <td>
-                            <a href="/product-detail?id=${book.id}" class="text-decoration-none text-dark">
-                                <h6 class="mb-1">${book.name}</h6>
+                            <a href="/product-detail?id=${book.BookID}" class="text-decoration-none text-dark">
+                                <h6 class="mb-1">${book.Name}</h6>
                             </a>
-                            <div class="text-muted small">${book.author}</div>
+                            <div class="text-muted small">${book.Author}</div>
                             ${stockWarning}
                         </td>
                         <td class="text-center">${price.toLocaleString()} ₫</td>
@@ -173,10 +172,10 @@
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 <input type="number" class="form-control text-center item-qty" value="${item.quantity}" 
-                                    min="1" max="${book.stock}" 
+                                    min="1" max="${book.Stock}" 
                                     ${isOutOfStock ? 'disabled' : ''}>
                                 <button class="btn btn-outline-secondary increase-qty" type="button"
-                                    ${item.quantity >= book.stock || isOutOfStock ? 'disabled' : ''}>
+                                    ${item.quantity >= book.Stock || isOutOfStock ? 'disabled' : ''}>
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
@@ -189,264 +188,312 @@
                         </td>
                     </tr>
                     `;
-                    }
-                });
-
-                cartTableBody.innerHTML = html;
-
-                // Update summary
-                cartSummaryCount.textContent = `${totalItems} sản phẩm`;
-                subtotalElement.textContent = `${totalPrice.toLocaleString()} ₫`;
-                totalElement.textContent = `${totalPrice.toLocaleString()} ₫`;
-            }
-        }
-
-        // Event delegation for quantity buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.decrease-qty')) {
-                const row = e.target.closest('tr');
-                const itemId = parseInt(row.dataset.id);
-                updateItemQuantity(itemId, -1);
-            } else if (e.target.closest('.increase-qty')) {
-                const row = e.target.closest('tr');
-                const itemId = parseInt(row.dataset.id);
-                updateItemQuantity(itemId, 1);
-            } else if (e.target.closest('.remove-item')) {
-                const row = e.target.closest('tr');
-                const itemId = parseInt(row.dataset.id);
-                removeItem(itemId);
-            }
-        });
-
-        // Event for input quantity change
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('item-qty')) {
-                const row = e.target.closest('tr');
-                const itemId = parseInt(row.dataset.id);
-                const newQty = parseInt(e.target.value);
-                setItemQuantity(itemId, newQty);
-            }
-        });
-
-        // Clear cart button
-        clearCartButton.addEventListener('click', function() {
-            // Use SweetAlert for confirmation
-            Swal.fire({
-                title: 'Xóa giỏ hàng',
-                text: 'Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e74c3c',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Xóa',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Clear cart in localStorage
-                    localStorage.removeItem('cart');
-                    // Update cart UI
-                    updateCartUI();
-                    // Update global cart interface
-                    window.updateCartInterface();
-                    // Show success message
-                    showToast('Đã xóa toàn bộ giỏ hàng', {
-                        type: 'success',
-                        title: 'Giỏ hàng'
-                    });
                 }
             });
-        });
 
-        // Checkout button
-        checkoutButton.addEventListener('click', function() {
-            <?php if (!isset($_SESSION['UserID'])): ?>
-                // If user is not logged in, show login required message
-                Swal.fire({
-                    title: 'Đăng nhập',
-                    text: 'Vui lòng đăng nhập để tiến hành thanh toán',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e74c3c',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Đăng nhập',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Show login modal
-                        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
-                        authModal.show();
-                        // Set the tab to login
-                        const loginTab = document.querySelector('#authModal [data-bs-target="#login-tab-pane"]');
-                        if (loginTab) {
-                            loginTab.click();
-                        }
-                    }
-                });
-            <?php else: ?>
-                // If user is logged in, redirect to checkout page
-                window.location.href = '/checkout';
-            <?php endif; ?>
-        });
+            cartTableBody.innerHTML = html;
 
-        // Function to update item quantity
-        function updateItemQuantity(itemId, change) {
-            // Get cart data
-            const savedCart = localStorage.getItem('cart');
-            let cartItems = [];
-
-            if (savedCart) {
-                try {
-                    const parsedData = JSON.parse(savedCart);
-                    if (Array.isArray(parsedData)) {
-                        cartItems = parsedData;
-                    }
-                } catch (error) {
-                    console.error('Error parsing cart data:', error);
-                }
-            }
-
-            // Find item
-            const itemIndex = cartItems.findIndex(item => item.id === itemId);
-            if (itemIndex !== -1) {
-                // Get book details to check stock
-                const book = allBooks.find(b => b.id == itemId);
-                if (!book) return;
-
-                const maxStock = book.stock || 0;
-                const newQty = cartItems[itemIndex].quantity + change;
-
-                // Check if new quantity is valid
-                if (newQty > 0 && newQty <= maxStock) {
-                    cartItems[itemIndex].quantity = newQty;
-
-                    // Save updated cart
-                    localStorage.setItem('cart', JSON.stringify(cartItems));
-
-                    // Update UI
-                    updateCartUI();
-                    // Update global cart interface
-                    window.updateCartInterface();
-                } else if (newQty > maxStock) {
-                    // Show error message for max stock
-                    showToast(`Chỉ còn ${maxStock} "${book.name}" trong kho`, {
-                        type: 'warning',
-                        title: 'Giỏ hàng'
-                    });
-                }
-            }
+            // Update summary
+            cartSummaryCount.textContent = `${totalItems} sản phẩm`;
+            subtotalElement.textContent = `${totalPrice.toLocaleString()} ₫`;
+            totalElement.textContent = `${totalPrice.toLocaleString()} ₫`;
         }
+    }
 
-        // Function to set item quantity directly
-        function setItemQuantity(itemId, quantity) {
-            // Get cart data
-            const savedCart = localStorage.getItem('cart');
-            let cartItems = [];
+    // Event delegation for quantity buttons
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.decrease-qty')) {
+            const row = e.target.closest('tr');
+            const itemId = parseInt(row.dataset.id);
+            updateItemQuantity(itemId, -1);
+        } else if (e.target.closest('.increase-qty')) {
+            const row = e.target.closest('tr');
+            const itemId = parseInt(row.dataset.id);
+            updateItemQuantity(itemId, 1);
+        } else if (e.target.closest('.remove-item')) {
+            const row = e.target.closest('tr');
+            const itemId = parseInt(row.dataset.id);
+            removeItem(itemId);
+        }
+    });
 
-            if (savedCart) {
-                try {
-                    const parsedData = JSON.parse(savedCart);
-                    if (Array.isArray(parsedData)) {
-                        cartItems = parsedData;
-                    }
-                } catch (error) {
-                    console.error('Error parsing cart data:', error);
-                }
-            }
+    // Event for input quantity change
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('item-qty')) {
+            const row = e.target.closest('tr');
+            const itemId = parseInt(row.dataset.id);
+            const newQty = parseInt(e.target.value);
+            setItemQuantity(itemId, newQty);
+        }
+    });
 
-            // Find item
-            const itemIndex = cartItems.findIndex(item => item.id === itemId);
-            if (itemIndex !== -1) {
-                // Get book details to check stock
-                const book = allBooks.find(b => b.id == itemId);
-                if (!book) return;
-
-                const maxStock = book.stock || 0;
-
-                // Handle invalid quantity input (empty, NaN, or contains non-numeric characters)
-                if (quantity === '' || isNaN(quantity) || !/^\d+$/.test(String(quantity))) {
-                    // Reset to current quantity in UI
-                    updateCartUI();
-                    showToast('Vui lòng nhập số lượng hợp lệ', {
-                        type: 'warning',
-                        title: 'Giỏ hàng'
-                    });
-                    return;
-                }
-
-                // Convert to integer if it's a valid number string
-                quantity = parseInt(quantity);
-
-                // Check if quantity is valid
-                if (quantity > 0 && quantity <= maxStock) {
-                    cartItems[itemIndex].quantity = quantity;
-                } else if (quantity > maxStock) {
-                    cartItems[itemIndex].quantity = maxStock;
-                    showToast(`Chỉ còn ${maxStock} "${book.name}" trong kho`, {
-                        type: 'warning',
-                        title: 'Giỏ hàng'
-                    });
-                } else if (quantity <= 0) {
-                    // If quantity is 0 or negative, remove item
-                    removeItem(itemId);
-                    return;
-                }
-
-                // Save updated cart
-                localStorage.setItem('cart', JSON.stringify(cartItems));
-
-                // Update UI
+    // Clear cart button
+    clearCartButton.addEventListener('click', function () {
+        // Use SweetAlert for confirmation
+        Swal.fire({
+            title: 'Xóa giỏ hàng',
+            text: 'Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Clear cart in localStorage
+                localStorage.removeItem('cart');
+                // Update cart UI
                 updateCartUI();
                 // Update global cart interface
                 window.updateCartInterface();
-            }
-        }
-
-        // Function to remove item
-        function removeItem(itemId) {
-            // Get cart data
-            const savedCart = localStorage.getItem('cart');
-            let cartItems = [];
-
-            if (savedCart) {
-                try {
-                    const parsedData = JSON.parse(savedCart);
-                    if (Array.isArray(parsedData)) {
-                        cartItems = parsedData;
-                    }
-                } catch (error) {
-                    console.error('Error parsing cart data:', error);
-                }
-            }
-
-            // Find item
-            const itemIndex = cartItems.findIndex(item => item.id === itemId);
-            if (itemIndex !== -1) {
-                // Get book name for message
-                const book = allBooks.find(b => b.id == itemId);
-                const bookName = book ? book.name : 'Sản phẩm';
-
-                // Remove item
-                cartItems.splice(itemIndex, 1);
-
-                // Save updated cart
-                localStorage.setItem('cart', JSON.stringify(cartItems));
-
-                // Update UI
-                updateCartUI();
-                // Update global cart interface
-                window.updateCartInterface();
-
                 // Show success message
-                showToast(`Đã xóa "${bookName}" khỏi giỏ hàng`, {
+                showToast('Đã xóa toàn bộ giỏ hàng', {
                     type: 'success',
                     title: 'Giỏ hàng'
                 });
             }
+        });
+    });
+
+    // Checkout button
+    checkoutButton.addEventListener('click', function () {
+        <?php if (!isset($_SESSION['UserID'])): ?>
+            // If user is not logged in, show login required message
+            Swal.fire({
+                title: 'Đăng nhập',
+                text: 'Vui lòng đăng nhập để tiến hành thanh toán',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đăng nhập',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show login modal
+                    const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+                    authModal.show();
+                    // Set the tab to login
+                    const loginTab = document.querySelector('#authModal [data-bs-target="#login-tab-pane"]');
+                    if (loginTab) {
+                        loginTab.click();
+                    }
+                }
+            });
+        <?php else: ?>
+            // If user is logged in, redirect to checkout page
+            window.location.href = '/cart/checkout';
+        <?php endif; ?>
+    });
+
+    // Function to update item quantity
+    function updateItemQuantity(itemId, change) {
+        // Get cart data
+        const savedCart = localStorage.getItem('cart');
+        let cartItems = [];
+
+        if (savedCart) {
+            try {
+                const parsedData = JSON.parse(savedCart);
+                if (Array.isArray(parsedData)) {
+                    cartItems = parsedData;
+                }
+            } catch (error) {
+                console.error('Error parsing cart data:', error);
+            }
         }
 
-        // Initialize cart UI
-        updateCartUI();
-    });
+        // Find item
+        const itemIndex = cartItems.findIndex(item => item.id === itemId);
+        if (itemIndex !== -1) {
+            // Get book details to check stock
+            const book = allBooks.find(b => b.BookID == itemId);
+            if (!book) return;
+
+            const maxStock = book.Stock || 0;
+            const newQty = cartItems[itemIndex].quantity + change;
+
+            // Check if new quantity is valid
+            if (newQty > 0 && newQty <= maxStock) {
+                cartItems[itemIndex].quantity = newQty;
+
+                // Save updated cart
+                localStorage.setItem('cart', JSON.stringify(cartItems));
+
+                // Update UI
+                updateCartUI();
+                // Update global cart interface
+                window.updateCartInterface();
+
+                // Update cart info with new totals
+                updateCartTotals(cartItems);
+            } else if (newQty > maxStock) {
+                // Show error message for max stock
+                showToast(`Chỉ còn ${maxStock} "${book.Name}" trong kho`, {
+                    type: 'warning',
+                    title: 'Giỏ hàng'
+                });
+            }
+        }
+    }
+
+    // Function to set item quantity directly
+    function setItemQuantity(itemId, quantity) {
+        // Get cart data
+        const savedCart = localStorage.getItem('cart');
+        let cartItems = [];
+
+        if (savedCart) {
+            try {
+                const parsedData = JSON.parse(savedCart);
+                if (Array.isArray(parsedData)) {
+                    cartItems = parsedData;
+                }
+            } catch (error) {
+                console.error('Error parsing cart data:', error);
+            }
+        }
+
+        // Find item
+        const itemIndex = cartItems.findIndex(item => item.id === itemId);
+        if (itemIndex !== -1) {
+            // Get book details to check stock
+            const book = allBooks.find(b => b.BookID == itemId);
+            if (!book) return;
+
+            const maxStock = book.Stock || 0;
+
+            // Handle invalid quantity input (empty, NaN, or contains non-numeric characters)
+            if (quantity === '' || isNaN(quantity) || !/^\d+$/.test(String(quantity))) {
+                // Reset to current quantity in UI
+                updateCartUI();
+                showToast('Vui lòng nhập số lượng hợp lệ', {
+                    type: 'warning',
+                    title: 'Giỏ hàng'
+                });
+                return;
+            }
+
+            // Convert to integer if it's a valid number string
+            quantity = parseInt(quantity);
+
+            // Check if quantity is valid
+            if (quantity > 0 && quantity <= maxStock) {
+                cartItems[itemIndex].quantity = quantity;
+            } else if (quantity > maxStock) {
+                cartItems[itemIndex].quantity = maxStock;
+                showToast(`Chỉ còn ${maxStock} "${book.Name}" trong kho`, {
+                    type: 'warning',
+                    title: 'Giỏ hàng'
+                });
+            } else if (quantity <= 0) {
+                // If quantity is 0 or negative, remove item
+                removeItem(itemId);
+                return;
+            }
+
+            // Save updated cart
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+
+            // Update UI
+            updateCartUI();
+            // Update global cart interface
+            window.updateCartInterface();
+
+            // Update cart info with new totals
+            updateCartTotals(cartItems);
+        }
+    }
+
+    // Function to remove item
+    function removeItem(itemId) {
+        // Get cart data
+        const savedCart = localStorage.getItem('cart');
+        let cartItems = [];
+
+        if (savedCart) {
+            try {
+                const parsedData = JSON.parse(savedCart);
+                if (Array.isArray(parsedData)) {
+                    cartItems = parsedData;
+                }
+            } catch (error) {
+                console.error('Error parsing cart data:', error);
+            }
+        }
+
+        // Find item
+        const itemIndex = cartItems.findIndex(item => item.id === itemId);
+        if (itemIndex !== -1) {
+            // Get book name for message
+            const book = allBooks.find(b => b.BookID == itemId);
+            const bookName = book ? book.Name : 'Sản phẩm';
+
+            // Remove item
+            cartItems.splice(itemIndex, 1);
+
+            // Save updated cart
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+
+            // Update UI
+            updateCartUI();
+            // Update global cart interface
+            window.updateCartInterface();
+
+            // Update cart info with new totals
+            updateCartTotals(cartItems);
+
+            // Show success message
+            showToast(`Đã xóa "${bookName}" khỏi giỏ hàng`, {
+                type: 'success',
+                title: 'Giỏ hàng'
+            });
+        }
+    }
+
+    // Function to calculate and update cart totals
+    function updateCartTotals(cartItems) {
+        let totalItems = 0;
+        let totalPrice = 0;
+
+        cartItems.forEach(item => {
+            const book = allBooks.find(b => b.BookID == item.id);
+            if (book) {
+                const price = parseFloat((book.Price).toLocaleString('vi-VN'));
+                totalItems += item.quantity;
+                totalPrice += price * item.quantity;
+            }
+        });
+
+        // Reset cart information with new values
+        resetCartInfo(totalItems, totalPrice);
+    }
+
+    // Function to reset cart information display
+    function resetCartInfo(itemCount, totalAmount) {
+        // Update summary displays
+        cartSummaryCount.textContent = `${itemCount} sản phẩm`;
+        subtotalElement.textContent = `${totalAmount.toLocaleString()} ₫`;
+        totalElement.textContent = `${totalAmount.toLocaleString()} ₫`;
+
+        // Show/hide elements based on item count
+        if (itemCount === 0) {
+            emptyCartMessage.style.display = 'block';
+            cartItemsContainer.style.display = 'none';
+            clearCartButton.disabled = true;
+            checkoutButton.disabled = true;
+            document.getElementById('shoppingBtn').style.display = 'none';
+        } else {
+            emptyCartMessage.style.display = 'none';
+            cartItemsContainer.style.display = 'block';
+            clearCartButton.disabled = false;
+            checkoutButton.disabled = false;
+        }
+    }
+
+    // Initialize cart UI
+    updateCartUI();
 </script>
 
 <style>
@@ -467,13 +514,6 @@
     .item-qty {
         text-align: center;
         max-width: 60px;
-    }
-
-    /* Fix input number spinner */
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
     }
 
     input[type=number] {

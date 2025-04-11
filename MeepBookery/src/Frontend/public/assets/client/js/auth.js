@@ -165,8 +165,8 @@ $(document).ready(() => {
         }
     });
 
-    // Email validation regex
     const emailRegex = /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const phoneRegex = /^(?:\+84|0)([0-9]{9})$/;
 
     // Field validation rules
     const validationRules = {
@@ -213,6 +213,18 @@ $(document).ready(() => {
                 {
                     test: value => emailRegex.test(value),
                     message: 'Email không hợp lệ. Vui lòng kiểm tra lại.'
+                }
+            ]
+        },
+        registerPhone: {
+            validators: [
+                {
+                    test: value => !!value,
+                    message: 'Vui lòng nhập số điện thoại.'
+                },
+                {
+                    test: value => phoneRegex.test(value),
+                    message: 'Vui lòng nhập đúng định dạng số điện thoại.(10 số bắt đầu bằng +84 hoặc 0)'
                 }
             ]
         },
@@ -300,8 +312,9 @@ $(document).ready(() => {
     const validateRegisterForm = () => {
         let isValid = true;
         const formData = {
-            registerFullName: $('#registerFullName').val(),
-            registerEmail: $('#registerEmail').val(),
+            registerFullName: $('#registerFullName').val().trim(),
+            registerEmail: $('#registerEmail').val().trim(),
+            registerPhone: $('#registerPhone').val(),
             registerPassword: $('#registerPassword').val(),
             confirmPassword: $('#confirmPassword').val(),
             agreeTerms: $('#agreeTerms').prop('checked')
@@ -310,6 +323,7 @@ $(document).ready(() => {
         // Validate each field
         if (!validateField('registerFullName', formData)) isValid = false;
         if (!validateField('registerEmail', formData)) isValid = false;
+        if (!validateField('registerPhone', formData)) isValid = false;
         if (!validateField('registerPassword', formData)) isValid = false;
         if (!validateField('confirmPassword', formData)) isValid = false;
         if (!validateField('agreeTerms', formData)) isValid = false;
@@ -327,7 +341,7 @@ $(document).ready(() => {
     });
 
     // Event listeners for register form
-    $('#registerFullName, #registerEmail, #registerPassword, #confirmPassword').on('input', function () {
+    $('#registerFullName, #registerEmail, #registerPhone, #registerPassword, #confirmPassword').on('input', function () {
         registerFormInteracted = true;
         validateRegisterForm();
     });
@@ -448,6 +462,7 @@ $(document).ready(() => {
             data: {
                 fullName: $('#registerFullName').val(),
                 email: $('#registerEmail').val(),
+                phone: $('#registerPhone').val(),
                 password: $('#registerPassword').val()
             },
             dataType: 'json',

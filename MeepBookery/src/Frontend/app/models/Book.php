@@ -32,7 +32,7 @@ class Book
     public function updateBook($bookID, $name, $description, $price, $stock, $imageURL, $categoryID, $length, $weight, $dimensions, $language, $format, $author, $publisher, $releaseDate, $status)
     {
         try {
-            $stmt = $this->conn->prepare("UPDATE Book SET Name = ?, Description = ?, Price = ?, Stock = ?, ImageURL = ?, CategoryID = ?, Length = ?, Weight = ?, Dimensions = ?, Language = ?, Format = ?, Author = ?, Publisher = ?, ReleaseDate = ?, Status = ? WHERE BookID = ?  AND Status <> 0");
+            $stmt = $this->conn->prepare("UPDATE Book SET Name = ?, Description = ?, Price = ?, Stock = ?, ImageURL = ?, CategoryID = ?, Length = ?, Weight = ?, Dimensions = ?, Language = ?, Format = ?, Author = ?, Publisher = ?, ReleaseDate = ?, Status = ? WHERE BookID = ? AND Status <> 0");
             return $stmt->execute([$name, $description, $price, $stock, $imageURL, $categoryID, $length, $weight, $dimensions, $language, $format, $author, $publisher, $releaseDate, $status, $bookID]);
         } catch (PDOException $e) {
             error_log("Lỗi cập nhật sách: " . $e->getMessage());
@@ -52,23 +52,24 @@ class Book
         }
     }
 
-        // Hủy xóa sách
-        public function undeleteBook($bookID)
-        {
-            try {
-                $stmt = $this->conn->prepare("UPDATE Book SET Status = 1 WHERE BookID = ? AND Status = 0");
-                return $stmt->execute([$bookID]);
-            } catch (PDOException $e) {
-                error_log("Lỗi hủy xóa sách: " . $e->getMessage());
-                return false;
-            }
+    // Hủy xóa sách
+    public function undeleteBook($bookID)
+    {
+        try {
+            $stmt = $this->conn->prepare("UPDATE Book SET Status = 1 WHERE BookID = ? AND Status = 0");
+            return $stmt->execute([$bookID]);
+        } catch (PDOException $e) {
+            error_log("Lỗi hủy xóa sách: " . $e->getMessage());
+            return false;
         }
+    }
 
     // Lấy danh sách tất cả sách
     public function getAllBooks()
     {
         try {
-            $stmt = $this->conn->query("SELECT * FROM Book WHERE Status <> 0 ORDER BY BookID DESC");
+            $stmt = $this->conn->prepare("SELECT b.*, c.Name AS Category FROM Book b JOIN Category c ON b.CategoryID = c.CategoryID ORDER BY b.BookID DESC");
+            $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Lỗi lấy danh sách sách: " . $e->getMessage());
@@ -79,7 +80,8 @@ class Book
     public function getAllAvailableBooks()
     {
         try {
-            $stmt = $this->conn->query("SELECT * FROM Book WHERE Status = 1 ORDER BY BookID DESC");
+            $stmt = $this->conn->prepare("SELECT b.*, c.Name AS Category FROM Book b JOIN Category c ON b.CategoryID = c.CategoryID WHERE b.Status <> 0 ORDER BY b.BookID DESC");
+            $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Lỗi lấy danh sách sách: " . $e->getMessage());
@@ -90,7 +92,7 @@ class Book
     public function getBookById($bookID)
     {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM Book WHERE BookID = ?  AND Status <> 0");
+            $stmt = $this->conn->prepare("SELECT b.*, c.Name AS Category FROM Book b JOIN Category c ON b.CategoryID = c.CategoryID WHERE b.BookID = ?");
             $stmt->execute([$bookID]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -102,7 +104,7 @@ class Book
     public function getAvailableBookById($bookID)
     {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM Book WHERE BookID = ?  AND Status = 1");
+            $stmt = $this->conn->prepare("SELECT * FROM Book WHERE BookID = ? AND Status = 1");
             $stmt->execute([$bookID]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -116,25 +118,27 @@ class Book
     {
         try {
             $query = "
-            SELECT 
-                b.*, 
+            SELECT
+                b.*,
+                c.Name AS Category,
                 SUM(od.Quantity) AS TotalSold,
                 SUM(od.Quantity * od.Price) AS TotalRevenue
             FROM OrderDetail od
             INNER JOIN `Order` o ON od.OrderID = o.OrderID
             INNER JOIN Book b ON od.ProductID = b.BookID
+            INNER JOIN Category c ON b.CategoryID = c.CategoryID
             WHERE o.Status = 'delivered_success'
-            GROUP BY b.BookID
+            GROUP BY b.BookID, c.Name
             ORDER BY TotalSold DESC
-            LIMIT $limit
+            LIMIT :limit
             ";
-            $stmt = $this->conn->query($query);
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Lỗi thống kê sách bán chạy: " . $e->getMessage());
             return [];
         }
     }
-    
 }
-

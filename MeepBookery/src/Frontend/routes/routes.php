@@ -2,36 +2,19 @@
 
 define('ROOT_PATH', dirname(__DIR__));
 
-// Tạo session giả nếu chưa tồn tại
-if (!isset($_SESSION['UserID'])) {
-    $_SESSION['UserID'] = 5; // Giả sử UserID là 1
-}
-// Tạo giỏ hàng giả nếu chưa có
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [
-        [
-            'product_id' => 3,
-            'quantity' => 2,
-            'price' => 150000
-        ],
-        [
-            'product_id' => 4,
-            'quantity' => 1,
-            'price' => 200000
-        ]
-    ];
-}
-
 require_once "../app/controllers/OrderController.php";
 require_once "../app/controllers/StaticController.php";
 require_once "../app/controllers/ClientController.php";
 require_once "../app/controllers/AuthController.php";
 require_once "../app/controllers/CategoryController.php";
+require_once "../app/controllers/UserController.php";
+require_once "../app/controllers/AdminController.php";
 
 $orderController = new OrderController();
 $statictisController = new StatisticsController();
 $authController = new AuthController();
 $clientController = new ClientController();
+$userController = new UserController();
 
 // Parse the URL path
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -67,37 +50,16 @@ if ($requestUri === "/admin/login") {
     $authController->logout('/admin/auth');
 } elseif ($requestUri === "/logout") {
     $authController->logout('/');
-} 
-// Client Routes
-elseif ($requestUri === "/" || $requestUri === "/index") {
-    $clientController->index();
-} elseif (preg_match("/^\/shop/", $requestUri)) {
-    $clientController->shop();
-} elseif (preg_match("/^\/product-detail/", $requestUri)) {
-    $clientController->productDetail();
-} elseif ($requestUri === "/cart") {
-    $clientController->cart();
-} elseif ($requestUri === "/checkout") {
-    $clientController->checkout();
-} elseif ($requestUri === "/order-history") {
-    $clientController->orderHistory();
-} elseif ($requestUri === "/order-detail") {
-    $clientController->orderDetail();
-} elseif ($requestUri === "/about-us") {
-    $clientController->aboutUs();
-} elseif ($requestUri === "/contact-us") {
-    $clientController->contactUs();
-} elseif ($requestUri === "/my-account") {
-    $clientController->myAccount();
-} else {
-    $clientController->notFound();
 }
-
-// } elseif ($_SERVER["REQUEST_URI"] === "/checkout") {
+// elseif ($_SERVER["REQUEST_URI"] === "/checkout") {
 //     $orderController->checkout();
-// } elseif ($_SERVER["REQUEST_URI"] === "/process_checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
-//     $orderController->processCheckout();
-// } elseif (strpos($_SERVER["REQUEST_URI"], "/orderCustomer") === 0) {
+// } 
+elseif ($_SERVER["REQUEST_URI"] === "/process_checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
+    $orderController->processCheckout();
+} elseif ($requestUri === "/orders/update-status" && $_SERVER["REQUEST_METHOD"] === "POST") {
+    $orderController->updateStatus();
+}
+// elseif (strpos($_SERVER["REQUEST_URI"], "/orderCustomer") === 0) {
 //     $orderController->getOrdersByCustomerId();
 // } elseif ($_SERVER["REQUEST_URI"] === "/category"  && $_SERVER["REQUEST_METHOD"] === "GET") {
 //     $categoryController->index();
@@ -107,3 +69,33 @@ elseif ($requestUri === "/" || $requestUri === "/index") {
 //     $categoryController->create();
 // } elseif (strpos($_SERVER["REQUEST_URI"], "/category/edit") === 0) {
 //     $categoryController->edit();
+
+
+// Client Routes
+elseif ($requestUri === "/" || $requestUri === "/index") {
+    $clientController->index();
+} elseif (preg_match("/^\/shop/", $requestUri)) {
+    $clientController->shop();
+} elseif (preg_match("/^\/product-detail/", $requestUri)) {
+    $clientController->productDetail();
+} elseif ($requestUri === "/cart") {
+    $clientController->cart();
+} elseif ($requestUri === "/cart/checkout") {
+    $clientController->checkout();
+} elseif ($requestUri === "/my-account/order-history") {
+    $clientController->orderHistory();
+} elseif ($requestUri === "/my-account/order-history/order-detail") {
+    $clientController->orderDetail();
+} elseif ($requestUri === "/about-us") {
+    $clientController->aboutUs();
+} elseif ($requestUri === "/contact-us") {
+    $clientController->contactUs();
+} elseif ($requestUri === "/my-account") {
+    $clientController->myAccount();
+} elseif ($requestUri === "/my-account/update") {
+    $userController->updateUserInfo();
+} elseif ($requestUri === "/sync-cart" && $_SERVER["REQUEST_METHOD"] === "POST") {
+    $clientController->syncCart();
+} else {
+    $clientController->notFound();
+}

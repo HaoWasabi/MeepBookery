@@ -545,20 +545,14 @@
     color: #e74c3c;
 }
 
-/* Fix style conflict with auth-modal */
-/* .input-group:not(.search-wrapper .input-group) {
-    border: none;
-    background-color: transparent;
-    display: flex;
-    align-items: stretch;
-} */
-
 .input-group {
     display: flex;
     align-items: stretch;
 }
 
-.input-group .form-control,
-.input-group .password-toggle {
+#registerPassword,
+#confirmPassword,
+#loginPassword,
+.password-toggle {
     height: 50px !important;
 }

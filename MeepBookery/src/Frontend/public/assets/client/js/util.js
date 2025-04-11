@@ -1,23 +1,12 @@
 // Hàm loại bỏ dấu tiếng Việt trong chuỗi
 const removeDiacritics = (str) => {
-    let map = {
-        'á': 'a', 'à': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a', 'ă': 'a', 'ắ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a', 'â': 'a',
-        'ấ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a', 'b': 'b', 'c': 'c', 'd': 'd', 'đ': 'd', 'e': 'e', 'é': 'e', 'è': 'e', 'ẻ': 'e',
-        'ẽ': 'e', 'ẹ': 'e', 'ê': 'e', 'ế': 'e', 'ề': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e', 'f': 'f', 'g': 'g', 'h': 'h', 'i': 'i',
-        'í': 'i', 'ì': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i', 'j': 'j', 'k': 'k', 'l': 'l', 'm': 'm', 'n': 'n', 'o': 'o', 'ó': 'o',
-        'ò': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o', 'ô': 'o', 'ố': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o', 'ơ': 'o', 'ớ': 'o',
-        'ờ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o', 'p': 'p', 'q': 'q', 'r': 'r', 's': 's', 't': 't', 'u': 'u', 'ú': 'u', 'ù': 'u',
-        'ủ': 'u', 'ũ': 'u', 'ụ': 'u', 'ư': 'u', 'ứ': 'u', 'ừ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u', 'v': 'v', 'w': 'w', 'x': 'x',
-        'y': 'y', 'ý': 'y', 'ỳ': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y', 'z': 'z'
-    };
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // xóa dấu tiếng Việt
+        .replace(/đ/g, 'd')              // đ → d
+        .replace(/Đ/g, 'D');             // Đ → D
+};
 
-    return str.replace(/[áàảãạăắằẳẵặâấầẩẫậ]/g, match => map[match] || match);
-}
-
-
-
-
-/* 
+/*
 // AutoNumeric Input
 */
 
@@ -26,16 +15,16 @@ const initAutoNumericInput = (selector, withCurrency = false) => {
         digitGroupSeparator: ',',
         decimalPlaces: 0,
         minimumValue: "0",
-        modifyValueOnWheel: false
+        modifyValueOnWheel: false,
+        allowDecimalPadding: false,
+        watchExternalChanges: true, // Quan sát khi input thay đổi ngoài AutoNumeric
     };
 
-    // Kiểm tra nếu cần đính kèm đơn vị tiền tệ
     if (withCurrency) {
-        options.currencySymbol = '₫';
-        options.currencySymbolPlacement = 's'; // 'p' là prefix (trước số), 's' là suffix (sau số)
+        options.currencySymbol = ' ₫';
+        options.currencySymbolPlacement = 's';
     }
 
-    // Khởi tạo AutoNumeric với các options đã chọn
     return new AutoNumeric(selector, options);
 };
 
@@ -67,7 +56,7 @@ const showToast = (message, options = {}) => {
         type: 'success', // success, error, warning, info
         title: 'Thông báo',
         duration: 3000,
-        position: 'top-right' // top-right, top-left, bottom-left, bottom-right
+        position: 'bottom-right' // top-right, top-left, bottom-left, bottom-right
     };
 
     // Merge default options with provided options
@@ -209,13 +198,6 @@ const showToast = (message, options = {}) => {
 // Custom SweetAlert
 */
 
-
-/**
- * Hiển thị thông báo sử dụng SweetAlert2
- * @param {string} message - Nội dung thông báo
- * @param {object} options - Tùy chọn (icon, title, confirmButtonText, ...)
- * @returns {Promise} Promise từ SweetAlert2 để có thể xử lý kết quả
- */
 const showSweetAlert = (message, options = {}) => {
     // Default options
     const defaults = {
@@ -245,5 +227,5 @@ const showSweetAlert = (message, options = {}) => {
     return Swal.fire(settings);
 };
 
-export { removeDiacritics, initAutoNumericInput, showSweetAlert, showToast };
+export { initAutoNumericInput, removeDiacritics, showSweetAlert, showToast };
 

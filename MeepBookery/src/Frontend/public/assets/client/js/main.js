@@ -28,7 +28,9 @@ const swiper = new Swiper('.swiper-container', {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    let isInitialPageLoad = true; // Dùng để tránh việc cuộn trang
+    // Dùng để tránh việc cuộn trang lần đầuđầu
+    let isInitialShopPageLoad = true;
+    let isInitialHomePageLoad = true;
 
     // Update cart UI when page loads
     updateCartInterface();
@@ -52,33 +54,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Highlight active category in dropdown
-    const highlightActiveCategory = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryParam = urlParams.get('category');
-
-        if (categoryParam) {
-            const categoryItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
-            categoryItems.forEach(item => {
-                const itemCategory = item.textContent.trim();
-                if (itemCategory === decodeURIComponent(categoryParam)) {
-                    // Remove active class from all items
-                    categoryItems.forEach(i => i.classList.remove('active'));
-                    // Add active to current item
-                    item.classList.add('active');
-                }
-            });
-        }
-    };
-
-    // // Call function to highlight active category
-    highlightActiveCategory();
+    /*  const highlightActiveCategory = () => {
+         const urlParams = new URLSearchParams(window.location.search);
+         const categoryParam = urlParams.get('category');
+ 
+         if (categoryParam) {
+             const categoryItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
+             categoryItems.forEach(item => {
+                 const itemCategory = item.textContent.trim();
+                 if (itemCategory === decodeURIComponent(categoryParam)) {
+                     // Remove active class from all items
+                     categoryItems.forEach(i => i.classList.remove('active'));
+                     // Add active to current item
+                     item.classList.add('active');
+                 }
+             });
+         }
+     };
+ 
+     // // Call function to highlight active category
+     highlightActiveCategory(); */
 
 
     // Hiển thị sách bán chạy và sách nếu ở trang home
     if (document.getElementById('featured-books-container')) {
         let bestSellerBooksHtml = '';
 
-        const availableBestSellers = bestSellerBooks.filter(book => book.status === 1);
+        const availableBestSellers = bestSellerBooks.filter(book => book.Status === 1);
 
         availableBestSellers.forEach(book => {
             bestSellerBooksHtml += createBookCard(book);
@@ -87,17 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('featured-books-container').innerHTML = bestSellerBooksHtml;
 
         // Khởi tạo phân trang với paginationjs
-        const availableBooks = allBooks.filter(book => book.status === 1);
+        const availableBooks = allBooks.filter(book => book.Status === 1);
 
         $('#pagination-container').pagination({
             dataSource: availableBooks,
             pageSize: 8,
             autoHidePrevious: true,
             autoHideNext: true,
+            hideOnlyOnePage: true,
             prevText: '<i class="fas fa-chevron-left"></i>',
             nextText: '<i class="fas fa-chevron-right"></i>',
             pageRange: 2,
-            hideOnlyOnePage: true,
             callback: (data, pagination) => {
                 // Render HTML
                 let html = '';
@@ -108,15 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 $('#books-container').html(html);
 
-                // Scroll to pagination position if navigating pages
-                if (pagination.pageNumber >= 1 && !isInitialPageLoad) {
+                // Scroll to pagination position
+                if (pagination.pageNumber >= 1 && !isInitialHomePageLoad) {
                     $('html, body').animate({
-                        scrollTop: $('#books-container').offset().top - 100
+                        scrollTop: $('#books-container').offset().top - 200
                     }, 200);
                 }
 
                 // Update the flag after the first page load
-                isInitialPageLoad = false;
+                isInitialHomePageLoad = false;
             },
             locator: 'items'
         });
@@ -133,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxPriceInput = initAutoNumericInput('#max-price');
 
         // Get max price from all books
-        const prices = allBooks.map(book => parseFloat(book.price.replace(/[^0-9]/g, '')));
+        const prices = allBooks.map(book => parseFloat((book.Price)));
         const minPrice = 0;
         const maxPrice = Math.max(...prices);
 
@@ -217,44 +219,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Filter and display products
         let filteredBooks = [...allBooks];
-        let currentPage = 1;
         const booksPerPage = 8;
 
         function applyFilters() {
-            const searchTerm = document.getElementById('search-term').value.toLowerCase();
+            const searchTerm = document.getElementById('search-term').value.toLowerCase().trim();
             const selectedCategory = document.getElementById('category-filter').value;
             const minPrice = parseFloat(minPriceInput.getNumber());
             const maxPrice = parseFloat(maxPriceInput.getNumber());
             const sortBy = document.getElementById('sort-by').value;
 
             // Get min and max price from all books for comparison
-            const prices = allBooks.map(book => parseFloat(book.price.replace(/[^0-9]/g, '')));
+            const prices = allBooks.map(book => parseFloat((book.Price)));
             const initialMinPrice = 0;
             const initialMaxPrice = Math.max(...prices);
 
             // Filter books
             filteredBooks = allBooks.filter(book => {
                 // Filter by status (active books)
-                if (book.status !== 1) return false;
+                if (book.Status !== 1) return false;
 
                 // Filter by search term
                 if (searchTerm &&
-                    !book.name.toLowerCase().includes(removeDiacritics(searchTerm))
+                    !removeDiacritics(book.Name.toLowerCase()).includes(removeDiacritics(searchTerm))
                 ) {
                     return false;
                 }
 
                 // Filter by category
-                if (selectedCategory && book.category !== selectedCategory) {
+                if (selectedCategory && book.Category !== selectedCategory) {
                     return false;
                 }
 
                 // Filter by price
-                const bookPrice = parseFloat(book.price.replace(/[^0-9]/g, ''));
+                const bookPrice = parseFloat((book.Price));
                 if (bookPrice < minPrice || bookPrice > maxPrice) {
                     return false;
                 }
-
                 return true;
             });
 
@@ -262,22 +262,22 @@ document.addEventListener('DOMContentLoaded', () => {
             switch (sortBy) {
                 case 'price-asc':
                     filteredBooks.sort((a, b) =>
-                        parseFloat(a.price.replace(/[^0-9]/g, '')) -
-                        parseFloat(b.price.replace(/[^0-9]/g, '')));
+                        parseFloat((a.Price)) -
+                        parseFloat((b.Price)));
                     break;
 
                 case 'price-desc':
                     filteredBooks.sort((a, b) =>
-                        parseFloat(b.price.replace(/[^0-9]/g, '')) -
-                        parseFloat(a.price.replace(/[^0-9]/g, '')));
+                        parseFloat((b.Price)) -
+                        parseFloat((a.Price)));
                     break;
 
                 case 'name-asc':
-                    filteredBooks.sort((a, b) => a.name.localeCompare(b.name));
+                    filteredBooks.sort((a, b) => a.Name.localeCompare(b.Name));
                     break;
 
                 case 'name-desc':
-                    filteredBooks.sort((a, b) => b.name.localeCompare(a.name));
+                    filteredBooks.sort((a, b) => b.Name.localeCompare(a.Name));
                     break;
 
                 default:
@@ -309,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             $('#shop-pagination-container').pagination({
                 dataSource: filteredBooks,
                 pageSize: booksPerPage,
+                hideOnlyOnePage: true,
                 autoHidePrevious: true,
                 autoHideNext: true,
                 prevText: '<i class="fas fa-chevron-left"></i>',
@@ -338,11 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     $('#shop-products-container').html(html);
 
                     // Scroll to shop section when changing pages
-                    if (pagination.pageNumber >= 1) {
+                    if (pagination.pageNumber >= 1 && !isInitialPageLoad) {
                         $('html, body').animate({
                             scrollTop: $('.shop-controls').offset().top - 120
                         }, 200);
+                        // Update the flag after the first page load
                     }
+                    isInitialPageLoad = false;
                 }
             });
         }
@@ -364,6 +367,12 @@ document.addEventListener('DOMContentLoaded', () => {
             applyFilters();
         });
 
+        document.getElementById('search-term').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+
         // Apply filter when inputs change
         document.getElementById('min-price').addEventListener('change', function () {
             // if(minInput)
@@ -372,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSlider(minValue, maxValue);
             // applyFilters();
         });
-        
+
         document.getElementById('max-price').addEventListener('change', function () {
             const minValue = minPriceInput.getNumber();
             const maxValue = maxPriceInput.getNumber();
@@ -384,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('clear-filters').addEventListener('click', function () {
             document.getElementById('search-term').value = '';
             document.getElementById('category-filter').value = '';
+            document.getElementById('sort-by').value = 'default';
             minPriceInput.set(0);
             maxPriceInput.set(maxPrice);
 
@@ -411,7 +421,7 @@ $(document).on('click', '#logoutBtn', function (e) {
     }).then((result) => {
         if (result.isConfirmed) {
             // Redirect to logout route
-            window.location.href = 'logout';
+            window.location.href = '/logout';
         }
     });
 });
@@ -421,7 +431,7 @@ $(document).on('click', '.add-cart-btn', function (e) {
     e.preventDefault();
     const bookId = $(this).data('book-id');
     // Find the book in allBooks array
-    const book = allBooks.find(b => b.id == bookId);
+    const book = allBooks.find(b => b.BookID == bookId);
     if (book) {
         addToCart(book);
     }
@@ -431,18 +441,12 @@ $(document).on('click', '.buy-now-btn', function (e) {
     e.preventDefault();
     const bookId = $(this).data('book-id');
     // Find the book in allBooks array
-    const book = allBooks.find(b => b.id == bookId);
+    const book = allBooks.find(b => b.BookID == bookId);
 
     if (book) {
-        // Add to cart first (without showing notification)
-        const added = addToCart(book, true);
-
-        // Redirect to product detail or checkout
-        if (added) {
-            setTimeout(() => {
-                window.location.href = '/product-detail?id=' + bookId;
-            }, 300);
-        }
+        setTimeout(() => {
+            window.location.href = '/product-detail?id=' + bookId;
+        }, 300);
     }
 });
 
@@ -495,8 +499,8 @@ $(document).ready(() => {
         itemContainer.find('.text-secondary').text(`SL: ${quantity} x`);
 
         // Update increase button state based on stock
-        const book = allBooks.find(b => b.id === itemId);
-        const maxStock = book ? book.stock : 99;
+        const book = allBooks.find(b => b.BookID === itemId);
+        const maxStock = book ? book.Stock : 99;
         const increaseBtn = itemContainer.find('.increase-qty');
 
         if (quantity >= maxStock) {
@@ -552,16 +556,16 @@ $(document).ready(() => {
                         // New format: array of {id, quantity}
                         parsedData.forEach(item => {
                             // Find book in allBooks array
-                            const book = allBooks.find(b => b.id == item.id);
+                            const book = allBooks.find(b => b.BookID == item.id);
 
                             if (book) {
                                 // Add to cart with saved quantity
                                 cart.items.push({
-                                    id: book.id,
-                                    name: book.name,
-                                    price: parseFloat(book.price.toString().replace(/[^\d]/g, '')),
+                                    id: book.BookID,
+                                    name: book.Name,
+                                    price: parseFloat((book.Price).toLocaleString('vi-VN')),
                                     quantity: item.quantity,
-                                    image: book.image
+                                    image: book.ImageURL
                                 });
                             }
                         });
@@ -569,16 +573,16 @@ $(document).ready(() => {
 
                         parsedData.items.forEach(item => {
                             // Verify item exists in current books
-                            const book = allBooks.find(b => b.id == item.id);
+                            const book = allBooks.find(b => b.BookID == item.id);
 
                             if (book) {
                                 // Add to cart with saved data but updated book info
                                 cart.items.push({
-                                    id: book.id,
-                                    name: book.name,
-                                    price: parseFloat(book.price.toString().replace(/[^\d]/g, '')),
+                                    id: book.BookID,
+                                    name: book.Name,
+                                    price: parseFloat((book.Price).toLocaleString('vi-VN')),
                                     quantity: item.quantity,
-                                    image: book.image
+                                    image: book.ImageURL
                                 });
                             }
                         });
@@ -614,8 +618,8 @@ $(document).ready(() => {
 
             cart.items.forEach(item => {
                 // Find book in allBooks to get current stock
-                const book = allBooks.find(b => b.id === item.id);
-                const maxStock = book ? book.stock : 99; // Fallback to 99 if book not found
+                const book = allBooks.find(b => b.BookID === item.id);
+                const maxStock = book ? book.Stock : 99; // Fallback to 99 if book not found
 
                 cartItemsHtml += `
                     <div class="card border-0 rounded-0 border-bottom cart-item">
@@ -651,7 +655,7 @@ $(document).ready(() => {
                                             </button>
                                         </div>
                                         <button class="btn btn-sm text-danger remove-item ms-3" data-id="${item.id}">
-                                            <i class="fas fa-trash-alt"></i>
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
                                     ${maxStock < 10 ? `<small class="text-muted mt-1 d-block">Còn ${maxStock} "${item.name}" trong kho</small>` : ''}
@@ -686,8 +690,8 @@ $(document).ready(() => {
     const updateItemQuantity = (itemId, change) => {
         const item = cart.items.find(item => item.id === itemId);
         if (item) {
-            const book = allBooks.find(b => b.id === itemId);
-            const maxStock = book ? book.stock : 99;
+            const book = allBooks.find(b => b.BookID === itemId);
+            const maxStock = book ? book.Stock : 99;
 
             const newQty = item.quantity + change;
             if (newQty > 0 && newQty <= maxStock) {
@@ -696,7 +700,7 @@ $(document).ready(() => {
                 updateCartItemUI(itemId, newQty); // Update only the relevant parts of the UI
                 saveCartToLocalStorage();
             } else if (newQty > maxStock) {
-                showToast(`Chỉ còn ${maxStock} "${book ? book.name : 'sản phẩm này'}" trong kho`, {
+                showToast(`Chỉ còn ${maxStock} "${book ? book.Name : 'sản phẩm này'}" trong kho`, {
                     type: 'warning',
                     title: 'Giỏ hàng'
                 });
@@ -710,8 +714,8 @@ $(document).ready(() => {
     const setItemQuantity = (itemId, quantity) => {
         const item = cart.items.find(item => item.id === itemId);
         if (item) {
-            const book = allBooks.find(b => b.id === itemId);
-            const maxStock = book ? book.stock : 99;
+            const book = allBooks.find(b => b.BookID === itemId);
+            const maxStock = book ? book.Stock : 99;
 
             // Handle invalid quantity input (empty, NaN, or contains non-numeric characters)
             if (quantity === '' || isNaN(quantity) || !/^\d+$/.test(String(quantity))) {
@@ -730,7 +734,7 @@ $(document).ready(() => {
             // Handle zero stock case
             if (maxStock <= 0) {
                 removeFromCart(itemId);
-                showToast(`Sản phẩm "${book ? book.name : 'này'}" đã hết hàng và đã được xóa khỏi giỏ hàng`, {
+                showToast(`Sản phẩm "${book ? book.Name : 'này'}" đã hết hàng và đã được xóa khỏi giỏ hàng`, {
                     type: 'warning',
                     title: 'Giỏ hàng'
                 });
@@ -747,7 +751,7 @@ $(document).ready(() => {
                 updateCartSummary();
                 updateCartItemUI(itemId, maxStock);
                 saveCartToLocalStorage();
-                showToast(`Chỉ còn ${maxStock} "${book ? book.name : 'sản phẩm này'}" trong kho`, {
+                showToast(`Chỉ còn ${maxStock} "${book ? book.Name : 'sản phẩm này'}" trong kho`, {
                     type: 'warning',
                     title: 'Giỏ hàng'
                 });
@@ -760,15 +764,15 @@ $(document).ready(() => {
     // Function to add items to cart - global scope for accessibility from other functions
     window.addToCart = (book, skipNotification = false) => {
         // Check if item already exists in cart
-        const existingItem = cart.items.find(item => item.id === book.id);
+        const existingItem = cart.items.find(item => item.id === book.BookID);
 
         // Check current stock
-        const currentStock = book.stock || 0;
+        const currentStock = book.Stock || 0;
 
         // Explicitly check for zero stock
         if (currentStock <= 0) {
             if (!skipNotification) {
-                showToast(`Rất tiếc, sách "${book.name}" đã hết hàng`, {
+                showToast(`Rất tiếc, sách "${book.Name}" đã hết hàng`, {
                     type: 'error',
                     title: 'Giỏ hàng'
                 });
@@ -780,7 +784,7 @@ $(document).ready(() => {
             // Check if adding one more would exceed stock
             if (existingItem.quantity >= currentStock) {
                 if (!skipNotification) {
-                    showToast(`Đã đạt giới hạn tồn kho của sách "${book.name}"`, {
+                    showToast(`Đã đạt giới hạn tồn kho của sách "${book.Name}"`, {
                         type: 'error',
                         title: 'Giỏ hàng'
                     });
@@ -791,15 +795,15 @@ $(document).ready(() => {
 
             // If the cart is open, update the item in the UI
             if ($('#cartOffcanvas').hasClass('show')) {
-                updateCartItemUI(book.id, existingItem.quantity);
+                updateCartItemUI(book.BookID, existingItem.quantity);
             }
         } else {
             cart.items.push({
-                id: book.id,
-                name: book.name,
-                price: parseFloat(book.price.toString().replace(/[^\d]/g, '')),
+                id: book.BookID,
+                name: book.Name,
+                price: parseFloat((book.Price).toLocaleString('vi-VN')),
                 quantity: 1,
-                image: book.image
+                image: book.ImageURL
             });
 
             // If cart is open, we need to re-render to show the new item
@@ -816,9 +820,9 @@ $(document).ready(() => {
 
         // Show notification unless skipNotification is true
         if (!skipNotification) {
-            showToast(`Đã thêm "${book.name}" vào giỏ hàng`, {
+            showToast(`Đã thêm "${book.Name}" vào giỏ hàng`, {
                 type: 'success',
-                title: 'Giỏ hàng'
+                title: 'Giỏ hàng',
             });
         }
 
@@ -861,32 +865,6 @@ $(document).ready(() => {
         setItemQuantity(itemId, newQty);
     });
 
-    // Clear entire cart
-    $('#clearCart').on('click', () => {
-        // Show confirmation dialog
-        showSweetAlert('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?', {
-            icon: 'warning',
-            title: 'Xóa giỏ hàng',
-            showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
-            confirmButtonColor: '#e74c3c',
-            cancelButtonColor: '#6c757d',
-            focusConfirm: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                cart.items = [];
-                updateCartSummary();
-                renderCartItems();
-                saveCartToLocalStorage();
-                showToast('Đã xóa toàn bộ giỏ hàng', {
-                    type: 'success',
-                    title: 'Giỏ hàng'
-                });
-            }
-        });
-    });
-
     // Handle checkout button click
     $('#checkoutBtn').on('click', () => {
         // Redirect to checkout page
@@ -898,22 +876,19 @@ $(document).ready(() => {
     const checkStockLevels = () => {
         let removedItems = [];
 
-        // Create a copy of the array to safely iterate while removing items
         [...cart.items].forEach(item => {
-            // Find book in allBooks array
-            const book = allBooks.find(b => b.id === item.id);
+            const book = allBooks.find(b => b.BookID === item.id);
 
-            // Remove item if book no longer exists or is out of stock
-            if (!book || book.stock <= 0) {
+            if (!book || book.Stock <= 0) {
                 // Remove item from cart
                 const itemIndex = cart.items.findIndex(i => i.id === item.id);
                 if (itemIndex !== -1) {
                     const removedItem = cart.items.splice(itemIndex, 1)[0];
                     removedItems.push(removedItem.name);
                 }
-            } else if (book && item.quantity > book.stock) {
+            } else if (book && item.quantity > book.Stock) {
                 // Adjust quantity if it exceeds current stock
-                item.quantity = book.stock;
+                item.quantity = book.Stock;
             }
         });
 
@@ -941,32 +916,30 @@ $(document).ready(() => {
 });
 
 /**
- * Cập nhật giỏ hàng dựa trên dữ liệu lưu trữ cục bộ
+ * Cập nhật giỏ hàng và số hiển thị(cartbadge) dựa trên dữ liệu lưu trữ cục bộ
  */
 window.updateCartInterface = () => {
-    // Get cart items from localStorage
     const savedCart = localStorage.getItem('cart');
     let cartCount = 0;
 
-    if (savedCart) {
-        try {
-            const parsedData = JSON.parse(savedCart);
-
-            if (Array.isArray(parsedData)) {
-                // Count total items in cart
-                cartCount = parsedData.reduce((total, item) => total + item.quantity, 0);
-            } else if (parsedData && typeof parsedData === 'object' && Array.isArray(parsedData.items)) {
-                // Old format support
-                cartCount = parsedData.items.reduce((total, item) => total + item.quantity, 0);
-            }
-        } catch (error) {
-            console.error('Error parsing cart data:', error);
+    try {
+        const cart = JSON.parse(savedCart);
+        const items = Array.isArray(cart) ? cart : cart?.items;
+        if (Array.isArray(items)) {
+            cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
         }
+    } catch (e) {
+        console.error('Cart parse error:', e);
     }
 
-    // Update cart count in the UI
     document.querySelectorAll('.cart-count').forEach(badge => {
         badge.textContent = cartCount;
+        badge.classList.add('badge-animated');
+        badge.addEventListener('animationend', function handler() {
+            badge.classList.remove('badge-animated');
+            badge.removeEventListener('animationend', handler);
+        });
     });
 };
+
 

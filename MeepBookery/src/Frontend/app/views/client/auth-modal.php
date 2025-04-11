@@ -65,6 +65,13 @@
                                     </div>
                                 </div>
                                 <div class="mb-4">
+                                    <label for="registerPhone" class="form-label">Số điện thoại</label>
+                                    <input type="tel" class="form-control" id="registerPhone" name="phone"
+                                        placeholder="Nhập số điện thoại của bạn" required>
+                                    <div class="invalid-feedback" id="registerPhoneFeedback">
+                                    </div>
+                                </div>
+                                <div class="mb-4">
                                     <label for="registerEmail" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="registerEmail" name="email"
                                         placeholder="Nhập email của bạn" required>

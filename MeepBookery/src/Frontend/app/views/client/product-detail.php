@@ -1,38 +1,12 @@
-<?php
-// Lấy ID sản phẩm từ URL
-$product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-//Tạm thời sài dữ liệu giả :v
-// Lấy thông tin sản phẩm từ data
-
-$product = null;
-$allbooks = $books;
-foreach ($allbooks as $book) {
-    if ($book['id'] == $product_id) {
-        $product = $book;
-        break;
-    }
-}
-
-// Kiểm tra nếu không tìm thấy sản phẩm
-// if (!$product) {
-//     header('Location: index.php');
-//     exit;
-// }
-//
-?>
+<!-- Product Detail Section -->
 <div class="container my-5">
-
-    <!-- Product Name -->
-    <!-- <h1 class="product-title mb-4">< ?= $product['name'] ?></h1> -->
-
     <!-- Product Main Section -->
     <div class="row mb-5">
         <!-- Product Image -->
         <div class="col-md-5">
-            <div class="product-image-container">
-                <img src="<?= $product['image'] ?>" alt="<?= $product['name'] ?>" class="img-fluid product-main-image">
-                <?php if ($product['stock'] <= 0): ?>
+            <div class="book-image-container">
+                <img src="<?= $book['ImageURL'] ?>" alt="<?= $book['Name'] ?>" class="img-fluid book-main-image">
+                <?php if ($book['Stock'] <= 0): ?>
                     <div class="out-of-stock-overlay">
                         <span class="out-of-stock-badge">Tạm hết hàng</span>
                     </div>
@@ -42,42 +16,42 @@ foreach ($allbooks as $book) {
 
         <!-- Product Details & Purchase Options -->
         <div class="col-md-7">
-            <div class="product-info-container p-4">
+            <div class="book-info-container p-4">
                 <!-- Product Name -->
-                <h2 class="product-title mb-3"><?= $product['name'] ?></h2>
+                <h2 class="book-title mb-3"><?= $book['Name'] ?></h2>
 
                 <!-- Product Information in two columns -->
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="mb-2">
                             <span class="text-muted">Tác giả:</span>
-                            <span style="color: #dc3545"><?= $product['author'] ?></span>
+                            <span style="color: #dc3545"><?= $book['Author'] ?></span>
                         </div>
                         <div class="mb-2">
                             <span class="text-muted">Nhà xuất bản:</span>
-                            <span style="color: #dc3545"><?= $product['publisher'] ?></span>
+                            <span style="color: #dc3545"><?= $book['Publisher'] ?></span>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-2">
                             <span class="text-muted">Thể loại:</span>
-                            <span class="product-category"><?= $product['category'] ?></span>
+                            <span class="book-category" ><?= $book['Category'] ?></span>
                         </div>
                         <div class="mb-2">
                             <span class="text-muted">Định dạng:</span>
-                            <span><?= $product['format'] ?></span>
+                            <span><?= $book['Format'] ?></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="product-price mb-4">
-                    <span class="price-value"><?= $product['price'] ?></span>
+                <div class="book-price mb-4">
+                    <span class="price-value"><?= number_format($book['Price'], 0, ',', '.') ?></span>
                 </div>
 
-                <!-- <div class="product-stock mb-4">
+                <!-- <div class="book-stock mb-4">
                     <span class="text-muted">Tình trạng:</span>
-                    < ?php if ($product['stock'] > 0): ?>
-                        <span class="text-success">Còn hàng (< ?= $product['stock'] ?> sản phẩm)</span>
+                    < ?php if ($book['Stock'] > 0): ?>
+                        <span class="text-success">Còn hàng (< ?= $book['Stock'] ?> sản phẩm)</span>
                     < ?php else: ?>
                         <span class="text-danger">Tạm hết hàng</span>
                     < ?php endif; ?>
@@ -93,10 +67,10 @@ foreach ($allbooks as $book) {
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 <input type="number" class="form-control text-center" id="quantity" value="1" min="1"
-                                    max="<?= $product['stock'] ?>" <?= $product['stock'] <= 0 ? 'disabled' : '' ?>
+                                    max="<?= $book['Stock'] ?>" <?= $book['Stock'] <= 0 ? 'disabled' : '' ?>
                                     style="border-color: #dc3545 !important; box-shadow: none !important;">
                                 <button class="btn btn-outline-danger" type="button" id="increase-qty"
-                                    <?= $product['stock'] <= 0 ? 'disabled' : '' ?>>
+                                    <?= $book['Stock'] <= 0 ? 'disabled' : '' ?>>
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
@@ -108,13 +82,13 @@ foreach ($allbooks as $book) {
                                 <button class="btn btn-lg w-100" id="buy-now"
                                     style="background-color: #0d6efd !important; color: white !important; border-color: #0d6efd !important; border-radius: 6px !important; transition: opacity 0.2s !important;"
                                     onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'"
-                                    <?= $product['stock'] <= 0 ? 'disabled' : '' ?>>
+                                    <?= $book['Stock'] <= 0 ? 'disabled' : '' ?>>
                                     <i class="fas fa-bolt me-2"></i>Mua ngay
                                 </button>
                                 <button class="btn btn-lg w-100" id="add-to-cart"
                                     style="background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; border-radius: 6px !important; transition: opacity 0.2s !important;"
                                     onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'"
-                                    <?= $product['stock'] <= 0 ? 'disabled' : '' ?>>
+                                    <?= $book['Stock'] <= 0 ? 'disabled' : '' ?>>
                                     <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
                                 </button>
                             </div>
@@ -126,7 +100,7 @@ foreach ($allbooks as $book) {
     </div>
 
     <!-- Product Tabs Section -->
-    <div class="product-tabs mb-5">
+    <div class="book-tabs mb-5">
         <ul class="nav nav-tabs" id="productTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
@@ -143,7 +117,7 @@ foreach ($allbooks as $book) {
         </ul>
         <div class="tab-content p-4 border border-top-0 rounded-bottom" id="productTabContent">
             <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
-                <p><?= $product['description'] ?></p>
+                <p><?= $book['Description'] ?></p>
             </div>
             <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
                 <div class="row">
@@ -152,19 +126,19 @@ foreach ($allbooks as $book) {
                             <tbody>
                                 <tr>
                                     <th>Nhà xuất bản:</th>
-                                    <td><?= $product['publisher'] ?></td>
+                                    <td><?= $book['Publisher'] ?></td>
                                 </tr>
                                 <tr>
                                     <th>Kích thước:</th>
-                                    <td><?= $product['dimensions'] ?></td>
+                                    <td><?= $book['Dimensions'] ?></td>
                                 </tr>
                                 <tr>
                                     <th>Số trang:</th>
-                                    <td><?= $product['length'] ?></td>
+                                    <td><?= $book['Length'] ?></td>
                                 </tr>
                                 <tr>
                                     <th>Trọng lượng:</th>
-                                    <td><?= $product['weight'] ?> kg</td>
+                                    <td><?= $book['Weight'] ?> kg</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -174,19 +148,19 @@ foreach ($allbooks as $book) {
                             <tbody>
                                 <tr>
                                     <th>Ngôn ngữ:</th>
-                                    <td><?= $product['language'] ?></td>
+                                    <td><?= $book['Language'] ?></td>
                                 </tr>
                                 <tr>
                                     <th>Định dạng:</th>
-                                    <td><?= $product['format'] ?></td>
+                                    <td><?= $book['Format'] ?></td>
                                 </tr>
                                 <tr>
                                     <th>Ngày phát hành:</th>
-                                    <td><?= $product['release_date'] ?></td>
+                                    <td><?= date('d/m/Y', strtotime($book['ReleaseDate'])) ?></td>
                                 </tr>
                                 <tr>
                                     <th>Thể loại:</th>
-                                    <td><?= $product['category'] ?></td>
+                                    <td><?= $book['Category'] ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -202,9 +176,10 @@ foreach ($allbooks as $book) {
     import { showSweetAlert } from '/assets/client/js/util.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-        const productId = <?= $product_id ?>;
-        const product = allBooks.find(book => book.id == productId);
-        const maxStock = <?= $product['stock'] ?>;
+        // const productId = < ?= $book['BookID'] ?>;
+        // const book = allBooks.find(b => b.BookID == productId);
+        const book = <?= json_encode($book) ?>;
+        const maxStock = <?= $book['Stock'] ?>;
 
         // Quantity controls
         const quantityInput = document.getElementById('quantity');
@@ -236,7 +211,7 @@ foreach ($allbooks as $book) {
 
         // Add to cart button
         document.getElementById('add-to-cart').addEventListener('click', () => {
-            if (!product) return;
+            if (!book) return;
 
             // Get current quantity
             const quantity = parseInt(quantityInput.value);
@@ -244,47 +219,22 @@ foreach ($allbooks as $book) {
             // Simulate multiple adds to cart
             let added = false;
             for (let i = 0; i < quantity; i++) {
-                added = window.addToCart(product, i > 0); // Only show notification for first addition
+                added = window.addToCart(book, i > 0); // Only show notification for first addition
             }
 
             if (added && quantity > 1) {
-                showToast(`Đã thêm ${quantity} sản phẩm "${product.name}" vào giỏ hàng`, {
+                showToast(`Đã thêm ${quantity} sản phẩm "${book.Name}" vào giỏ hàng`, {
                     type: 'success',
                     title: 'Giỏ hàng'
                 });
             }
 
             // Update the cart interface
-            updateCartInterface();
+            window.updateCartInterface();
         });
 
-        // Buy now button
         document.getElementById('buy-now').addEventListener('click', () => {
-            <?php if (!isset($_SESSION['UserID'])): ?>
-                Swal.fire({
-                    title: 'Đăng nhập',
-                    text: 'Vui lòng đăng nhập để tiến hành thanh toán',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e74c3c',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Đăng nhập',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Show login modal
-                        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
-                        authModal.show();
-                        // Set the tab to login
-                        const loginTab = document.querySelector('#authModal [data-bs-target="#login-tab-pane"]');
-                        if (loginTab) {
-                            loginTab.click();
-                        }
-                    }
-                });
-            <?php else: ?>
-
-                if (!product) return;
+                if (!book) return;
 
                 // Get current quantity
                 const quantity = parseInt(quantityInput.value);
@@ -292,7 +242,7 @@ foreach ($allbooks as $book) {
                 // Add to cart first without notification
                 let added = false;
                 for (let i = 0; i < quantity; i++) {
-                    added = window.addToCart(product, true);
+                    added = window.addToCart(book, true);
                 }
 
                 // Update the cart interface
@@ -301,14 +251,13 @@ foreach ($allbooks as $book) {
                 if (added) {
                     window.location.href = '/cart';
                 }
-            <?php endif ?>
         });
     });
 </script>
 
 <style>
     /* Product Detail Page Styles */
-    .product-title {
+    .book-title {
         font-size: 2rem;
         color: #333;
         font-weight: 700;
@@ -316,7 +265,7 @@ foreach ($allbooks as $book) {
         padding-bottom: 0.5rem;
     }
 
-    .product-image-container {
+    .book-image-container {
         position: relative;
         background-color: #f9f9f9;
         padding: 2rem;
@@ -328,7 +277,7 @@ foreach ($allbooks as $book) {
         justify-content: center;
     }
 
-    .product-main-image {
+    .book-main-image {
         max-height: 400px;
         object-fit: contain;
     }
@@ -357,23 +306,18 @@ foreach ($allbooks as $book) {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .product-info-container {
+    .book-info-container {
         background-color: #f9f9f9;
         border-radius: 0.5rem;
         height: 100%;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    .product-category {
-        font-size: 0.9rem;
-        padding: 0.3rem 0.8rem;
-    }
-
-    .product-author {
+    .book-author {
         font-size: 1.1rem;
     }
 
-    .product-price {
+    .book-price {
         font-size: 1.8rem;
         font-weight: 700;
         color: #e74c3c;
@@ -399,14 +343,14 @@ foreach ($allbooks as $book) {
     }
 
     /* Tab Content Styling */
-    .product-tabs .nav-tabs .nav-link {
+    .book-tabs .nav-tabs .nav-link {
         color: #555;
         font-weight: 500;
         border-top-left-radius: 0.5rem;
         border-top-right-radius: 0.5rem;
     }
 
-    .product-tabs .nav-tabs .nav-link.active {
+    .book-tabs .nav-tabs .nav-link.active {
         color: #e74c3c;
         font-weight: 700;
         border-top: 3px solid #e74c3c;
@@ -420,7 +364,7 @@ foreach ($allbooks as $book) {
         min-height: 200px;
     }
 
-    /* Table styling for product details */
+    /* Table styling for book details */
     .tab-pane .table {
         margin-bottom: 0;
     }
@@ -437,11 +381,11 @@ foreach ($allbooks as $book) {
 
     /* Responsive adjustments */
     @media (max-width: 768px) {
-        .product-title {
+        .book-title {
             font-size: 1.5rem;
         }
 
-        .product-image-container {
+        .book-image-container {
             padding: 1rem;
             margin-bottom: 1.5rem;
         }

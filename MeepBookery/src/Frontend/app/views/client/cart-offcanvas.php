@@ -36,7 +36,8 @@
         <img src="../../img/empty-cart.png" alt="Giỏ hàng trống" class="empty-cart-image">
         <div class="empty-cart-message">Giỏ hàng của bạn đang trống</div>
         <div class="empty-cart-submessage">Hãy thêm sản phẩm vào giỏ hàng của bạn</div>
-        <button onclick="window.location.href='/shop'" class="empty-cart-button" data-bs-dismiss="offcanvas">Tiếp tục
+        <button onclick="if(window.location.pathname !== '/shop') window.location.href='/shop'"
+            class="empty-cart-button" data-bs-dismiss="offcanvas">Tiếp tục
             mua sắm</button>
     </div>
 </template>
@@ -70,7 +71,7 @@
             });
         <?php else: ?>
             // Redirect to checkout page
-            window.location.href = '/checkout';
+            window.location.href = '/cart/checkout';
         <?php endif; ?>
     });
 </script>

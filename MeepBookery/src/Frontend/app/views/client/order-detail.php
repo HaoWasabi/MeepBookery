@@ -1,22 +1,3 @@
-<?php
-// Lấy ID từ URL
-$order_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-//Tạm thời sài dữ liệu giả :v
-// Lấy thông tin order từ data
-
-$user = $users[0];
-
-$order = null;
-foreach ($orders as $o) {
-    if ($o['id'] == $order_id) {
-        $order = $o;
-        break;
-    }
-}
-
-?>
-
 <!-- Chi tiết đơn hàng - MeepBookery -->
 
 <!-- Order Detail Banner -->
@@ -25,7 +6,7 @@ foreach ($orders as $o) {
         <div class="row">
             <div class="col-lg-12">
                 <div class="order-detail-banner-content text-center">
-                    <h1 class="order-detail-title mb-2 ">Chi tiết đơn hàng #<?php echo $order['id']; ?></h1>
+                    <h1 class="order-detail-title mb-2 ">Chi tiết đơn hàng #<?php echo $order['OrderID']; ?></h1>
                 </div>
             </div>
         </div>
@@ -47,7 +28,7 @@ foreach ($orders as $o) {
                         $statusClass = '';
                         $statusText = '';
 
-                        switch ($order['status']) {
+                        switch ($order['Status']) {
                             case 'pending':
                                 $statusClass = 'warning';
                                 $statusText = 'Chờ xác nhận';
@@ -84,8 +65,9 @@ foreach ($orders as $o) {
                             <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
                                 <i class="fas fa-exclamation-circle me-2"></i>
                                 <div>
-                                    Đơn hàng của bạn đã bị hủy. Vui lòng liên hệ với chúng tôi nếu bạn có bất kỳ câu hỏi
-                                    nào.
+                                    Đơn hàng của bạn đã bị hủy.
+                                    <!-- Vui lòng liên hệ với chúng tôi nếu bạn có bất kỳ câu hỏi -->
+                                    <!-- nào. -->
                                 </div>
                             </div>
                         <?php else: ?>
@@ -149,46 +131,46 @@ foreach ($orders as $o) {
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Sản phẩm đã đặt</h5>
-                        <span class="text-muted small"><?php echo count($order['details']); ?> sản phẩm</span>
+                        <span class="text-muted"><?php echo count($order['OrderDetails']); ?> sản phẩm</span>
                     </div>
                     <div class="card-body p-0">
                         <?php
-                        $totalItems = count($order['details']);
+                        $totalItems = count($order['OrderDetails']);
                         $initialDisplay = 4; // Số sản phẩm hiển thị ban đầu khi dùng chế độ đóng/mở
-
+                        
                         // Nếu có 10 sản phẩm trở xuống, hiển thị kiểu đóng/mở (nếu có >= 5 sản phẩm)
                         if ($totalItems <= 10) {
                             $useCollapseMode = $totalItems >= 5;
-                        ?>
+                            ?>
                             <div class="list-group list-group-flush">
-                                <?php foreach ($order['details'] as $index => $item):
+                                <?php foreach ($order['OrderDetails'] as $index => $item):
                                     $displayClass = ($useCollapseMode && $index >= $initialDisplay) ? 'item-hidden d-none' : '';
-                                ?>
+                                    ?>
                                     <div class="list-group-item product-item <?php echo $displayClass; ?>">
                                         <div class="d-flex align-items-center">
                                             <div class="item-number"><?php echo $index + 1; ?></div>
                                             <div class="flex-shrink-0 ms-2">
-                                                <img src="<?php echo $item['book']['image']; ?>"
-                                                    alt="<?php echo $item['book']['name']; ?>" class="img-fluid rounded"
+                                                <img src="<?php echo $item['ImageURL']; ?>"
+                                                    alt="<?php echo $item['ProductName']; ?>" class="img-fluid rounded"
                                                     style="width: 80px; height: 100px; object-fit: cover;">
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <div class="row">
                                                     <div class="col-md-5">
-                                                        <h6 class="mb-1"><?php echo $item['book']['name']; ?></h6>
+                                                        <h6 class="mb-1"><?php echo $item['ProductName']; ?></h6>
                                                         <div class="text-muted small">
-                                                            <div>Tác giả: <?php echo $item['book']['author']; ?></div>
-                                                            <div>Thể loại: <?php echo $item['book']['category']; ?></div>
+                                                            <div>Tác giả: <?php echo $item['Author']; ?></div>
+                                                            <div>Thể loại: <?php echo $item['Category']; ?></div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 text-md-center mt-2 mt-md-0">
                                                         <div class="text-muted small">Số lượng</div>
-                                                        <div class="fw-bold"><?php echo $item['quantity']; ?></div>
+                                                        <div class="fw-bold"><?php echo $item['Quantity']; ?></div>
                                                     </div>
                                                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                                         <div class="text-muted small">Giá</div>
                                                         <div class="fw-bold">
-                                                            <?php echo number_format(str_replace('.', '', $item['price']), 0, ',', '.'); ?>đ
+                                                            <?= number_format((float) $item['Price'], 0, ',', '.') ?> đ
                                                         </div>
                                                     </div>
                                                 </div>
@@ -211,37 +193,37 @@ foreach ($orders as $o) {
                                     </div>
                                 <?php endif; ?>
                             </div>
-                        <?php
+                            <?php
                             // Nếu có nhiều hơn 10 sản phẩm, hiển thị kiểu cuộn
                         } else {
-                        ?>
+                            ?>
                             <div class="list-group list-group-flush scrollable-items">
                                 <?php foreach ($order['details'] as $index => $item): ?>
                                     <div class="list-group-item product-item">
                                         <div class="d-flex align-items-center">
                                             <div class="item-number"><?php echo $index + 1; ?></div>
                                             <div class="flex-shrink-0 ms-2">
-                                                <img src="<?php echo $item['book']['image']; ?>"
-                                                    alt="<?php echo $item['book']['name']; ?>" class="img-fluid rounded"
+                                                <img src="<?php echo $item['ImageURL']; ?>"
+                                                    alt="<?php echo $item['ProductName']; ?>" class="img-fluid rounded"
                                                     style="width: 80px; height: 100px; object-fit: cover;">
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <div class="row">
                                                     <div class="col-md-5">
-                                                        <h6 class="mb-1"><?php echo $item['book']['name']; ?></h6>
+                                                        <h6 class="mb-1"><?php echo $item['ProductName']; ?></h6>
                                                         <div class="text-muted small">
-                                                            <div>Tác giả: <?php echo $item['book']['author']; ?></div>
-                                                            <div>Thể loại: <?php echo $item['book']['category']; ?></div>
+                                                            <div>Tác giả: <?php echo $item['Author']; ?></div>
+                                                            <div>Thể loại: <?php echo $item['Category']; ?></div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3 text-md-center mt-2 mt-md-0">
                                                         <div class="text-muted small">Số lượng</div>
-                                                        <div class="fw-bold"><?php echo $item['quantity']; ?></div>
+                                                        <div class="fw-bold"><?php echo $item['Quantity']; ?></div>
                                                     </div>
                                                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
                                                         <div class="text-muted small">Giá</div>
                                                         <div class="fw-bold">
-                                                            <?php echo number_format(str_replace('.', '', $item['price']), 0, ',', '.'); ?>đ
+                                                            <?= number_format((float) $item['Price'], 0, ',', '.') ?> đ
                                                         </div>
                                                     </div>
                                                 </div>
@@ -265,15 +247,15 @@ foreach ($orders as $o) {
                         <ul class="list-group list-group-flush mb-3">
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span>Mã đơn hàng</span>
-                                <span class="fw-bold">#<?php echo $order['id']; ?></span>
+                                <span class="fw-bold">#<?php echo $order['OrderID']; ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span>Ngày đặt hàng</span>
-                                <span><?php echo date('d/m/Y', strtotime($order['order_date'])); ?></span>
+                                <span><?php echo date('d/m/Y', strtotime($order['OrderDate'])); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span>Phương thức thanh toán</span>
-                                <span><?php echo $order['payment_method']; ?></span>
+                                <span><?php echo $order['PaymentMethod']; ?></span>
                             </li>
                         </ul>
 
@@ -281,7 +263,7 @@ foreach ($orders as $o) {
                             <hr>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tạm tính</span>
-                                <span><?php echo number_format(str_replace('.', '', $order['total_amount']), 0, ',', '.'); ?>đ</span>
+                                <span><?= number_format((float) $order['TotalAmount'], 0, ',', '.') ?>đ</span>
                             </div>
                             <!-- <div class="d-flex justify-content-between mb-2">
                                 <span>Phí vận chuyển</span>
@@ -295,7 +277,7 @@ foreach ($orders as $o) {
                             <div class="d-flex justify-content-between mb-0">
                                 <span class="fw-bold">Tổng cộng</span>
                                 <span
-                                    class="fw-bold text-danger"><?php echo number_format(str_replace('.', '', $order['total_amount']), 0, ',', '.'); ?>đ</span>
+                                    class="fw-bold text-danger"><?= number_format((float) $order['TotalAmount'], 0, ',', '.') ?>đ</span>
                             </div>
                         </div>
                     </div>
@@ -309,16 +291,16 @@ foreach ($orders as $o) {
                     <div class="card-body">
                         <div class="mb-3">
                             <p class="mb-1 text-muted small">Người nhận</p>
-                            <p class="mb-0 fw-medium"><?php echo $users[0]['name']; ?></p>
+                            <p class="mb-0 fw-medium"><?php echo $order['UserName']; ?></p>
                         </div>
                         <div class="mb-3">
                             <p class="mb-1 text-muted small">Số điện thoại</p>
-                            <p class="mb-0 fw-medium"><?php echo $users[0]['phone']; ?></p>
+                            <p class="mb-0 fw-medium"><?php echo $order['Phone']; ?></p>
                         </div>
                         <div class="mb-0">
                             <p class="mb-1 text-muted small">Địa chỉ giao hàng</p>
                             <p class="mb-0 fw-medium">
-                                <?php echo $order['address'] . ', ' . $order['ward'] . ', ' . $order['district'] . ', ' . $order['city']; ?>
+                                <?php echo $order['Address'] . ', ' . $order['Ward'] . ', ' . $order['District'] . ', ' . $order['City']; ?>
                             </p>
                         </div>
                     </div>
@@ -327,12 +309,11 @@ foreach ($orders as $o) {
                 <!-- Actions -->
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <a href="/order-history" class="btn btn-outline-secondary w-100 mb-2">
+                        <a href="/my-account/order-history" class="btn btn-outline-secondary w-100 mb-2">
                             <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách đơn hàng
                         </a>
-                        <?php if ($order['status'] == 'pending'): ?>
-                            <button type="button" class="btn btn-danger w-100 mb-2" data-bs-toggle="modal"
-                                data-bs-target="#cancelOrderModal">
+                        <?php if ($order['Status'] == 'pending'): ?>
+                            <button type="button" class="btn btn-danger w-100 mb-2" id="cancelOrderBtn">
                                 <i class="fas fa-times-circle me-2"></i> Hủy đơn hàng
                             </button>
                         <?php endif; ?>
@@ -345,45 +326,6 @@ foreach ($orders as $o) {
         </div>
     </div>
 </section>
-
-<!-- Cancel Order Modal -->
-<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cancelOrderModalLabel">Xác nhận hủy đơn hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Bạn có chắc chắn muốn hủy đơn hàng #<?php echo $order['id']; ?>?</p>
-                <p class="text-muted small">Lưu ý: Hành động này không thể hoàn tác.</p>
-                <form id="cancelOrderForm">
-                    <div class="mb-3">
-                        <label for="cancelReason" class="form-label">Lý do hủy đơn</label>
-                        <select class="form-select" id="cancelReason" required>
-                            <option value="">-- Chọn lý do --</option>
-                            <option value="1">Tôi muốn thay đổi địa chỉ giao hàng</option>
-                            <option value="2">Tôi muốn thay đổi phương thức thanh toán</option>
-                            <option value="3">Tôi muốn thay đổi sản phẩm đã đặt</option>
-                            <option value="4">Tôi tìm thấy giá tốt hơn ở nơi khác</option>
-                            <option value="5">Tôi đặt nhầm sản phẩm</option>
-                            <option value="6">Lý do khác</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="otherReasonContainer" style="display: none;">
-                        <label for="otherReason" class="form-label">Lý do khác</label>
-                        <textarea class="form-control" id="otherReason" rows="3"
-                            placeholder="Vui lòng nêu rõ lý do của bạn"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-danger" id="confirmCancelOrder">Xác nhận hủy</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Custom CSS -->
 <style>
@@ -483,65 +425,73 @@ foreach ($orders as $o) {
         showSweetAlert
     } from '/assets/client/js/util.js';
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Handle "Other reason" logic for cancellation
-        const cancelReasonSelect = document.getElementById('cancelReason');
-        const otherReasonContainer = document.getElementById('otherReasonContainer');
-
-        if (cancelReasonSelect) {
-            cancelReasonSelect.addEventListener('change', function() {
-                if (this.value === '6') {
-                    otherReasonContainer.style.display = 'block';
-                } else {
-                    otherReasonContainer.style.display = 'none';
-                }
-            });
-        }
-
-        // Handle cancel order submission
-        const confirmCancelOrderBtn = document.getElementById('confirmCancelOrder');
-        if (confirmCancelOrderBtn) {
-            confirmCancelOrderBtn.addEventListener('click', function() {
-                const form = document.getElementById('cancelOrderForm');
-                const cancelReason = document.getElementById('cancelReason');
-
-                if (!cancelReason.value) {
-                    showSweetAlert('Vui lòng chọn lý do hủy đơn hàng', {
-                        icon: 'warning',
-                        title: 'Thông tin không đầy đủ'
-                    });
-                    return;
-                }
-
-                if (cancelReason.value === '6') {
-                    const otherReason = document.getElementById('otherReason');
-                    if (!otherReason.value.trim()) {
-                        showSweetAlert('Vui lòng nhập lý do hủy đơn hàng', {
-                            icon: 'warning',
-                            title: 'Thông tin không đầy đủ'
-                        });
-                        return;
-                    }
-                }
-
-                // Here you would normally submit the form via AJAX
-                // For this example, we'll just show a success message
-                const modal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
-                modal.hide();
-
-                // Show success message with SweetAlert2
-                showSweetAlert('Đơn hàng của bạn đã được hủy thành công!', {
-                    icon: 'success',
-                    title: 'Hủy đơn hàng thành công',
-                    confirmButtonText: 'Quay lại danh sách đơn hàng',
-                    confirmButtonColor: '#dc3545'
+    document.addEventListener('DOMContentLoaded', function () {
+        const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+        if (cancelOrderBtn) {
+            cancelOrderBtn.addEventListener('click', function () {
+                showSweetAlert('Bạn có chắc chắn muốn hủy đơn hàng #<?php echo $order['OrderID']; ?>?', {
+                    icon: 'warning',
+                    title: 'Xác nhận hủy đơn hàng',
+                    text: 'Lưu ý: Hành động này không thể hoàn tác.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận hủy',
+                    cancelButtonText: 'Đóng',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Redirect back to order history
-                        window.location.href = '/order-history';
+                        cancelOrder(<?php echo $order['OrderID']; ?>);
                     }
                 });
             });
+        }
+
+        // Function to handle order cancellation via API
+        function cancelOrder(orderId) {
+            // Create a FormData object to match the expected format in OrderController
+            const formData = new FormData();
+            formData.append('orderId', orderId);
+            formData.append('status', 'canceled');
+
+            // Add userId if available
+            <?php if (isset($_SESSION['UserID'])): ?>
+                formData.append('userId', <?php echo $_SESSION['UserID']; ?>);
+            <?php endif; ?>
+
+            // Make a POST request to update the order status to 'canceled'
+            fetch('/orders/update-status', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message && data.message.includes("thành công")) {
+                        showSweetAlert('Đơn hàng đã được hủy thành công!', {
+                            icon: 'success',
+                            title: 'Hủy đơn hàng thành công',
+                            confirmButtonText: 'Quay lại danh sách đơn hàng',
+                            confirmButtonColor: '#dc3545'
+                        }).then(() => {
+                            window.location.href = '/my-account/order-history';
+                        });
+                    } else {
+                        showSweetAlert(data.message || 'Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại sau.', {
+                            icon: 'error',
+                            title: 'Lỗi hủy đơn hàng',
+                            confirmButtonText: 'Đã hiểu',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showSweetAlert('Đã xảy ra lỗi khi kết nối đến máy chủ. Vui lòng thử lại sau.', {
+                        icon: 'error',
+                        title: 'Lỗi kết nối',
+                        confirmButtonText: 'Đã hiểu',
+                        confirmButtonColor: '#dc3545'
+                    });
+                });
         }
 
         // Xử lý nút Xem thêm/Thu gọn
@@ -549,7 +499,7 @@ foreach ($orders as $o) {
         const showLessBtn = document.getElementById('showLessBtn');
 
         if (showMoreBtn) {
-            showMoreBtn.addEventListener('click', function() {
+            showMoreBtn.addEventListener('click', function () {
                 document.querySelectorAll('.item-hidden').forEach(item => {
                     item.classList.remove('d-none');
                 });
@@ -560,7 +510,7 @@ foreach ($orders as $o) {
         }
 
         if (showLessBtn) {
-            showLessBtn.addEventListener('click', function() {
+            showLessBtn.addEventListener('click', function () {
                 document.querySelectorAll('.item-hidden').forEach(item => {
                     item.classList.add('d-none');
                 });

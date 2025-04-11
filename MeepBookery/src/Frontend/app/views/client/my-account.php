@@ -10,7 +10,7 @@
                     <a href="/my-account" class="list-group-item list-group-item-action active">
                         <i class="fas fa-user me-2"></i> Thông tin tài khoản
                     </a>
-                    <a href="/order-history" class="list-group-item list-group-item-action">
+                    <a href="/my-account/order-history" class="list-group-item list-group-item-action">
                         <i class="fas fa-clipboard-list me-2"></i> Lịch sử đơn hàng
                     </a>
                     <a href="/cart" class="list-group-item list-group-item-action">
@@ -38,93 +38,153 @@
                     </div>
 
                     <!-- Account Form -->
-                    <form id="accountForm" method="POST" action="/update-account" data-aos="fade-up">
+                    <form id="accountForm" method="POST" action="/my-account/update" data-aos="fade-up">
                         <!-- This form will POST to /update-account endpoint -->
-
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        placeholder="Họ và tên" value="<?= htmlspecialchars($user['name']) ?>" required>
+                                    <input type="text" class="form-control" id="Name" name="Name"
+                                        placeholder="Họ và tên" value="<?php if (isset($user) && isset($user['Name']))
+                                            echo htmlspecialchars($user['Name']); ?>" disabled>
                                     <label for="name">Họ và tên <span class="text-danger">*</span></label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email"
-                                        value="<?= htmlspecialchars($user['email']) ?>" required>
-                                    <label for="email">Email <span class="text-danger">*</span></label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="tel" class="form-control" id="phone" name="phone"
-                                        placeholder="Số điện thoại"
-                                        value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
-                                    <label for="phone">Số điện thoại</label>
-                                    <div class="form-text">Vui lòng nhập số điện thoại nếu có</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="border-top pt-4 mb-4">
-                            <h5 class="mb-3">Địa chỉ giao hàng mặc định</h5>
-
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <div class="form-floating">
-                                        <input type="text" class="form-control" id="address" name="address"
-                                            placeholder="Địa chỉ"
-                                            value="<?= htmlspecialchars($user['address'] ?? '') ?>">
-                                        <label for="address">Địa chỉ chi tiết</label>
+                                    <input type="email" class="form-control" id="Email" name="Email" placeholder="Email"
+                                        disabled value="<?php if (isset($user) && isset($user['Email']))
+                                            echo htmlspecialchars($user['Email']) ?>">
+                                        <label for="email">Email <span class="text-danger">*</span></label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <select class="form-select" id="city" name="city">
-                                            <option value="">Chọn Tỉnh/Thành phố</option>
-                                            <!-- Các tùy chọn sẽ được tải bằng JavaScript -->
-                                            <option value="city 1" <?= ($user['city'] ?? '') == 'city 1' ? 'selected' : '' ?>>Thành phố 1</option>
-                                            <option value="city 2" <?= ($user['city'] ?? '') == 'city 2' ? 'selected' : '' ?>>Thành phố 2</option>
-                                        </select>
-                                        <label for="city">Tỉnh/Thành phố</label>
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="tel" class="form-control" id="Phone" name="Phone"
+                                            placeholder="Số điện thoại" value="<?php if (isset($user) && isset($user['Phone']))
+                                            echo htmlspecialchars($user['Phone'] ?? '') ?>" disabled>
+                                        <label for="phone">Số điện thoại <span class="text-danger">*</span></label>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <select class="form-select" id="district" name="district">
-                                            <option value="">Chọn Quận/Huyện</option>
-                                            <!-- Các tùy chọn sẽ được tải bằng JavaScript -->
-                                            <option value="district 1" <?= ($user['district'] ?? '') == 'district 1' ? 'selected' : '' ?>>Quận/Huyện 1</option>
-                                            <option value="district 2" <?= ($user['district'] ?? '') == 'district 2' ? 'selected' : '' ?>>Quận/Huyện 2</option>
-                                        </select>
-                                        <label for="district">Quận/Huyện</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <select class="form-select" id="ward" name="ward">
-                                            <option value="">Chọn Phường/Xã</option>
-                                            <!-- Các tùy chọn sẽ được tải bằng JavaScript -->
-                                            <option value="ward 1" <?= ($user['ward'] ?? '') == 'ward 1' ? 'selected' : '' ?>>Phường/Xã 1</option>
-                                            <option value="ward 2" <?= ($user['ward'] ?? '') == 'ward 2' ? 'selected' : '' ?>>Phường/Xã 2</option>
-                                        </select>
-                                        <label for="ward">Phường/Xã</label>
+                                <div class="col-md-6 d-flex align-items-center justify-content-end">
+                                    <div class="personal-info-buttons">
+                                        <button type="button" class="btn btn-outline-primary" id="editPersonalInfoBtn">
+                                            <i class="fas fa-user-edit me-2"></i> Cập nhật thông tin cá nhân
+                                        </button>
+                                        <div class="edit-mode-buttons" style="display: none;">
+                                            <button type="button" class="btn btn-outline-secondary me-2"
+                                                id="cancelPersonalInfoBtn">
+                                                <i class="fas fa-times me-2"></i> Hủy
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="savePersonalInfoBtn">
+                                                <i class="fas fa-save me-2"></i> Lưu
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-save me-2"></i> Cập nhật thông tin
-                            </button>
+                            <div class="border-top pt-4 mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Địa chỉ giao hàng mặc định</h5>
+                                    <?php
+                                        $hasAddress = isset($user) && !empty($user['Address']);
+                                        ?>
+                                <div class="address-buttons">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="changeAddressBtn">
+                                        <i class="fas fa-edit me-1"></i>Cập nhật địa chỉ
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Hiển thị địa chỉ -->
+                            <div id="displayAddressSection">
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <?php if ($hasAddress): ?>
+                                            <p class="mb-0">
+                                                <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                                                <?php
+                                                $addressParts = [];
+                                                if (!empty($user['Address']))
+                                                    $addressParts[] = $user['Address'];
+                                                if (!empty($user['Ward']))
+                                                    $addressParts[] = $user['Ward'];
+                                                if (!empty($user['District']))
+                                                    $addressParts[] = $user['District'];
+                                                if (!empty($user['City']))
+                                                    $addressParts[] = $user['City'];
+                                                echo implode(', ', $addressParts);
+                                                ?>
+                                            </p>
+                                        <?php else: ?>
+                                            <p class="text-muted mb-0">
+                                                <i class="fas fa-exclamation-circle me-2"></i>
+                                                Bạn chưa có địa chỉ giao hàng mặc định. Vui lòng cập nhật địa chỉ.
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form chỉnh sửa địa chỉ - ẩn ban đầu -->
+                            <div id="editAddressSection" style="display: none;">
+                                <div class="card border mb-3">
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="Address" name="Address"
+                                                        placeholder="Địa chỉ chi tiết"
+                                                        value="<?php echo isset($user['Address']) ? htmlspecialchars($user['Address']) : ''; ?>">
+                                                    <label for="Address">Địa chỉ chi tiết <span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-4 mb-3 mb-md-0">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="City" name="City"
+                                                        placeholder="Tỉnh/Thành phố"
+                                                        value="<?php echo isset($user['City']) ? htmlspecialchars($user['City']) : ''; ?>">
+                                                    <label for="City">Tỉnh/Thành phố <span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3 mb-md-0">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="District"
+                                                        name="District" placeholder="Quận/Huyện"
+                                                        value="<?php echo isset($user['District']) ? htmlspecialchars($user['District']) : ''; ?>">
+                                                    <label for="District">Quận/Huyện <span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-floating">
+                                                    <input type="text" class="form-control" id="Ward" name="Ward"
+                                                        placeholder="Phường/Xã"
+                                                        value="<?php echo isset($user['Ward']) ? htmlspecialchars($user['Ward']) : ''; ?>">
+                                                    <label for="Ward">Phường/Xã <span
+                                                            class="text-danger">*</span></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                id="cancelAddressBtn">
+                                                <i class="fas fa-times me-1"></i> Hủy
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="saveAddressBtn">
+                                                <i class="fas fa-save me-1"></i> Lưu địa chỉ
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -141,47 +201,276 @@
         const alertBox = document.getElementById('accountUpdateAlert');
         const alertMessage = document.getElementById('alertMessage');
 
-        if (accountForm) {
-            accountForm.addEventListener('submit', function (e) {
-                e.preventDefault();
+        // Personal info elements
+        const editPersonalInfoBtn = document.getElementById('editPersonalInfoBtn');
+        const cancelPersonalInfoBtn = document.getElementById('cancelPersonalInfoBtn');
+        const savePersonalInfoBtn = document.getElementById('savePersonalInfoBtn');
+        const personalInfoEditButtons = document.querySelector('.personal-info-buttons .edit-mode-buttons');
 
-                // Perform form validation
-                const name = document.getElementById('name').value.trim();
-                const email = document.getElementById('email').value.trim();
+        // Address elements
+        const changeAddressBtn = document.getElementById('changeAddressBtn');
+        const cancelAddressBtn = document.getElementById('cancelAddressBtn');
+        const saveAddressBtn = document.getElementById('saveAddressBtn');
+        const addressEditButtons = document.querySelector('.address-buttons .edit-mode-buttons');
 
-                if (!name || !email) {
-                    showAlert('Vui lòng điền đầy đủ thông tin bắt buộc', 'danger');
+        const displayAddressSection = document.getElementById('displayAddressSection');
+        const editAddressSection = document.getElementById('editAddressSection');
+
+        // Personal info fields
+        const nameField = document.getElementById('Name');
+        const emailField = document.getElementById('Email');
+        const phoneField = document.getElementById('Phone');
+
+        // Personal info button handlers
+        if (editPersonalInfoBtn) {
+            editPersonalInfoBtn.addEventListener('click', function () {
+                // Hide edit button, show cancel and save buttons
+                editPersonalInfoBtn.style.display = 'none';
+                personalInfoEditButtons.style.display = 'flex';
+
+                // Enable fields
+                nameField.disabled = false;
+                phoneField.disabled = false;
+
+                // Focus on the first field
+                nameField.focus();
+            });
+        }
+
+        if (cancelPersonalInfoBtn) {
+            cancelPersonalInfoBtn.addEventListener('click', function () {
+                // Show edit button, hide cancel and save buttons
+                editPersonalInfoBtn.style.display = 'block';
+                personalInfoEditButtons.style.display = 'none';
+
+                // Disable fields and reset values
+                nameField.disabled = true;
+                phoneField.disabled = true;
+                nameField.value = '<?php echo htmlspecialchars($user['Name'] ?? ''); ?>';
+                phoneField.value = '<?php echo htmlspecialchars($user['Phone'] ?? ''); ?>';
+            });
+        }
+
+        if (savePersonalInfoBtn) {
+            savePersonalInfoBtn.addEventListener('click', function () {
+                // Validate and save personal info
+                const name = nameField.value.trim();
+                const phone = phoneField.value.trim();
+
+                if (!name) {
+                    showAlert('Vui lòng nhập họ tên của bạn', 'danger');
                     return;
                 }
 
-                // Here you would normally send the data to the server
-                // For demonstration, we'll just show a success message
+                if (!phone) {
+                    showAlert('Vui lòng nhập số điện thoại', 'danger');
+                    return;
+                }
 
-                // Simulate AJAX request
-                setTimeout(() => {
-                    // This would be replaced with actual AJAX call:
-                    /*
-                    fetch('/update-account', {
-                        method: 'POST',
-                        body: new FormData(accountForm),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showAlert('Thông tin đã được cập nhật thành công!', 'success');
-                        } else {
-                            showAlert(data.message || 'Có lỗi xảy ra khi cập nhật thông tin', 'danger');
-                        }
-                    })
-                    .catch(error => {
-                        showAlert('Có lỗi xảy ra khi cập nhật thông tin', 'danger');
-                    });
-                    */
+                // Create form data
+                const formData = new FormData();
+                formData.append('Name', name);
+                formData.append('Phone', phone);
 
-                    // Show success message (for demo)
-                    showAlert('Thông tin đã được cập nhật thành công!', 'success');
-                }, 800);
+                // Submit the form
+                submitPersonalInfoForm(formData, 'personal');
             });
+        }
+
+        // Address button handlers
+        if (changeAddressBtn) {
+            changeAddressBtn.addEventListener('click', function () {
+                displayAddressSection.style.display = 'none';
+                editAddressSection.style.display = 'block';
+            });
+        }
+
+        if (cancelAddressBtn) {
+            cancelAddressBtn.addEventListener('click', function () {
+                displayAddressSection.style.display = 'block';
+                editAddressSection.style.display = 'none';
+
+                // Reset address fields
+                document.getElementById('Address').value = '<?php echo htmlspecialchars($user['Address'] ?? ''); ?>';
+                document.getElementById('City').value = '<?php echo htmlspecialchars($user['City'] ?? ''); ?>';
+                document.getElementById('District').value = '<?php echo htmlspecialchars($user['District'] ?? ''); ?>';
+                document.getElementById('Ward').value = '<?php echo htmlspecialchars($user['Ward'] ?? ''); ?>';
+            });
+        }
+
+        if (saveAddressBtn) {
+            saveAddressBtn.addEventListener('click', function () {
+                // Validate and save address
+                const address = document.getElementById('Address').value.trim();
+                const city = document.getElementById('City').value.trim();
+                const district = document.getElementById('District').value.trim();
+                const ward = document.getElementById('Ward').value.trim();
+
+                // Validate all address fields
+                if (!address) {
+                    showAlert('Vui lòng nhập địa chỉ chi tiết', 'danger');
+                    return;
+                }
+
+                if (!city) {
+                    showAlert('Vui lòng nhập Tỉnh/Thành phố', 'danger');
+                    return;
+                }
+
+                if (!district) {
+                    showAlert('Vui lòng nhập Quận/Huyện', 'danger');
+                    return;
+                }
+
+                if (!ward) {
+                    showAlert('Vui lòng nhập Phường/Xã', 'danger');
+                    return;
+                }
+
+                // Create form data only with address fields
+                const formData = new FormData();
+                formData.append('Address', address);
+                formData.append('City', city);
+                formData.append('District', district);
+                formData.append('Ward', ward);
+                formData.append('update_type', 'address'); // Add a flag to indicate this is an address update
+
+                // Submit the form
+                submitAddressForm(formData);
+            });
+        }
+
+        // Function to submit address form data
+        function submitAddressForm(formData) {
+            // Show loading state
+            const saveBtn = saveAddressBtn;
+            const originalBtnText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang lưu...';
+            saveBtn.disabled = true;
+
+            // Submit the form to the endpoint
+            fetch('/my-account/update', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Restore button state
+                    saveBtn.innerHTML = originalBtnText;
+                    saveBtn.disabled = false;
+
+                    if (data.success) {
+                        showAlert('Địa chỉ đã được cập nhật thành công!', 'success');
+
+                        // Switch back to view mode for address
+                        displayAddressSection.style.display = 'block';
+                        editAddressSection.style.display = 'none';
+
+                        // Get the new address values
+                        const address = document.getElementById('Address').value.trim();
+                        const city = document.getElementById('City').value.trim();
+                        const district = document.getElementById('District').value.trim();
+                        const ward = document.getElementById('Ward').value.trim();
+
+                        // Update the displayed address
+                        const fullAddress = [];
+                        if (address) fullAddress.push(address);
+                        if (ward) fullAddress.push(ward);
+                        if (district) fullAddress.push(district);
+                        if (city) fullAddress.push(city);
+
+                        const combinedAddress = fullAddress.join(', ');
+
+                        // Update the display or create it if not exists
+                        let addressDisplay = document.querySelector('#displayAddressSection .card-body p');
+
+                        if (addressDisplay) {
+                            addressDisplay.innerHTML = `<i class="fas fa-map-marker-alt me-2 text-danger"></i> ${combinedAddress}`;
+                        } else {
+                            // Create new content if it was an empty address before
+                            const cardBody = document.querySelector('#displayAddressSection .card-body');
+                            if (cardBody) {
+                                cardBody.innerHTML = `<p class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i> ${combinedAddress}</p>`;
+                            }
+                        }
+                    } else {
+                        showAlert(data.message || 'Có lỗi xảy ra khi cập nhật địa chỉ', 'danger');
+                    }
+                })
+                .catch(error => {
+                    // Restore button state
+                    saveBtn.innerHTML = originalBtnText;
+                    saveBtn.disabled = false;
+                    showAlert('Có lỗi xảy ra khi kết nối đến máy chủ', 'danger');
+                    console.error('Error:', error);
+                });
+                // location.reload();
+        }
+
+        // Function to submit personal info form data
+        function submitPersonalInfoForm(formData, type) {
+            // Only handle personal info in this function now
+            if (type !== 'personal') {
+                console.error('Invalid form type');
+                return;
+            }
+
+            // Show loading state
+            const saveBtn = savePersonalInfoBtn;
+            const originalBtnText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang lưu...';
+            saveBtn.disabled = true;
+
+            // Add a flag to indicate this is a personal info update
+            formData.append('update_type', 'personal');
+
+            // Submit the form to the endpoint
+            fetch('/my-account/update', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Restore button state
+                    saveBtn.innerHTML = originalBtnText;
+                    saveBtn.disabled = false;
+
+                    if (data.success) {
+                        showAlert('Thông tin cá nhân đã được cập nhật thành công!', 'success');
+
+                        // Switch back to view mode for personal info
+                        editPersonalInfoBtn.style.display = 'block';
+                        personalInfoEditButtons.style.display = 'none';
+                        nameField.disabled = true;
+                        phoneField.disabled = true;
+                    } else {
+                        showAlert(data.message || 'Có lỗi xảy ra khi cập nhật thông tin cá nhân', 'danger');
+                    }
+                })
+                .catch(error => {
+                    // Restore button state
+                    saveBtn.innerHTML = originalBtnText;
+                    saveBtn.disabled = false;
+                    showAlert('Có lỗi xảy ra khi kết nối đến máy chủ', 'danger');
+                    console.error('Error:', error);
+                });
+                location.reload();
+        }
+
+        // Function to show alert messages
+        function showAlert(message, type = 'success') {
+            alertBox.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
+            alertBox.classList.add(`alert-${type}`);
+            alertMessage.textContent = message;
+            alertBox.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertBox.classList.add('d-none');
+            }, 5000);
         }
 
         // Handle sidebar logout confirmation
@@ -207,42 +496,6 @@
                 });
             });
         }
-
-        // Function to show alert messages
-        function showAlert(message, type = 'success') {
-            alertBox.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
-            alertBox.classList.add(`alert-${type}`);
-            alertMessage.textContent = message;
-            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Auto hide after 5 seconds
-            setTimeout(() => {
-                alertBox.classList.add('d-none');
-            }, 5000);
-        }
-
-        // Initialize any additional libraries or components
-        // You could add address selection dropdowns here
-
-        // Example of how you might load city/district/ward options dynamically
-        /*
-        function populateCities() {
-            fetch('/api/cities')
-                .then(response => response.json())
-                .then(data => {
-                    const citySelect = document.getElementById('city');
-                    data.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city.id;
-                        option.textContent = city.name;
-                        citySelect.appendChild(option);
-                    });
-                });
-        }
-        
-        // Call functions to load data
-        populateCities();
-        */
     });
 </script>
 
@@ -276,5 +529,11 @@
     .form-floating>.form-control:not(:placeholder-shown)~label {
         opacity: 0.65;
         transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    }
+
+    .personal-info-buttons .edit-mode-buttons,
+    .address-buttons .edit-mode-buttons {
+        display: flex;
+        align-items: center;
     }
 </style>

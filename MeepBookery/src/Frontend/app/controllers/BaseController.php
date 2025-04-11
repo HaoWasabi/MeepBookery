@@ -31,8 +31,6 @@ class BaseController
         }
         return $data;
     }
-
-    // Chuyển hướng
     protected function redirect($url)
     {
         header('Location: ' . $url);

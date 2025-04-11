@@ -4,6 +4,13 @@
         <div class="col-lg-12">
             <h1 class="order-title text-center mb-4">Lịch sử đơn hàng</h1>
         </div>
+
+        <!-- Filter Error Alert -->
+        <div id="filterErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+            <span id="filterErrorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <!-- Search & Filter -->
         <div class="order-filter-container mb-4">
             <div class="card shadow-sm">
@@ -18,44 +25,47 @@
                 </div>
                 <div id="filterCollapse" class="collapse show">
                     <div class="card-body">
-                        <form action="" method="GET" class="row g-3">
+                        <form id="orderFilterForm" action="/my-account/order-history" method="GET" class="row g-3">
                             <!-- Order ID -->
                             <div class="col-md-6 col-lg-3">
                                 <label for="orderId" class="form-label">Mã đơn hàng</label>
-                                <input type="text" class="form-control" id="orderId" name="order_id"
-                                    placeholder="Nhập mã đơn hàng">
+                                <input type="text" class="form-control" id="orderId" name="orderID"
+                                    placeholder="Nhập mã đơn hàng"
+                                    value="<?= isset($_GET['orderID']) ? htmlspecialchars($_GET['orderID']) : '' ?>">
                             </div>
 
                             <!-- Status Filter -->
                             <div class="col-md-6 col-lg-3">
                                 <label for="status" class="form-label">Trạng thái</label>
-                                <select class="form-select" id="status" name="status">
+                                <select class="form-select" id="status" name="Status">
                                     <option value="">Tất cả trạng thái</option>
-                                    <option value="pending">Chờ xác nhận</option>
-                                    <option value="confirmed">Đã xác nhận</option>
-                                    <!-- <option value="shipping">Đang giao hàng</option> -->
-                                    <option value="delivered">Đã giao hàng</option>
-                                    <option value="cancelled">Đã hủy</option>
+                                    <option value="pending" <?= (isset($_GET['Status']) && $_GET['Status'] === 'pending') ? 'selected' : '' ?>>Chờ xác nhận</option>
+                                    <option value="confirmed" <?= (isset($_GET['Status']) && $_GET['Status'] === 'confirmed') ? 'selected' : '' ?>>Đã xác nhận</option>
+                                    <option value="delivered_success" <?= (isset($_GET['Status']) && $_GET['Status'] === 'delivered_success') ? 'selected' : '' ?>>Đã giao hàng
+                                    </option>
+                                    <option value="canceled" <?= (isset($_GET['Status']) && $_GET['Status'] === 'canceled') ? 'selected' : '' ?>>Đã hủy</option>
                                 </select>
                             </div>
 
                             <!-- Date Range -->
                             <div class="col-md-6 col-lg-3">
                                 <label for="startDate" class="form-label">Từ ngày</label>
-                                <input type="date" class="form-control" id="startDate" name="start_date">
+                                <input type="date" class="form-control" id="startDate" name="startDate"
+                                    value="<?= isset($_GET['startDate']) ? htmlspecialchars($_GET['startDate']) : date('Y-m-d', strtotime('-30 days')) ?>">
                             </div>
 
                             <div class="col-md-6 col-lg-3">
                                 <label for="endDate" class="form-label">Đến ngày</label>
-                                <input type="date" class="form-control" id="endDate" name="end_date">
+                                <input type="date" class="form-control" id="endDate" name="endDate"
+                                    value="<?= isset($_GET['endDate']) ? htmlspecialchars($_GET['endDate']) : date('Y-m-d') ?>">
                             </div>
 
                             <!-- Submit Button -->
                             <div class="col-12 text-end">
-                                <button type="reset" class="btn btn-outline-secondary me-2">
+                                <a href="/my-account/order-history" class="btn btn-outline-secondary me-2">
                                     <i class="fas fa-redo-alt me-1"></i> Đặt lại
-                                </button>
-                                <button type="submit" class="btn btn-danger">
+                                </a>
+                                <button type="submit" class="btn btn-danger" id="filterSubmitBtn">
                                     <i class="fas fa-search me-1"></i> Tìm kiếm
                                 </button>
                             </div>
@@ -68,7 +78,19 @@
         <!-- Orders Table -->
         <div class="card shadow-sm">
             <div class="card-body">
-                <?php if (!empty($orders)): ?>
+                <?php
+                // No orders found
+                if (empty($orders)) {
+                    echo '<div class="empty-orders">
+                        <img src="../../img/empty-order.jpg" alt="Không tìm thấy đơn hàng" class="img-fluid">
+                        <h4>Không tìm thấy đơn hàng nào</h4>
+                        <p class="text-muted">Hãy thử sử dụng tiêu chí tìm kiếm khác hoặc tiếp tục mua sắm.</p>
+                        <a href="/shop" class="btn btn-danger mt-3">
+                            <i class="fas fa-shopping-cart me-2"></i> Mua sắm ngay
+                        </a>
+                    </div>';
+                } else {
+                    ?>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped">
                             <thead class="table-light">
@@ -77,95 +99,123 @@
                                     <th>Ngày đặt</th>
                                     <th>Trạng thái</th>
                                     <th>Tổng tiền</th>
-                                    <th>Phương thức thanh toán</th>
                                     <th>Địa chỉ giao hàng</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <?php foreach ($orders as $order): ?>
-                                    <tr>
-                                        <td>#<?php echo $order['id']; ?></td>
-                                        <td><?php echo date('d/m/Y', strtotime($order['order_date'])); ?></td>
-                                        <td>
-                                            <?php
-                                            $statusClass = '';
-                                            $statusText = '';
-
-                                            switch ($order['status']) {
-                                                case 'pending':
-                                                    $statusClass = 'warning';
-                                                    $statusText = 'Chờ xác nhận';
-                                                    break;
-                                                case 'confirmed':
-                                                    $statusClass = 'info';
-                                                    $statusText = 'Đã xác nhận';
-                                                    break;
-                                                /* case 'shipping':
-                                                    $statusClass = 'primary';
-                                                    $statusText = 'Đang giao hàng';
-                                                    break; */
-                                                case 'delivered_success':
-                                                    $statusClass = 'success';
-                                                    $statusText = 'Đã giao hàng';
-                                                    break;
-                                                case 'canceled':
-                                                    $statusClass = 'danger';
-                                                    $statusText = 'Đã hủy';
-                                                    break;
-                                                default:
-                                                    $statusClass = 'secondary';
-                                                    $statusText = 'Không xác định';
-                                            }
-                                            ?>
-                                            <span class="badge bg-<?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
-                                        </td>
-                                        <td><?php echo number_format(str_replace('.', '', $order['total_amount']), 0, ',', '.'); ?>đ
-                                        </td>
-                                        <td><?php echo $order['payment_method']; ?></td>
-                                        <td>
-                                            <?php echo $order['address'] . ', ' . $order['ward'] . ', ' . $order['district'] . ', ' . $order['city']; ?>
-                                        </td>
-                                        <td>
-                                            <a href="/order-detail?id=<?= urlencode($order['id']) ?>"
-                                                class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i> Chi tiết
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                            <tbody id="orderTableBody">
+                                <!-- Orders will be populated by PaginationJS -->
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Pagination -->
-                    <nav aria-label="Page navigation" class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                    <i class="fas fa-angle-left"></i>
-                                </a>
-                            </li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">
-                                    <i class="fas fa-angle-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                <?php else: ?>
-                    <div class="text-center">
-                        <img src="../../img/empty-order.jpg" alt="Empty Orders" class="img-fluid" style="max-width: 20%;">
-                        <h4>Bạn chưa có đơn hàng nào</h4>
-                        <p class="text-muted">Hãy khám phá các sản phẩm của chúng tôi và đặt hàng ngay!</p>
-                        <a href="/shop" class="btn btn-danger mt-3">
-                            <i class="fas fa-shopping-cart me-2"></i> Mua sắm ngay
-                        </a>
-                    </div>
-                <?php endif; ?>
+                    <!-- Pagination container -->
+                    <div id="orderPagination" class="d-flex justify-content-center mt-4"></div>
+
+                    <?php
+                    // Prepare orders data for JavaScript
+                    $ordersJson = json_encode($orders);
+                    ?>
+
+                    <script>
+                        // Order data from PHP
+                        const orderData = <?= $ordersJson ?>;
+
+                        // Render a single order row
+                        function renderOrderRow(order) {
+                            // Determine status display
+                            let statusClass = '';
+                            let statusText = '';
+
+                            switch (order.Status) {
+                                case 'pending':
+                                    statusClass = 'warning';
+                                    statusText = 'Chờ xác nhận';
+                                    break;
+                                case 'confirmed':
+                                    statusClass = 'info';
+                                    statusText = 'Đã xác nhận';
+                                    break;
+                                case 'delivered_success':
+                                    statusClass = 'success';
+                                    statusText = 'Đã giao hàng';
+                                    break;
+                                case 'canceled':
+                                    statusClass = 'danger';
+                                    statusText = 'Đã hủy';
+                                    break;
+                                default:
+                                    statusClass = 'secondary';
+                                    statusText = 'Không xác định';
+                            }
+
+                            // Format date
+                            const orderDate = new Date(order.OrderDate);
+                            const formattedDate = orderDate.toLocaleDateString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+
+                            // Format currency
+                            const formattedAmount = new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND',
+                                minimumFractionDigits: 0
+                            }).format(order.TotalAmount);
+
+                            // Combine address parts
+                            const addressParts = [];
+                            if (order.Address) addressParts.push(order.Address);
+                            if (order.Ward) addressParts.push(order.Ward);
+                            if (order.District) addressParts.push(order.District);
+                            if (order.City) addressParts.push(order.City);
+                            const fullAddress = addressParts.length > 0 ? addressParts.join(', ') : 'Không có';
+
+                            return `
+                                <tr>
+                                    <td>#${order.OrderID}</td>
+                                    <td>${formattedDate}</td>
+                                    <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                                    <td>${formattedAmount}</td>
+                                    <td class="text-truncate" style="max-width: 250px;" title="${fullAddress}">
+                                        ${fullAddress}
+                                    </td>
+                                    <td>
+                                        <a href="/my-account/order-history/order-detail?id=${encodeURIComponent(order.OrderID)}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+
+                        // Initialize pagination when DOM is loaded
+                        document.addEventListener('DOMContentLoaded', function () {
+                            // Initialize pagination
+                            $('#orderPagination').pagination({
+                                dataSource: orderData,
+                                pageSize: 5,
+                                callback: function (data, pagination) {
+                                    // Render order rows
+                                    const html = data.map(renderOrderRow).join('');
+                                    $('#orderTableBody').html(html);
+                                },
+                                // Pagination configuration
+                                pageRange: 2,
+                                prevText: '<i class="fas fa-angle-left"></i>',
+                                nextText: '<i class="fas fa-angle-right"></i>',
+                                autoHidePrevious: true,
+                                autoHideNext: true,
+                                hideOnlyOnePage: true,
+                                className: 'paginationjs-theme-red'
+                            });
+                        });
+                    </script>
+                <?php } ?>
             </div>
         </div>
     </div>
@@ -212,7 +262,6 @@
     </div>
 </section>
 
-
 <style>
     .help-icon {
         font-size: 1.5rem;
@@ -230,48 +279,87 @@
         font-weight: 500;
     }
 
-    .pagination .page-link {
+    .empty-orders {
+        padding: 2rem 0;
+        text-align: center;
+    }
+
+    .empty-orders img {
+        max-width: 200px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* PaginationJS customization */
+    .paginationjs-theme-red .paginationjs-pages li.active>a {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .paginationjs-theme-red .paginationjs-pages li>a {
         color: #dc3545;
     }
 
-    .pagination .page-item.active .page-link {
-        background-color: #dc3545;
-        border-color: #dc3545;
-        color: white;
+    .paginationjs-theme-red .paginationjs-pages li>a:hover {
+        background-color: #f8d7da;
     }
 </style>
 
-<!-- Date Range Filter -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const orderIdInput = document.getElementById('orderId');
+        const filterForm = document.getElementById('orderFilterForm');
+        const filterErrorAlert = document.getElementById('filterErrorAlert');
+        const filterErrorMessage = document.getElementById('filterErrorMessage');
 
-        // Set default date range (last 30 days)
-        const today = new Date();
-        const thirtyDaysAgo = new Date(today);
-        thirtyDaysAgo.setDate(today.getDate() - 30);
+        // Form submission validation
+        filterForm.addEventListener('submit', function (e) {
+            // Reset any previous error
+            hideAlert();
 
-        // Format dates for input
-        document.getElementById('endDate').valueAsDate = today;
-        document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
+            // Trim orderID input
+            orderIdInput.value = orderIdInput.value.trim();
 
-        // Reset button handler
-        document.querySelector('button[type="reset"]').addEventListener('click', function() {
-            setTimeout(function() {
-                document.getElementById('endDate').valueAsDate = today;
-                document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
-            }, 10);
-        });
+            // Validate date range
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
 
-        // Cuộn đến phần order-history-section khi trang tải
-        $(document).ready(function() {
-            const windowHeight = $(window).height();
-            const $section = $('.order-history-section');
-
-            if ($section.length) {
-                $('html, body').animate({
-                    scrollTop: $section.offset().top - (windowHeight * 0.15)
-                }, 0);
+            if (startDate > endDate) {
+                e.preventDefault();
+                showAlert('Ngày bắt đầu không thể sau ngày kết thúc. Vui lòng chọn lại.');
+                return false;
             }
+
+            return true;
         });
+
+        // Function to show alert message
+        function showAlert(message) {
+            filterErrorMessage.textContent = message;
+            filterErrorAlert.classList.remove('d-none');
+
+            // Scroll to error message
+            filterErrorAlert.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+
+        // Function to hide alert message
+        function hideAlert() {
+            filterErrorAlert.classList.add('d-none');
+        }
+
+        // Initialize date inputs with defaults if they're empty
+        if (!startDateInput.value) {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            startDateInput.valueAsDate = thirtyDaysAgo;
+        }
+
+        if (!endDateInput.value) {
+            endDateInput.valueAsDate = new Date();
+        }
     });
 </script>

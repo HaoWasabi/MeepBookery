@@ -34,7 +34,7 @@
         padding: 0.75rem 0;
         margin-bottom: 0;
         background-color: transparent;
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
 
     .breadcrumb-item+.breadcrumb-item::before {
@@ -56,16 +56,5 @@
     .breadcrumb-item.active {
         color: #6c757d;
         font-weight: 500;
-    }
-
-    .error-page-container {
-        padding: 40px 0;
-        text-align: center;
-    }
-
-    .error-image {
-        max-width: 250px;
-        height: auto;
-        margin: 0 auto 20px;
     }
 </style>

@@ -22,7 +22,7 @@ class AuthController extends BaseController
         $user = $this->authModel->login($email, $password);
 
         // Kiểm tra nếu là tài khoản admin
-        if($context === 'client'){
+        if ($context === 'client') {
             if ($this->authModel->isAdmin($user)) {
                 $this->responseJson([
                     'success' => false,
@@ -67,6 +67,7 @@ class AuthController extends BaseController
         $data = $this->getRequestData();
         $fullName = $data['fullName'] ?? '';
         $email = $data['email'] ?? '';
+        $phone = $data['phone'] ?? '';
         $password = $data['password'] ?? '';
 
         // Kiểm tra email đã tồn tại chưa
@@ -78,8 +79,17 @@ class AuthController extends BaseController
             return;
         }
 
+        // Kiểm tra số điện thoại đã tồn tại chưa
+        if ($phone && $this->authModel->phoneExists($phone)) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Số điện thoại này đã được sử dụng, vui lòng nhập số khác'
+            ]);
+            return;
+        }
+
         // Đăng ký người dùng mới
-        $result = $this->authModel->register($fullName, $email, $password);
+        $result = $this->authModel->register($fullName, $email, $password, $phone);
 
         if ($result) {
             // Đăng nhập người dùng sau khi đăng ký thành công
@@ -103,7 +113,7 @@ class AuthController extends BaseController
         }
     }
 
-    public function logout($index = '/')
+    public function logout($redirectUrl = '/')
     {
         // Xóa tất cả dữ liệu session
         $_SESSION = array();
@@ -126,6 +136,6 @@ class AuthController extends BaseController
         session_destroy();
 
         // Chuyển hướng về trang chủ
-        $this->redirect($index);
+        $this->redirect($redirectUrl);
     }
 }
