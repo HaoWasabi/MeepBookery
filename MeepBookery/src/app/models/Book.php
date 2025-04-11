@@ -110,4 +110,31 @@ class Book
             return null;
         }
     }
+
+    // Thống kê sách bán chạy nhất kèm số lượt bán
+    public function getTopBestSellingBooks($limit = 5)
+    {
+        try {
+            $query = "
+            SELECT 
+                b.*, 
+                SUM(od.Quantity) AS TotalSold,
+                SUM(od.Quantity * od.Price) AS TotalRevenue
+            FROM OrderDetail od
+            INNER JOIN `Order` o ON od.OrderID = o.OrderID
+            INNER JOIN Book b ON od.ProductID = b.BookID
+            WHERE o.Status = 'delivered_success'
+            GROUP BY b.BookID
+            ORDER BY TotalSold DESC
+            LIMIT $limit
+            ";
+            $stmt = $this->conn->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi thống kê sách bán chạy: " . $e->getMessage());
+            return [];
+        }
+    }
+    
 }
+
