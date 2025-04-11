@@ -8,7 +8,7 @@ require_once "../app/controllers/ClientController.php";
 require_once "../app/controllers/AuthController.php";
 require_once "../app/controllers/CategoryController.php";
 require_once "../app/controllers/UserController.php";
-require_once "../app/controllers/AdminController.php";
+// require_once "../app/controllers/AdminController.php";
 
 $orderController = new OrderController();
 $statictisController = new StatisticsController();

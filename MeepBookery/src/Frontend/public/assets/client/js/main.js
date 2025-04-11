@@ -339,13 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     $('#shop-products-container').html(html);
 
                     // Scroll to shop section when changing pages
-                    if (pagination.pageNumber >= 1 && !isInitialPageLoad) {
+                    if (pagination.pageNumber >= 1 && !isInitialShopPageLoad) {
                         $('html, body').animate({
                             scrollTop: $('.shop-controls').offset().top - 120
                         }, 200);
                         // Update the flag after the first page load
                     }
-                    isInitialPageLoad = false;
+                    isInitialShopPageLoad = false;
                 }
             });
         }
