@@ -88,7 +88,10 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+    // Import the showToast function from util.js
+    import { showToast } from '/assets/client/js/util.js';
+
     // Get cart items container elements
     const cartTableBody = document.getElementById('cartTableBody');
     const emptyCartMessage = document.getElementById('emptyCartMessage');
@@ -116,24 +119,12 @@
             }
         }
 
-        // Show/hide empty cart message
-        if (cartItems.length == 0) {
-            emptyCartMessage.style.display = 'block';
-            cartItemsContainer.style.display = 'none';
-            clearCartButton.disabled = true;
-            checkoutButton.disabled = true;
-            document.getElementById('shoppingBtn').style.display = 'none';
-        } else {
-            emptyCartMessage.style.display = 'none';
-            cartItemsContainer.style.display = 'block';
-            clearCartButton.disabled = false;
-            checkoutButton.disabled = false;
+        // Calculate totals for cart items
+        let totalItems = 0;
+        let totalPrice = 0;
+        let cartItemsHtml = '';
 
-            // Generate cart items HTML
-            let html = '';
-            let totalItems = 0;
-            let totalPrice = 0;
-
+        if (cartItems.length > 0) {
             cartItems.forEach(item => {
                 // Find book details from allBooks array
                 const book = allBooks.find(b => b.BookID == item.id);
@@ -149,7 +140,7 @@
                     const stockWarning = book.Stock < 10 ?
                         `<div class="text-danger small">Chỉ còn ${book.Stock} sản phẩm</div>` : '';
 
-                    html += `
+                    cartItemsHtml += `
                     <tr data-id="${book.BookID}">
                         <td>
                             <a href="/product-detail?id=${book.BookID}">
@@ -191,13 +182,11 @@
                 }
             });
 
-            cartTableBody.innerHTML = html;
-
-            // Update summary
-            cartSummaryCount.textContent = `${totalItems} sản phẩm`;
-            subtotalElement.textContent = `${totalPrice.toLocaleString()} ₫`;
-            totalElement.textContent = `${totalPrice.toLocaleString()} ₫`;
+            cartTableBody.innerHTML = cartItemsHtml;
         }
+
+        // Update display based on cart state
+        resetCartInfo(totalItems, totalPrice);
     }
 
     // Event delegation for quantity buttons
@@ -243,10 +232,16 @@
             if (result.isConfirmed) {
                 // Clear cart in localStorage
                 localStorage.removeItem('cart');
+
+                // Reset the cart display to empty state
+                resetCartInfo(0, 0);
+
                 // Update cart UI
                 updateCartUI();
+
                 // Update global cart interface
                 window.updateCartInterface();
+
                 // Show success message
                 showToast('Đã xóa toàn bộ giỏ hàng', {
                     type: 'success',
@@ -489,6 +484,7 @@
             cartItemsContainer.style.display = 'block';
             clearCartButton.disabled = false;
             checkoutButton.disabled = false;
+            document.getElementById('shoppingBtn').style.display = 'block';
         }
     }
 

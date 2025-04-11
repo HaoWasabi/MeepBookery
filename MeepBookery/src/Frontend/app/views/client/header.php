@@ -129,7 +129,13 @@
                     }
                     ?>
                 </div>
-                <a href="" class="btn btn-danger cart-btn position-relative">
+                <?php
+                // Check if we are currently on the cart page or checkout page
+                $is_cart_page = ($_SERVER['REQUEST_URI'] === '/cart' || $_SERVER['REQUEST_URI'] === '/cart/checkout');
+                ?>
+                <a href="<?php echo $is_cart_page ? 'javascript:void(0)' : '/cart'; ?>"
+                    class="btn btn-danger cart-btn position-relative <?php echo $is_cart_page ? 'disabled opacity-75' : ''; ?>"
+                    <?php echo $is_cart_page ? 'aria-disabled="true" tabindex="-1"' : ''; ?>>
                     <div class="btn-icon">
                         <div class="cart-icon-wrapper">
                             <i class="fas fa-shopping-cart"></i>

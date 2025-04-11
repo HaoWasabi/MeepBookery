@@ -27,6 +27,18 @@ const swiper = new Swiper('.swiper-container', {
     speed: 1000,
 });
 
+// Ngăn việc truy cập cart offcanvas khi đang ở giỏ hàng hoặc trang thanh toán
+if (window.location.pathname === '/cart' || window.location.pathname === '/cart/checkout') {
+    const cartButton = document.querySelector('.cart-btn');
+    if (cartButton) {
+        cartButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Dùng để tránh việc cuộn trang lần đầuđầu
     let isInitialShopPageLoad = true;
