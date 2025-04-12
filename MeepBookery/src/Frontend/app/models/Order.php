@@ -18,14 +18,14 @@ class Order
     }
 
     // 1. Hàm tạo đơn hàng
-    public function createOrder($userId, $totalAmount, $addressId, $paymentMethodId)
+    public function createOrder($userId, $totalAmount, $addressId, $paymentMethodId, $time)
     {
         try {
             $stmt = $this->conn->prepare("
-            INSERT INTO `Order` (UserID, TotalAmount, AddressID, PaymentMethodID) 
-            VALUES (?, ?, ?, ?)
+            INSERT INTO `Order` (UserID, TotalAmount, AddressID, PaymentMethodID,OrderDate) 
+            VALUES (?, ?, ?, ?,?)
         ");
-            $stmt->execute([$userId, $totalAmount, $addressId, $paymentMethodId]);
+            $stmt->execute([$userId, $totalAmount, $addressId, $paymentMethodId, $time]);
             return $this->conn->lastInsertId();
         } catch (PDOException $e) {
             error_log("Lỗi tạo đơn hàng: " . $e->getMessage());

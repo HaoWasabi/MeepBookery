@@ -199,5 +199,14 @@
         </div>
     </div>
 </body>
+<script>
+    setTimeout(function() {
+        let toastEl = document.getElementById('liveToast');
+        if (toastEl) {
+            let toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+            toast.hide();
+        }
+    }, 3000);
+</script>
 
 </html>

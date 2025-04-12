@@ -156,6 +156,7 @@
                     <?php endforeach; ?>
                 </select>
             </div>
+            <input type="hidden" id="client_time" name="client_time">
             <button type="submit" class="btn btn-primary w-100 fw-bold py-3 rounded">✅ Xác Nhận Đặt Hàng</button>
         </form>
     </div>
@@ -172,6 +173,25 @@
             fields.querySelectorAll("input").forEach(function(input) {
                 input.setAttribute("required", "required");
             });
+        });
+
+        function getCurrentDateTime() {
+            const now = new Date();
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0
+            const day = String(now.getDate()).padStart(2, '0');
+
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+        // Khi submit form, gán thời gian máy tính vào input hidden
+        document.querySelector("form").addEventListener("submit", function() {
+            const timeField = document.getElementById("client_time");
+            timeField.value = getCurrentDateTime();
         });
     </script>
 </body>

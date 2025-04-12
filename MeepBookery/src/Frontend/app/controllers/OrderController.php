@@ -103,9 +103,10 @@ class OrderController
         $totalAmount = array_reduce($_SESSION['cart'], function ($sum, $item) {
             return $sum + ($item['quantity'] * $item['price']);
         }, 0);
-
+        $clientTime = $_POST['client_time'] ?? null;
+        var_dump($clientTime);
         // Lưu đơn hàng vào database
-        $orderId = $this->orderModel->createOrder($userId, $totalAmount, $addressId, $paymentMethodId);
+        $orderId = $this->orderModel->createOrder($userId, $totalAmount, $addressId, $paymentMethodId, $clientTime);
         if (!$orderId) {
             die("Lỗi khi tạo đơn hàng!");
         }
