@@ -4,7 +4,7 @@ class Database
     private $host = "localhost";
     private $dbname = "bookstoredb";
     private $username = "root";
-    private $password = "";
+    private $password = "root";
     private $conn;
     private static $instance = null;
 
