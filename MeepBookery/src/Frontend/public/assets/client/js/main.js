@@ -101,39 +101,39 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('featured-books-container').innerHTML = bestSellerBooksHtml;
 
         // Khởi tạo phân trang với paginationjs
-        const availableBooks = allBooks.filter(book => book.Status === 1);
+        // const availableBooks = allBooks.filter(book => book.Status === 1);
 
-        $('#pagination-container').pagination({
-            dataSource: availableBooks,
-            pageSize: 8,
-            autoHidePrevious: true,
-            autoHideNext: true,
-            hideOnlyOnePage: true,
-            prevText: '<i class="fas fa-chevron-left"></i>',
-            nextText: '<i class="fas fa-chevron-right"></i>',
-            pageRange: 2,
-            callback: (data, pagination) => {
-                // Render HTML
-                let html = '';
+        // $('#pagination-container').pagination({
+        //     dataSource: availableBooks,
+        //     pageSize: 8,
+        //     autoHidePrevious: true,
+        //     autoHideNext: true,
+        //     hideOnlyOnePage: true,
+        //     prevText: '<i class="fas fa-chevron-left"></i>',
+        //     nextText: '<i class="fas fa-chevron-right"></i>',
+        //     pageRange: 2,
+        //     callback: (data, pagination) => {
+        //         // Render HTML
+        //         let html = '';
 
-                data.forEach(book => {
-                    html += createBookCard(book);
-                });
+        //         data.forEach(book => {
+        //             html += createBookCard(book);
+        //         });
 
-                $('#books-container').html(html);
+        //         $('#books-container').html(html);
 
-                // Scroll to pagination position
-                if (pagination.pageNumber >= 1 && !isInitialHomePageLoad) {
-                    $('html, body').animate({
-                        scrollTop: $('#books-container').offset().top - 200
-                    }, 200);
-                }
+        //         // Scroll to pagination position
+        //         if (pagination.pageNumber >= 1 && !isInitialHomePageLoad) {
+        //             $('html, body').animate({
+        //                 scrollTop: $('#books-container').offset().top - 200
+        //             }, 200);
+        //         }
 
-                // Update the flag after the first page load
-                isInitialHomePageLoad = false;
-            },
-            locator: 'items'
-        });
+        //         // Update the flag after the first page load
+        //         isInitialHomePageLoad = false;
+        //     },
+        //     locator: 'items'
+        // });
 
     }
     // Kiểm tra nếu đang ở trang shop

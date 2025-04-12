@@ -306,13 +306,13 @@ body {
     font-weight: 600;
     color: #333;
     margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
-    height: 2.6em;
+    /* display: -webkit-box; */
+    /* -webkit-line-clamp: 2; */
+    /* -webkit-box-orient: vertical; */
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
+    /* line-height: 1.3; */
+    /* height: 2.6em; */
 }
 
 .book-title a {
@@ -571,8 +571,9 @@ body {
 
 /* Swiper Slider Styling */
 .swiper-container {
-    width: 100%;
+    width: 85%;
     height: auto;
+    margin: 0 auto;
 
     margin-bottom: 30px;
     position: relative;

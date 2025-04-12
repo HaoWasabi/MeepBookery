@@ -61,7 +61,7 @@
                             </div>
 
                             <button type="button" id="apply-filter" class="btn btn-danger w-100">
-                                <i class="fas fa-filter me-2"></i> Lọc sản phẩm
+                                <i class="fas fa-filter me-2"></i> Lọc
                             </button>
                         </form>
                     </div>
