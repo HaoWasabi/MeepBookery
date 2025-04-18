@@ -24,9 +24,9 @@ export const createBookCard = (book) => {
 
                     <!-- Hover action buttons -->
                     <div class="book-hover-actions">
-                        <button class="action-btn buy-now-btn" data-book-id="${book.BookID}" ${isOutOfStock ? 'disabled' : ''} title="Mua ngay">
-                            <span class="btn-icon"><i class="fas fa-bolt"></i></span>
-                            <span class="btn-text">Chi tiết</span>
+                        <button class="action-btn buy-now-btn" data-book-id="${book.BookID}" ${isOutOfStock ? 'disabled' : ''} title="Xem chi tiết">
+                            <span class="btn-icon"><i class="fa-solid fa-eyes"></i></span>
+                            <span class="btn-text">Xem chi tiết</span>
                         </button>
                         <button class="action-btn add-cart-btn" data-book-id="${book.BookID}" ${isOutOfStock ? 'disabled' : ''} title="Thêm vào giỏ hàng">
                             <span class="btn-icon"><i class="fas fa-cart-plus"></i></span>

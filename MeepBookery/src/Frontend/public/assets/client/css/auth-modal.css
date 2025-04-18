@@ -93,7 +93,6 @@
     border-color: #e74c3c;
     box-shadow: 0 0 0 0.15rem rgba(231, 76, 60, 0.25);
     background-color: #fff;
-    /* transform: translateY(-2px); */
 }
 
 .modal .form-label {
@@ -168,7 +167,6 @@
 }
 
 .modal .btn-danger:hover .btn-icon {
-    /* transform: translateX(3px); */
     opacity: 1;
 }
 
@@ -234,7 +232,6 @@
 
 .modal a.text-danger:hover {
     text-decoration: none;
-    /* transform: translateX(3px); */
 }
 
 .password-toggle {

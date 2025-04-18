@@ -1,12 +1,23 @@
 import { showSweetAlert } from "./util.js";
 
 $(document).ready(() => {
-
-
     // Re-initialize AOS when modal opens
     $('#authModal').on('shown.bs.modal', () => {
         AOS.refresh();
     });
+
+    // Khi modal mở, hiển thị tab tương ứng
+    document.querySelectorAll('[data-auth-action]').forEach(link => {
+        link.addEventListener('click', function () {
+            const tabToActivate = this.getAttribute('data-auth-action') === 'login' ? '#login-tab' : '#register-tab';
+            const tabTrigger = document.querySelector(tabToActivate);
+            if (tabTrigger) {
+                const tabInstance = new bootstrap.Tab(tabTrigger);
+                tabInstance.show();
+            }
+        });
+    });
+
 
     // Theo dõi tương tác với form
     let loginFormInteracted = false;
@@ -378,7 +389,7 @@ $(document).ready(() => {
         btnIcon.html('<i class="fas fa-spinner fa-spin"></i>');
 
         $.ajax({
-            url: '/login',
+            url: '/auth/login',
             type: 'POST',
             data: {
                 email: $('#loginEmail').val(),
@@ -390,22 +401,41 @@ $(document).ready(() => {
                     // Đóng modal
                     $('#authModal').modal('hide');
 
-                    // Hiển thị thông báo thành công với SweetAlert
-                    showSweetAlert(response.message, {
-                        icon: 'success',
-                        title: 'Đăng nhập thành công',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        // window.location.href = '/';
-                        location.reload();
-                    });
+                    // Check if there's a cart cookie to sync
+                    if (response.has_cart_cookie) {
+                        // Fetch cart data from cookie
+                        $.ajax({
+                            url: '/auth/get-cart-cookie',
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (cookieData) {
+                                if (cookieData.success && cookieData.cart) {
+                                    // Update localStorage cart with cookie data
+                                    localStorage.setItem('cart', JSON.stringify(cookieData.cart));
+
+                                    // Update cart interface if function exists
+                                    if (typeof window.updateCartInterface === 'function') {
+                                        window.updateCartInterface();
+                                    }
+                                }
+                                // Reload page after cart sync
+                                window.location.reload();
+                            },
+                            error: function () {
+                                // Still reload page even if cart sync fails
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        // No cart cookie, just reload the page
+                        window.location.reload();
+                    }
                 } else {
 
                     showSweetAlert(response.message, {
                         icon: 'error',
                         title: 'Đăng nhập thất bại',
-                        confirmButtonText: 'Đã hiểu'
+                        confirmButtonText: 'Thử lại'
                     });
 
                     // Reset button
@@ -457,7 +487,7 @@ $(document).ready(() => {
         btnIcon.html('<i class="fas fa-spinner fa-spin"></i>');
 
         $.ajax({
-            url: '/register',
+            url: '/auth/register',
             type: 'POST',
             data: {
                 fullName: $('#registerFullName').val(),
@@ -478,7 +508,6 @@ $(document).ready(() => {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {
-                        // Reload trang sau khi SweetAlert đóng
                         location.reload();
                     });
                 } else {

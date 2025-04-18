@@ -12,12 +12,13 @@ const removeDiacritics = (str) => {
 
 const initAutoNumericInput = (selector, withCurrency = false) => {
     const options = {
-        digitGroupSeparator: ',',
+        digitGroupSeparator: '.',
+        decimalCharacter: ',',
         decimalPlaces: 0,
         minimumValue: "0",
         modifyValueOnWheel: false,
         allowDecimalPadding: false,
-        watchExternalChanges: true, // Quan sát khi input thay đổi ngoài AutoNumeric
+        watchExternalChanges: true,
     };
 
     if (withCurrency) {
