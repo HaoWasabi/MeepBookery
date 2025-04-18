@@ -2,74 +2,129 @@
 
 define('ROOT_PATH', dirname(__DIR__));
 
+require_once "../app/controllers/CategoryController.php";
 require_once "../app/controllers/OrderController.php";
-require_once "../app/controllers/StaticController.php";
-require_once "../app/controllers/ClientController.php";
+require_once "../app/controllers/StatisticsController.php";
 require_once "../app/controllers/AuthController.php";
 require_once "../app/controllers/CategoryController.php";
 require_once "../app/controllers/UserController.php";
-// require_once "../app/controllers/AdminController.php";
+require_once "../app/controllers/ClientController.php";
+require_once "../app/controllers/AdminController.php";
+require_once "../app/controllers/BookController.php";
 
 $orderController = new OrderController();
+$bookController = new BookController();
 $statictisController = new StatisticsController();
-$authController = new AuthController();
-$clientController = new ClientController();
+$categoryController = new CategoryController();
 $userController = new UserController();
+
+$authController = new AuthController();
+
+$clientController = new ClientController();
+$adminController = new AdminController();
 
 // Parse the URL path
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-
-// Admin routes
-// elseif ($_SERVER["REQUEST_URI"] === "/orders") {
-//     $orderController->index();
-// } elseif ($_SERVER["REQUEST_URI"] === "/orders/create" && $_SERVER["REQUEST_METHOD"] === "POST") {
-//     $orderController->create();
-// } elseif ($_SERVER["REQUEST_URI"] === "/orders/update-status" && $_SERVER["REQUEST_METHOD"] === "POST") {
-//     $orderController->updateStatus();
-// } elseif (strpos($_SERVER["REQUEST_URI"], "/orders/filter") === 0) {
-//     $orderController->filterOrders();
-// } elseif ($_SERVER["REQUEST_URI"] === "/statistic") {
-//     $statictisController->index();
-// } elseif ($_SERVER["REQUEST_URI"] === "/statistic/result") {
-//     $statictisController->showStatistics();
-// } elseif (strpos($_SERVER["REQUEST_URI"], "/statistic/viewOrders") === 0) {
-//     $statictisController->viewOrder();
-// } elseif (strpos($_SERVER["REQUEST_URI"], "/satictic/orderdetail") === 0) {
-//     $orderController->getOrderDetailById();
-// }
-
 // Auth routes
-if ($requestUri === "/admin/login") {
-    $authController->login('admin');
-} elseif ($requestUri === "/login") {
-    $authController->login('client');
-} elseif ($requestUri === "/register") {
+if ($requestUri === "/admin/auth/login" || $requestUri === "/auth/login") {
+    $authController->login();
+} elseif ($requestUri === "/auth/register") {
     $authController->register();
-} elseif ($requestUri === "/admin/logout") {
-    $authController->logout('/admin/auth');
-} elseif ($requestUri === "/logout") {
-    $authController->logout('/');
+} elseif ($requestUri === "/admin/logout" || $requestUri === "/logout") {
+    $authController->logout();
+} elseif ($requestUri === "/auth/get-cart-cookie") {
+    $authController->getCartFromCookie();
 }
-// elseif ($_SERVER["REQUEST_URI"] === "/checkout") {
-//     $orderController->checkout();
-// } 
-elseif ($_SERVER["REQUEST_URI"] === "/process_checkout" && $_SERVER["REQUEST_METHOD"] === "POST") {
+// Category Controller routes
+else if ($requestUri === "/api/categories/add") {
+    $categoryController->addCategory();
+} elseif ($requestUri === "/api/categories/update") {
+    $categoryController->updateCategory();
+}
+// Order Controller routes
+elseif ($requestUri === "/api/orders/filtered") {
+    $orderController->getFilteredOrders();
+} elseif ($requestUri === "/api/orders/recentOrders") {
+    $orderController->getRecentOrders();
+}
+// Order processing routes
+elseif ($_SERVER["REQUEST_URI"] === "/process_checkout") {
     $orderController->processCheckout();
-} elseif ($requestUri === "/orders/update-status" && $_SERVER["REQUEST_METHOD"] === "POST") {
+} elseif ($requestUri === "/api/orders/update-status") {
     $orderController->updateStatus();
 }
-// elseif (strpos($_SERVER["REQUEST_URI"], "/orderCustomer") === 0) {
-//     $orderController->getOrdersByCustomerId();
-// } elseif ($_SERVER["REQUEST_URI"] === "/category"  && $_SERVER["REQUEST_METHOD"] === "GET") {
-//     $categoryController->index();
-// } elseif (strpos($_SERVER["REQUEST_URI"], "/category/delete") === 0) {
-//     $categoryController->delete();
-// } elseif ($_SERVER["REQUEST_URI"] === "/category/create") {
-//     $categoryController->create();
-// } elseif (strpos($_SERVER["REQUEST_URI"], "/category/edit") === 0) {
-//     $categoryController->edit();
+// Statistics Controller routes
+elseif ($requestUri === "/api/statistics/revenue-by-year") {
+    $statictisController->getRevenueByYear();
+} elseif ($requestUri === "/api/statistics/top-customers") {
+    $statictisController->getTopCustomers();
 
+} elseif ($requestUri === "/api/statistics/orders-by-category") {
+    $statictisController->getOrdersByCategory();
+}
+// Book Controller routes
+elseif ($requestUri === "/api/products/filtered") {
+    $bookController->getFilteredBooks();
+} elseif ($requestUri === "/api/products/add") {
+    $bookController->createBook();
+} elseif ($requestUri === "/api/products/update") {
+    $bookController->updateBook();
+} elseif ($requestUri === "/api/products/delete") {
+    $bookController->deleteProduct();
+}
+
+// User Controller routes
+elseif ($requestUri === "/api/users/add") {
+    $userController->addUser();
+} elseif ($requestUri === "/api/users/toggle-status") {
+    $userController->toggleUserStatus();
+} elseif ($requestUri === "/api/users/update") {
+    $userController->updateUser();
+}
+
+// Admin routes
+else if ($requestUri === "/admin/login") {
+    $adminController->login();
+} elseif ($requestUri === "/admin/dashboard") {
+    $adminController->dashboard();
+}
+// Admin products routes
+elseif ($requestUri === "/admin/products") {
+    $adminController->products();
+} elseif ($requestUri === "/admin/products/add") {
+    $adminController->addProduct();
+} elseif ($requestUri === "/admin/products/product-detail") {
+    $adminController->viewProduct();
+}
+// Admin categories routes
+elseif ($requestUri === "/admin/categories") {
+    $adminController->categories();
+} elseif ($requestUri === "/admin/categories/add") {
+    $adminController->addCategory();
+} elseif ($requestUri === "/admin/categories/category") {
+    $adminController->viewCategory();
+}
+// Admin orders routes
+elseif ($requestUri === "/admin/orders") {
+    $adminController->orders();
+} elseif ($requestUri === "/admin/orders/order-detail") {
+    $adminController->viewOrder();
+}
+// Admin users routes
+elseif ($requestUri === "/admin/users") {
+    $adminController->users();
+} elseif ($requestUri === "/admin/users/add") {
+    $adminController->addUser();
+} elseif ($requestUri === "/admin/users/user-info") {
+    $adminController->viewUser();
+}
+// Admin statistics routes
+elseif ($requestUri === "/admin/top-customers") {
+    $adminController->topCustomers();
+} elseif (strpos($requestUri, "/admin") === 0) {
+    $adminController->notFound();
+}
 
 // Client Routes
 elseif ($requestUri === "/" || $requestUri === "/index") {
