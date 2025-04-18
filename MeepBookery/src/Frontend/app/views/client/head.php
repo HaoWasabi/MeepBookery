@@ -77,12 +77,12 @@
 <!-- Custom JS files -->
 <script type="module" src="../../assets/client/js/main.js"></script>
 
-<?php if (!isset($_SESSION['UserID'])): ?>
-    <script type="module" src="../../assets/client/js/auth.js"></script>
-    <link rel="stylesheet" href="../../assets/client/css/auth-modal.css" />
-<?php endif; ?>
+<!-- < ?php if (!isset($_SESSION['UserID'])): ?> -->
+<script type="module" src="../../assets/client/js/auth.js"></script>
+<link rel="stylesheet" href="../../assets/client/css/auth-modal.css" />
+<!-- < ?php endif; ?> -->
 
 <script>
-    let allBooks = <?php echo json_encode($books); ?>;
     let bestSellerBooks = <?php echo json_encode($bestSellerBooks); ?>;
+    let allBooks = <?php echo json_encode($books); ?>;
 </script>

@@ -7,5 +7,8 @@
         <a href="/" class="btn btn-danger">
             <i class="fas fa-home me-2"></i>Về trang chủ
         </a>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
     </div>
 </div>

@@ -79,7 +79,7 @@
                     </div>
                     <div class="d-grid gap-2">
                         <button id="checkoutButton" class="btn btn-danger btn-lg">
-                            <i class="fas fa-credit-card me-2"></i>Tiến hành thanh toán
+                            <i class="fas fa-credit-card me-2"></i>Thanh toán
                         </button>
                     </div>
                 </div>
@@ -90,7 +90,9 @@
 
 <script type="module">
     // Import the showToast function from util.js
-    import { showToast } from '/assets/client/js/util.js';
+    import {
+        showToast
+    } from '/assets/client/js/util.js';
 
     // Get cart items container elements
     const cartTableBody = document.getElementById('cartTableBody');

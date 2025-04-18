@@ -146,10 +146,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const minPriceInput = initAutoNumericInput('#min-price');
         const maxPriceInput = initAutoNumericInput('#max-price');
 
-        // Get max price from all books
-        const prices = allBooks.map(book => parseFloat((book.Price)));
-        const minPrice = 0;
-        const maxPrice = Math.max(...prices);
+        let prices = allBooks.map(book => parseFloat((book.Price)));
+        let minPrice = 0;
+        let maxPrice = Math.max(...prices);
+
+        // Function to fetch the latest product data before searching
+        const fetchLatestProductData = async () => {
+            try {
+                // Fetch dữ liệu
+                const response = await fetch('/api/products/filtered');
+                const data = await response.json();
+
+                if (data.success) {
+                    allBooks = data.data.books;
+
+                    // Cập nhật giá trị min/max từ dữ liệu mới
+                    prices = allBooks.map(book => parseFloat((book.Price)));
+                    maxPrice = Math.max(...prices);
+
+                    // Cập nhật range cho slider
+                    if (priceSlider && priceSlider.noUiSlider) {
+                        priceSlider.noUiSlider.updateOptions({
+                            range: {
+                                'min': minPrice,
+                                'max': maxPrice
+                            }
+                        });
+                    }
+
+                    // Cập nhật label hiển thị giá max
+                    if (priceMaxLabel) {
+                        priceMaxLabel.textContent = formatCurrency(maxPrice);
+                    }
+
+                    return true;
+                } else {
+                    console.error('Error fetching product data');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error fetching product data:', error);
+                return false;
+            }
+        };
 
         // Set initial values for inputs
         minPriceInput.set(minPrice);
@@ -233,17 +272,13 @@ document.addEventListener('DOMContentLoaded', () => {
         let filteredBooks = [...allBooks];
         const booksPerPage = 8;
 
+
         function applyFilters() {
             const searchTerm = document.getElementById('search-term').value.toLowerCase().trim();
             const selectedCategory = document.getElementById('category-filter').value;
-            const minPrice = parseFloat(minPriceInput.getNumber());
-            const maxPrice = parseFloat(maxPriceInput.getNumber());
+            const minPrice = parseFloat(minPriceInput.getNumber() || 0);
+            const currentMaxPrice = parseFloat(maxPriceInput.getNumber() || maxPrice);
             const sortBy = document.getElementById('sort-by').value;
-
-            // Get min and max price from all books for comparison
-            const prices = allBooks.map(book => parseFloat((book.Price)));
-            const initialMinPrice = 0;
-            const initialMaxPrice = Math.max(...prices);
 
             // Filter books
             filteredBooks = allBooks.filter(book => {
@@ -258,13 +293,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Filter by category
-                if (selectedCategory && book.Category !== selectedCategory) {
+                if (selectedCategory && book.CategoryID != selectedCategory) {
                     return false;
                 }
 
                 // Filter by price
                 const bookPrice = parseFloat((book.Price));
-                if (bookPrice < minPrice || bookPrice > maxPrice) {
+                if (bookPrice < minPrice || bookPrice > currentMaxPrice) {
                     return false;
                 }
                 return true;
@@ -293,23 +328,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
 
                 default:
-                    // Default sorting (no specific sort)
                     break;
             }
 
             // Show/hide clear filters button
             const clearFiltersBtn = document.getElementById('clear-filters');
-            if (searchTerm ||
+            const hasActiveFilters = searchTerm ||
                 selectedCategory ||
-                minPrice > initialMinPrice ||
-                maxPrice < initialMaxPrice ||
-                sortBy !== 'default') {
-                clearFiltersBtn.style.display = 'inline-block';
-            } else {
-                clearFiltersBtn.style.display = 'none';
-            }
+                minPrice > 0 ||
+                currentMaxPrice < maxPrice ||
+                sortBy !== 'default';
 
-            // Update result count
+            clearFiltersBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
+
             document.getElementById('result-count').textContent = `${filteredBooks.length} sản phẩm`;
 
             // Reinitialize pagination
@@ -364,11 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cập nhật giá trị slider khi thay đổi giá trị input
         const updateSlider = (minValue, maxValue) => {
-            if (minValue === undefined || maxValue === undefined) {
-                minValue = parseFloat(minPriceInput.getNumber()) || 0;
-                maxValue = parseFloat(maxPriceInput.getNumber()) || maxPrice;
-            }
-
             if (priceSlider && priceSlider.noUiSlider) {
                 priceSlider.noUiSlider.set([minValue, maxValue]);
             }
@@ -376,46 +402,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Apply filters button
         document.getElementById('apply-filter').addEventListener('click', function () {
-            applyFilters();
+            fetchLatestProductData().then(() => {
+                applyFilters();
+            });
         });
 
         document.getElementById('search-term').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
-                applyFilters();
+                fetchLatestProductData().then(() => {
+                    applyFilters();
+                });
             }
         });
 
         // Apply filter when inputs change
         document.getElementById('min-price').addEventListener('change', function () {
-            // if(minInput)
-            const minValue = minPriceInput.getNumber()
-            const maxValue = maxPriceInput.getNumber();
+            const minValue = minPriceInput.getNumber() || 0;
+            const maxValue = maxPriceInput.getNumber() || maxPrice;
             updateSlider(minValue, maxValue);
-            // applyFilters();
         });
 
         document.getElementById('max-price').addEventListener('change', function () {
-            const minValue = minPriceInput.getNumber();
-            const maxValue = maxPriceInput.getNumber();
+            const minValue = minPriceInput.getNumber() || 0;
+            const maxValue = maxPriceInput.getNumber() || maxPrice;
             updateSlider(minValue, maxValue);
-            // applyFilters();
         });
 
         // Clear filters button
         document.getElementById('clear-filters').addEventListener('click', function () {
-            document.getElementById('search-term').value = '';
-            document.getElementById('category-filter').value = '';
-            document.getElementById('sort-by').value = 'default';
-            minPriceInput.set(0);
-            maxPriceInput.set(maxPrice);
+            fetchLatestProductData().then(() => {
+                // Reset filter values
+                document.getElementById('search-term').value = '';
+                document.getElementById('category-filter').value = '';
+                document.getElementById('sort-by').value = 'default';
+                minPriceInput.set(0);
+                maxPriceInput.set(maxPrice);
 
-            // Clear slider and apply filters
-            priceSlider.noUiSlider.set([0, maxPrice]);
-            applyFilters();
+                // Reset slider
+                priceSlider.noUiSlider.set([0, maxPrice]);
+
+                // Apply filters
+                applyFilters();
+            });
         });
 
         // Apply initial filter
         applyFilters();
+
+        // Fetch latest product data after initial load (không phải chờ người dùng click)
+        /*         setTimeout(() => {
+                    fetchLatestProductData();
+                }, 1000); // Đợi 1 giây sau khi trang đã được hiển thị để không làm gián đoạn UX */
     }
 });
 
@@ -432,8 +469,53 @@ $(document).on('click', '#logoutBtn', function (e) {
         cancelButtonText: 'Hủy',
     }).then((result) => {
         if (result.isConfirmed) {
-            // Redirect to logout route
-            window.location.href = '/logout';
+            // Before logout, sync cart to server
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                try {
+                    const parsedCart = JSON.parse(savedCart);
+                    if (Array.isArray(parsedCart) && parsedCart.length > 0) {
+                        // Convert cart items to session format
+                        const sessionCart = parsedCart.map(item => {
+                            const book = allBooks.find(b => b.BookID == item.id);
+                            if (book) {
+                                return {
+                                    product_id: item.id,
+                                    quantity: item.quantity,
+                                    price: parseFloat((book.Price).toLocaleString('vi-VN'))
+                                };
+                            }
+                            return null;
+                        }).filter(item => item !== null);
+
+                        // Sync to server before redirecting
+                        fetch('/sync-cart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                cart: sessionCart
+                            })
+                        }).finally(() => {
+                            // Clear the cart in localStorage
+                            localStorage.removeItem('cart');
+                            // Redirect to logout route
+                            window.location.href = '/logout';
+                        });
+                    } else {
+                        // Cart is empty, just redirect
+                        window.location.href = '/logout';
+                    }
+                } catch (error) {
+                    console.error('Error parsing cart data:', error);
+                    window.location.href = '/logout';
+                }
+            } else {
+                // No cart in localStorage, just redirect
+                window.location.href = '/logout';
+            }
         }
     });
 });
@@ -456,9 +538,9 @@ $(document).on('click', '.buy-now-btn', function (e) {
     const book = allBooks.find(b => b.BookID == bookId);
 
     if (book) {
-        setTimeout(() => {
-            window.location.href = '/product-detail?id=' + bookId;
-        }, 300);
+        // setTimeout(() => {
+        window.location.href = '/product-detail?id=' + bookId;
+        // }, 300);
     }
 });
 

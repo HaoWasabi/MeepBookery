@@ -1,5 +1,5 @@
 <!-- "Giới thiệu - MeepBookery"; -->
-
+<?php $foundedYear = 2024; ?>
 <!-- About Us Banner -->
 <section class="about-banner py-2 bg-light">
     <div class="container">
@@ -22,7 +22,7 @@
                     <img src="../../img/about/about-1.jpg" alt="Our Story" class="img-fluid rounded shadow">
                     <div
                         class="experience-badge bg-danger text-white shadow py-3 px-4 position-absolute bottom-0 end-0 translate-middle-y rounded-pill">
-                        <h3 class="mb-0">+4</h3>
+                        <h3 class="mb-0">+<?= date("Y") - $foundedYear ?></h3>
                         <p class="mb-0">Năm kinh nghiệm</p>
                     </div>
                 </div>
@@ -31,7 +31,8 @@
                 <div class="about-content ps-lg-4">
                     <h6 class="text-danger fw-bold">CÂU CHUYỆN CỦA CHÚNG TÔI</h6>
                     <h2 class="mb-4">MeepBookery - Hành trình của đam mê sách</h2>
-                    <p class="lead">MeepBookery được thành lập vào năm 2020, với khởi đầu khiêm tốn là một hiệu sách nhỏ
+                    <p class="lead">MeepBookery được thành lập vào năm <?= $foundedYear ?>, với khởi đầu khiêm tốn là
+                        một hiệu sách nhỏ
                         tại trung tâm thành phố Hồ Chí Minh.</p>
                     <p>Từ một cửa hàng nhỏ với vài trăm đầu sách, MeepBookery đã phát triển mạnh mẽ và trở thành một
                         trong những hiệu sách trực tuyến lớn nhất Việt Nam, với hơn 20.000 đầu sách đa dạng từ nhiều thể

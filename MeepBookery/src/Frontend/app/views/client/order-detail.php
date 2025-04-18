@@ -6,7 +6,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="order-detail-banner-content text-center">
-                    <h1 class="order-detail-title mb-2 ">Chi tiết đơn hàng #<?php echo $order['OrderID']; ?></h1>
+                    <h1 class="order-detail-title mb-2 ">Chi tiết đơn hàng
+                        <!-- < ?php echo $order['OrderID']; ?> -->
+                    </h1>
                 </div>
             </div>
         </div>
@@ -247,11 +249,11 @@
                         <ul class="list-group list-group-flush mb-3">
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span>Mã đơn hàng</span>
-                                <span class="fw-bold">#<?php echo $order['OrderID']; ?></span>
+                                <span class="fw-bold"><?php echo $order['OrderID']; ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span>Ngày đặt hàng</span>
-                                <span><?php echo date('d/m/Y', strtotime($order['OrderDate'])); ?></span>
+                                <span><?php echo date('H:i:s d/m/Y ', strtotime($order['OrderDate'])); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between px-0">
                                 <span>Phương thức thanh toán</span>
@@ -429,7 +431,7 @@
         const cancelOrderBtn = document.getElementById('cancelOrderBtn');
         if (cancelOrderBtn) {
             cancelOrderBtn.addEventListener('click', function () {
-                showSweetAlert('Bạn có chắc chắn muốn hủy đơn hàng #<?php echo $order['OrderID']; ?>?', {
+                showSweetAlert('Bạn có chắc chắn muốn hủy đơn hàng <?php echo $order['OrderID']; ?>?', {
                     icon: 'warning',
                     title: 'Xác nhận hủy đơn hàng',
                     text: 'Lưu ý: Hành động này không thể hoàn tác.',
@@ -446,20 +448,16 @@
             });
         }
 
-        // Function to handle order cancellation via API
         function cancelOrder(orderId) {
-            // Create a FormData object to match the expected format in OrderController
             const formData = new FormData();
             formData.append('orderId', orderId);
             formData.append('status', 'canceled');
 
-            // Add userId if available
             <?php if (isset($_SESSION['UserID'])): ?>
                 formData.append('userId', <?php echo $_SESSION['UserID']; ?>);
             <?php endif; ?>
 
-            // Make a POST request to update the order status to 'canceled'
-            fetch('/orders/update-status', {
+            fetch('/api/orders/update-status', {
                 method: 'POST',
                 body: formData
             })

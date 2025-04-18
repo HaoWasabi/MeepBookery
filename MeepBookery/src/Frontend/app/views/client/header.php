@@ -1,20 +1,36 @@
 <!-- Top bar -->
 <div class="top-bar py-1">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 d-flex align-items-center">
+        <div class="row align-items-center">
+            <!-- Cột icon MXH -->
+            <div class="col-md-3 d-flex">
                 <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
                 <a href="#" class="me-2"><i class="fab fa-youtube"></i></a>
-                <span class="ms-2">Chào mừng bạn đến với MeepBookery</span>
             </div>
-            <div class="col-md-6 text-end">
-                <a href="tel:+84123456789" class="me-3"><i class="fas fa-phone-alt me-1"></i> (+84) 0123456789</a>
-                <a href="mailto:mbk@gmail.com"><i class="fas fa-envelope me-1"></i> mbk@gmail.com</a>
+
+            <!-- Cột chào mừng -->
+            <div class="col-md-6 text-center fw-bold">
+                <span>Chào mừng bạn đến với MeepBookery</span>
+            </div>
+
+            <!-- Cột liên hệ -->
+            <div class="col-md-3 text-end d-flex flex-column align-items-end">
+                <a href="tel:+84123456789"
+                    class="d-inline-flex align-items-center mb-1 text-white text-decoration-none">
+                    <i class="fas fa-phone-alt me-1"></i>
+                    <span>(+84) 0123456789</span>
+                </a>
+                <a href="mailto:mbkery@gmail.com"
+                    class="d-inline-flex align-items-center text-white text-decoration-none">
+                    <i class="fas fa-envelope me-1"></i>
+                    <span>mbkery@gmail.com</span>
+                </a>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Main Header -->
 <header class="main-header">
@@ -37,8 +53,8 @@
                                 Danh mục
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                                <li><a class="dropdown-item" href="/shop" data-category-id="">Tất cả danh
-                                        mục</a></li>
+                                <li><a class="dropdown-item" href="/shop" data-category-id="">Tất cả thể
+                                        loại</a></li>
                                 <?php if (isset($categories) && is_array($categories)): ?>
                                     <?php foreach ($categories as $category): ?>
                                         <li><a class="dropdown-item" href="/shop?category=<?= urlencode($category['Name']); ?>"
@@ -48,7 +64,7 @@
                                 <?php endif; ?>
                             </ul>
                         </div>
-                        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm..."
+                        <input type="text" name="search" class="form-control" placeholder="Nhập tên sách..."
                             aria-label="Search">
                         <button class="btn search-btn" type="submit">
                             <i class="fas fa-search"></i>
@@ -103,7 +119,8 @@
                     } else {
                         // User is not logged in - show login/register buttons
                         ?>
-                        <a href="#" class="btn btn-danger account-btn">
+                        <a href="#" class="btn btn-danger account-btn" data-bs-toggle="modal"
+                        data-bs-target="#authModal" data-auth-action="login">
                             <div class="btn-icon">
                                 <i class="fas fa-user"></i>
                             </div>
@@ -183,7 +200,7 @@
                             <i class="fas fa-book"></i>
                         </div>
                         <div class="nav-text">
-                            Sản phẩm
+                            Sách
                         </div>
                     </a>
                 </li>

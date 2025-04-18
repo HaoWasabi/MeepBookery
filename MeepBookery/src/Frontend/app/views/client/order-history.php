@@ -8,7 +8,7 @@
         <!-- Filter Error Alert -->
         <div id="filterErrorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
             <span id="filterErrorMessage"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" id="closeFilterAlert" aria-label="Close"></button>
         </div>
 
         <!-- Search & Filter -->
@@ -51,13 +51,14 @@
                             <div class="col-md-6 col-lg-3">
                                 <label for="startDate" class="form-label">Từ ngày</label>
                                 <input type="date" class="form-control" id="startDate" name="startDate"
-                                    value="<?= isset($_GET['startDate']) ? htmlspecialchars($_GET['startDate']) : date('Y-m-d', strtotime('-30 days')) ?>">
+                                    value="<?= isset($_GET['startDate']) ? htmlspecialchars($_GET['startDate']) : '' ?>">
+                                <!-- , strtotime('-30 days')) -->
                             </div>
 
                             <div class="col-md-6 col-lg-3">
                                 <label for="endDate" class="form-label">Đến ngày</label>
                                 <input type="date" class="form-control" id="endDate" name="endDate"
-                                    value="<?= isset($_GET['endDate']) ? htmlspecialchars($_GET['endDate']) : date('Y-m-d') ?>">
+                                    value="<?= isset($_GET['endDate']) ? htmlspecialchars($_GET['endDate']) : '' ?>">
                             </div>
 
                             <!-- Submit Button -->
@@ -156,7 +157,8 @@
                                 month: '2-digit',
                                 year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit'
+                                minute: '2-digit',
+                                second: '2-digit'
                             });
 
                             // Format currency
@@ -176,7 +178,7 @@
 
                             return `
                                 <tr>
-                                    <td>#${order.OrderID}</td>
+                                    <td>${order.OrderID}</td>
                                     <td>${formattedDate}</td>
                                     <td><span class="badge bg-${statusClass}">${statusText}</span></td>
                                     <td>${formattedAmount}</td>
@@ -348,11 +350,13 @@
 
         // Function to hide alert message
         function hideAlert() {
-            filterErrorAlert.classList.add('d-none');
+            document.getElementById('closeFilterAlert').addEventListener('click', function () {
+                filterErrorAlert.classList.add('d-none');
+            });
         }
 
         // Initialize date inputs with defaults if they're empty
-        if (!startDateInput.value) {
+        /* if (!startDateInput.value) {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
             startDateInput.valueAsDate = thirtyDaysAgo;
@@ -360,6 +364,6 @@
 
         if (!endDateInput.value) {
             endDateInput.valueAsDate = new Date();
-        }
+        } */
     });
 </script>

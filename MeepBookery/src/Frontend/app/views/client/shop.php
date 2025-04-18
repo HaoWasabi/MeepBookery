@@ -1,4 +1,3 @@
-
 <!-- Shop page -->
 <div class="container mt-4 mb-5">
     <div class="row">
@@ -7,7 +6,7 @@
             <div class="shop-sidebar">
                 <div class="filter-section card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white">
-                        <h4 class="mb-0">Tìm kiếm sản phẩm</h4>
+                        <h4 class="mb-0">Tìm kiếm sách</h4>
                     </div>
                     <div class="card-body">
                         <form id="shop-filter-form">
@@ -25,7 +24,7 @@
                                     <option value="">Tất cả thể loại</option>
                                     <?php if (isset($categories) && is_array($categories)): ?>
                                         <?php foreach ($categories as $category): ?>
-                                            <option value="<?= $category['Name']; ?>" <?= isset($_GET['category']) && $_GET['category'] == $category['Name'] ? 'selected' : ''; ?>>
+                                            <option value="<?= $category['CategoryID']; ?>" data-category-id="<?= $category['CategoryID']; ?>" <?= isset($_GET['category']) && $_GET['category'] == $category['Name'] ? 'selected' : ''; ?>>
                                                 <?= $category['Name']; ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -43,25 +42,22 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-6">
-                                        <div class="input-group input-group-sm">
-                                            <!-- <span class="input-group-text">Từ</span> -->
-                                            <input type="text" class="form-control price-input" id="min-price"
-                                                min="0">
-                                        </div>
+                                    <div class="col-5">
+                                        <label for="min-price" class="form-label">Từ</label>
+                                        <input type="text" class="form-control form-control-sm" id="min-price" min="0">
                                     </div>
-                                    <div class="col-6">
-                                        <div class="input-group input-group-sm">
-                                            <!-- <span class="input-group-text">Đến</span> -->
-                                            <input type="text" class="form-control price-input" id="max-price"
-                                                min="0">
-                                        </div>
+                                    <div class="col-1 d-flex align-items-end justify-content-center">
+                                        <span class="mb-1">–</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <label for="max-price" class="form-label">Đến</label>
+                                        <input type="text" class="form-control form-control-sm" id="max-price" min="0">
                                     </div>
                                 </div>
                             </div>
 
                             <button type="button" id="apply-filter" class="btn btn-danger w-100">
-                                <i class="fas fa-filter me-2"></i> Lọc
+                                <i class="fas fa-search mr-2"></i> Tìm kiếm
                             </button>
                         </form>
                     </div>

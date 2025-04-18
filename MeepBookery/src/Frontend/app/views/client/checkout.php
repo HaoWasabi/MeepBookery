@@ -502,7 +502,7 @@
                         // Show success message
                         Swal.fire({
                             title: 'Đặt hàng thành công!',
-                            text: `Đơn hàng #${data.orderId} đã được đặt thành công. Cảm ơn bạn đã mua hàng!`,
+                            text: `Đơn hàng đã được đặt thành công. Cảm ơn bạn đã mua hàng!`,
                             icon: 'success',
                             confirmButtonColor: '#e74c3c',
                             confirmButtonText: 'Xem đơn hàng'

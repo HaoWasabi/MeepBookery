@@ -267,6 +267,11 @@
                     return;
                 }
 
+                if (!/^(?:\+84|0)([0-9]{9})$/.test(phone)) {
+                    showAlert('Số điện thoại không hợp lệ', 'danger');
+                    return;
+                }
+
                 // Create form data
                 const formData = new FormData();
                 formData.append('Name', name);
@@ -333,7 +338,7 @@
                 formData.append('City', city);
                 formData.append('District', district);
                 formData.append('Ward', ward);
-                formData.append('update_type', 'address'); // Add a flag to indicate this is an address update
+                formData.append('update_type', 'address');
 
                 // Submit the form
                 submitAddressForm(formData);
@@ -348,7 +353,6 @@
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang lưu...';
             saveBtn.disabled = true;
 
-            // Submit the form to the endpoint
             fetch('/my-account/update', {
                 method: 'POST',
                 body: formData
@@ -360,51 +364,69 @@
                     saveBtn.disabled = false;
 
                     if (data.success) {
-                        showAlert('Địa chỉ đã được cập nhật thành công!', 'success');
+                        // Replace showAlert with SweetAlert2
+                        Swal.fire({
+                            title: 'Thành công',
+                            text: 'Địa chỉ đã được cập nhật thành công!',
+                            icon: 'success',
+                            confirmButtonColor: '#e74c3c',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Switch back to view mode for address
+                            displayAddressSection.style.display = 'block';
+                            editAddressSection.style.display = 'none';
 
-                        // Switch back to view mode for address
-                        displayAddressSection.style.display = 'block';
-                        editAddressSection.style.display = 'none';
+                            // Get the new address values
+                            const address = document.getElementById('Address').value.trim();
+                            const city = document.getElementById('City').value.trim();
+                            const district = document.getElementById('District').value.trim();
+                            const ward = document.getElementById('Ward').value.trim();
 
-                        // Get the new address values
-                        const address = document.getElementById('Address').value.trim();
-                        const city = document.getElementById('City').value.trim();
-                        const district = document.getElementById('District').value.trim();
-                        const ward = document.getElementById('Ward').value.trim();
+                            // Update the displayed address
+                            const fullAddress = [];
+                            if (address) fullAddress.push(address);
+                            if (ward) fullAddress.push(ward);
+                            if (district) fullAddress.push(district);
+                            if (city) fullAddress.push(city);
 
-                        // Update the displayed address
-                        const fullAddress = [];
-                        if (address) fullAddress.push(address);
-                        if (ward) fullAddress.push(ward);
-                        if (district) fullAddress.push(district);
-                        if (city) fullAddress.push(city);
+                            const combinedAddress = fullAddress.join(', ');
 
-                        const combinedAddress = fullAddress.join(', ');
+                            // Update the display or create it if not exists
+                            let addressDisplay = document.querySelector('#displayAddressSection .card-body p');
 
-                        // Update the display or create it if not exists
-                        let addressDisplay = document.querySelector('#displayAddressSection .card-body p');
-
-                        if (addressDisplay) {
-                            addressDisplay.innerHTML = `<i class="fas fa-map-marker-alt me-2 text-danger"></i> ${combinedAddress}`;
-                        } else {
-                            // Create new content if it was an empty address before
-                            const cardBody = document.querySelector('#displayAddressSection .card-body');
-                            if (cardBody) {
-                                cardBody.innerHTML = `<p class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i> ${combinedAddress}</p>`;
+                            if (addressDisplay) {
+                                addressDisplay.innerHTML = `<i class="fas fa-map-marker-alt me-2 text-danger"></i> ${combinedAddress}`;
+                            } else {
+                                // Create new content if it was an empty address before
+                                const cardBody = document.querySelector('#displayAddressSection .card-body');
+                                if (cardBody) {
+                                    cardBody.innerHTML = `<p class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i> ${combinedAddress}</p>`;
+                                }
                             }
-                        }
+                        });
                     } else {
-                        showAlert(data.message || 'Có lỗi xảy ra khi cập nhật địa chỉ', 'danger');
+                        Swal.fire({
+                            title: 'Lỗi',
+                            text: data.message || 'Có lỗi xảy ra khi cập nhật địa chỉ',
+                            icon: 'error',
+                            confirmButtonColor: '#e74c3c',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 })
                 .catch(error => {
                     // Restore button state
                     saveBtn.innerHTML = originalBtnText;
                     saveBtn.disabled = false;
-                    showAlert('Có lỗi xảy ra khi kết nối đến máy chủ', 'danger');
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi kết nối đến máy chủ',
+                        icon: 'error',
+                        confirmButtonColor: '#e74c3c',
+                        confirmButtonText: 'OK'
+                    });
                     console.error('Error:', error);
                 });
-                // location.reload();
         }
 
         // Function to submit personal info form data
@@ -436,25 +458,44 @@
                     saveBtn.disabled = false;
 
                     if (data.success) {
-                        showAlert('Thông tin cá nhân đã được cập nhật thành công!', 'success');
-
-                        // Switch back to view mode for personal info
-                        editPersonalInfoBtn.style.display = 'block';
-                        personalInfoEditButtons.style.display = 'none';
-                        nameField.disabled = true;
-                        phoneField.disabled = true;
+                        // Replace showAlert with SweetAlert2
+                        Swal.fire({
+                            title: 'Thành công',
+                            text: 'Thông tin cá nhân đã được cập nhật thành công!',
+                            icon: 'success',
+                            confirmButtonColor: '#e74c3c',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Switch back to view mode for personal info
+                            editPersonalInfoBtn.style.display = 'block';
+                            personalInfoEditButtons.style.display = 'none';
+                            nameField.disabled = true;
+                            phoneField.disabled = true;
+                            location.reload();
+                        });
                     } else {
-                        showAlert(data.message || 'Có lỗi xảy ra khi cập nhật thông tin cá nhân', 'danger');
+                        Swal.fire({
+                            title: 'Lỗi',
+                            text: data.message || 'Có lỗi xảy ra khi cập nhật thông tin cá nhân',
+                            icon: 'error',
+                            confirmButtonColor: '#e74c3c',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 })
                 .catch(error => {
                     // Restore button state
                     saveBtn.innerHTML = originalBtnText;
                     saveBtn.disabled = false;
-                    showAlert('Có lỗi xảy ra khi kết nối đến máy chủ', 'danger');
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi kết nối đến máy chủ',
+                        icon: 'error',
+                        confirmButtonColor: '#e74c3c',
+                        confirmButtonText: 'OK'
+                    });
                     console.error('Error:', error);
                 });
-                location.reload();
         }
 
         // Function to show alert messages
@@ -466,11 +507,6 @@
                 behavior: 'smooth',
                 block: 'center'
             });
-
-            // Auto hide after 5 seconds
-            setTimeout(() => {
-                alertBox.classList.add('d-none');
-            }, 5000);
         }
 
         // Handle sidebar logout confirmation

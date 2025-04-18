@@ -31,7 +31,8 @@
                         <i class="fas fa-map-marker-alt fa-3x text-danger"></i>
                     </div>
                     <h3>Địa chỉ</h3>
-                    <p>Tầng 8, Tòa nhà Central Plaza<br>17 Lê Duẩn, Quận 1<br>TP. Hồ Chí Minh, Việt Nam</p>
+                    <p>MeepBookery Bookstore<br>273 Đ. An Dương Vương, Phường 2, Quận 5<br>TP. Hồ Chí Minh, Việt Nam
+                    </p>
                 </div>
             </div>
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
@@ -116,7 +117,7 @@
                     <div class="separator mx-auto mb-4"></div>
                     <div class="contact-map rounded overflow-hidden">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.3899967323595!2d106.6993559!3d10.7790139!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3c59575b17%3A0x97960535563e1808!2zMTcgTMOqIER14bqpbiwgQuG6v24gTmdow6ksIFF14bqtbiAxLCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1648818645186!5m2!1svi!2s"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2233.1123318087766!2d106.68347126864462!3d10.760180546047135!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f1b7c3ed289%3A0xa06651894598e488!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBTw6BpIEfDsm4!5e0!3m2!1svi!2s!4v1744631010735!5m2!1svi!2s"
                             width="100%" height="380" style="border:0;" allowfullscreen="" loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
@@ -195,7 +196,7 @@
                             data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 Thời gian giao hàng của chúng tôi phụ thuộc vào khu vực của bạn. Đối với nội thành
-                                TP.HCM và Hà Nội, thời gian giao hàng thường từ 1-2 ngày làm việc. Đối với các tỉnh
+                                TP.HCM, thời gian giao hàng thường từ 1-2 ngày làm việc. Đối với các tỉnh
                                 thành khác, thời gian giao hàng có thể từ 3-5 ngày làm việc. Chúng tôi luôn cố gắng để
                                 đơn hàng đến tay bạn sớm nhất có thể.
                             </div>
@@ -229,10 +230,10 @@
                         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
                             data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                Hiện tại, MeepBookery có hai cửa hàng trực tiếp tại TP.HCM và một cửa hàng tại Hà Nội.
-                                Bạn có thể ghé thăm cửa hàng của chúng tôi tại địa chỉ: Tầng 8, Tòa nhà Central Plaza,
-                                17 Lê Duẩn, Quận 1, TP.HCM hoặc 24 Trần Phú, Quận Hoàn Kiếm, Hà Nội. Chúng tôi đang có
-                                kế hoạch mở rộng hệ thống cửa hàng ở nhiều tỉnh thành khác trong thời gian tới.
+                                Hiện tại, MeepBookery có một cửa hàng trực tiếp tại TP.HCM.
+                                Bạn có thể ghé thăm cửa hàng của chúng tôi tại địa chỉ: 273 Đ. An Dương Vương, Phường 2,
+                                Quận 5. Chúng tôi đang có kế hoạch mở rộng hệ thống cửa hàng ở nhiều tỉnh thành khác
+                                trong thời gian tới.
                             </div>
                         </div>
                     </div>

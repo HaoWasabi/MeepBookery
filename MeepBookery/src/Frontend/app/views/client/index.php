@@ -16,7 +16,7 @@
 
     <!-- Nội dung chính -->
     <main>
-        <?php echo $content; ?>
+        <?= $content ?? '' ?>
     </main>
 
     <?php require_once 'footer.php'; ?>
