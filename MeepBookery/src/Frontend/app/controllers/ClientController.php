@@ -19,14 +19,12 @@ class ClientController extends BaseController
         $this->orderModel = new Order();
         $this->paymentMethodModel = new PaymentMethod();
 
-
-        $this->data['categories'] = $this->categoryModel->getAll();
-        $this->data['books'] = $this->bookModel->getAllAvailableBooks();
         $this->data['bestSellerBooks'] = $this->bookModel->getTopBestSellingBooks(4);
     }
 
     public function index()
     {
+        $this->data['bestSellerBooks'] = $this->bookModel->getTopBestSellingBooks(4);
         $this->renderView('home', 'MeepBookery');
     }
 
@@ -39,14 +37,15 @@ class ClientController extends BaseController
 
     public function productDetail()
     {
-        $this->data['book'] = $this->bookModel->getBookById($_GET['id']);
+        $this->data['book'] = $this->bookModel->getAvailableBookById($_GET['id']);
         if (!$this->data['book']) {
             $this->notFound();
             return;
         }
-        $this->renderView('product-detail', 'Chi tiết sản phẩm', true, false, [
+        $this->renderView('product-detail', 'Sách ' . $this->data['book']['Name'], true, false, [
             ['title' => 'Cửa hàng', 'url' => '/shop'],
-            ['title' => 'Chi tiết sản phẩm', 'url' => '#']
+            // ['title' => 'Chi tiết sản phẩm', 'url' => '#']
+            ['title' => 'Sách ' . $this->data['book']['Name'], 'url' => '#']
         ]);
     }
 
@@ -100,7 +99,12 @@ class ClientController extends BaseController
         $this->renderView('order-detail', 'Chi tiết đơn hàng', true, false, [
             ['title' => 'Tài khoản', 'url' => '/my-account'],
             ['title' => 'Lịch sử đơn hàng', 'url' => '/my-account/order-history'],
-            ['title' => 'Chi tiết đơn hàng #' . $this->data['order']['OrderID'], 'url' => '#']
+            [
+                'title' => 'Chi tiết đơn hàng '
+                // . $this->data['order']['OrderID']
+                ,
+                'url' => '#'
+            ]
         ]);
     }
 
@@ -140,11 +144,9 @@ class ClientController extends BaseController
     private function checkLogin(): void
     {
         if (!isset($_SESSION['UserID'])) {
-            header('Location: /');
-            exit();
+            $this->redirect('/');
         }
     }
-
     public function syncCart()
     {
         if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -168,6 +170,15 @@ class ClientController extends BaseController
     }
     private function renderView($viewName, $page_title, $show_breadcrumb = false, $show_nav = true, $breadcrumbs = [])
     {
+
+        if (isset($_SESSION['UserID']) && $_SESSION['Role'] == 'admin') {
+            header('Location: /logout');
+            exit();
+        }
+
+        $this->data['categories'] = $this->categoryModel->getAll();
+        $this->data['books'] = $this->bookModel->getAllAvailableBooks();
+
         extract($this->data);
 
         // Bắt đầu bộ nhớ đệm và include view con

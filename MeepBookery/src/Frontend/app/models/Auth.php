@@ -7,7 +7,7 @@ class Auth extends BaseModel
     {
         try {
             // Lấy thông tin user theo email
-            $stmt = $this->conn->prepare("SELECT UserID, Name, Password, Role, Status FROM user WHERE Email = ?");
+            $stmt = $this->conn->prepare("SELECT UserID, Name, Email, Password, Role, Status FROM user WHERE Email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

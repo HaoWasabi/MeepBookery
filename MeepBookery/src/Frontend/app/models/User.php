@@ -75,9 +75,20 @@ class User extends BaseModel
                 $params[] = $userData['Name'];
             }
 
+            if (isset($userData['Email'])) {
+                $updateFields[] = "Email = ?";
+                $params[] = $userData['Email'];
+            }
+
             if (isset($userData['Phone'])) {
                 $updateFields[] = "Phone = ?";
                 $params[] = $userData['Phone'];
+            }
+
+            // Nếu có mật khẩu mới, cập nhật mật khẩu
+            if (isset($userData['Password']) && !empty($userData['Password'])) {
+                $updateFields[] = "Password = ?";
+                $params[] = password_hash($userData['Password'], PASSWORD_BCRYPT);
             }
 
             if ($addressId) {
@@ -102,7 +113,7 @@ class User extends BaseModel
             return false;
         }
     }
-    
+
     public function lockUser($userId)
     {
         try {
@@ -154,7 +165,6 @@ class User extends BaseModel
                 $params[] = $searchTerm;
             }
 
-            // Sắp xếp theo ID giảm dần (mới nhất trước)
             $query .= " ORDER BY u.UserID DESC";
 
             $stmt = $this->conn->prepare($query);
@@ -203,6 +213,183 @@ class User extends BaseModel
             return (int) $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
             error_log("Lỗi kiểm tra số điện thoại: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Method to check if email exists for another user (used during edit)
+    public function emailExistsForOtherUser($email, $userId)
+    {
+        return $this->emailExists($email, $userId);
+    }
+
+    // Method to check if phone exists for another user (used during edit)
+    public function phoneExistsForOtherUser($phone, $userId)
+    {
+        return $this->phoneExists($phone, $userId);
+    }
+
+    // Get total number of users
+    public function getTotalUsers()
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT COUNT(*) FROM user");
+            $stmt->execute();
+            return (int) $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Lỗi đếm tổng số người dùng: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    // Count admin active
+    public function countAdmin()
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT COUNT(*) FROM user WHERE Role = 'admin'");
+            $stmt->execute();
+            return (int) $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Lỗi đếm số admin: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    // Get filtered users with pagination
+    public function getFilteredUsers($offset, $limit, $search = '', $role = '', $status = '')
+    {
+        try {
+            $query = "SELECT u.UserID, u.Name, u.Email, u.Role, u.Phone, u.Status, 
+                      a.Address, a.City, a.District, a.Ward
+                      FROM user u
+                      LEFT JOIN address a ON u.AddressID = a.AddressID
+                      WHERE 1=1";
+
+            $params = [];
+
+            if (!empty($search)) {
+                $query .= " AND (u.Name LIKE ? OR u.Email LIKE ? OR u.Phone LIKE ?)";
+                $searchTerm = "%" . $search . "%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+
+            if (!empty($role)) {
+                $query .= " AND u.Role = ?";
+                $params[] = $role;
+            }
+
+            if ($status !== '') {
+                $query .= " AND u.Status = ?";
+                $params[] = (int) $status;
+            }
+
+            $query .= " ORDER BY u.UserID DESC LIMIT ?, ?";
+            $params[] = (int) $offset;
+            $params[] = (int) $limit;
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Lỗi lấy danh sách người dùng: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Count filtered users (for pagination)
+    public function countFilteredUsers($search = '', $role = '', $status = '')
+    {
+        try {
+            $query = "SELECT COUNT(*) FROM user WHERE 1=1";
+            $params = [];
+
+            if (!empty($search)) {
+                $query .= " AND (Name LIKE ? OR Email LIKE ? OR Phone LIKE ?)";
+                $searchTerm = "%" . $search . "%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+
+            if (!empty($role)) {
+                $query .= " AND Role = ?";
+                $params[] = $role;
+            }
+
+            if ($status !== '') {
+                $query .= " AND Status = ?";
+                $params[] = (int) $status;
+            }
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($params);
+            return (int) $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Lỗi đếm số người dùng: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    // Toggle user status (active/inactive)
+    public function toggleUserStatus($userId)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT Status FROM user WHERE UserID = ?");
+            $stmt->execute([$userId]);
+            $currentStatus = $stmt->fetchColumn();
+
+            $newStatus = ($currentStatus == 1) ? 0 : 1;
+
+            $stmt = $this->conn->prepare("UPDATE user SET Status = ? WHERE UserID = ?");
+            return $stmt->execute([$newStatus, $userId]);
+        } catch (PDOException $e) {
+            error_log("Lỗi chuyển đổi trạng thái người dùng: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Add a new user
+    public function addUser($userData): mixed
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            // Create address if provided
+            $addressId = null;
+            if (!empty($userData['Address'])) {
+                $stmt = $this->conn->prepare("INSERT INTO address (Address, City, District, Ward) VALUES (?, ?, ?, ?)");
+                $stmt->execute([
+                    $userData['Address'] ?? null,
+                    $userData['City'] ?? null,
+                    $userData['District'] ?? null,
+                    $userData['Ward'] ?? null
+                ]);
+                $addressId = $this->conn->lastInsertId();
+            }
+
+            // Hash the password
+            $hashedPassword = password_hash($userData['Password'], PASSWORD_BCRYPT);
+
+            // Insert the user
+            $stmt = $this->conn->prepare("INSERT INTO user (Name, Email, Password, Phone, Role, Status, AddressID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $userData['Name'],
+                $userData['Email'],
+                $hashedPassword,
+                $userData['Phone'] ?? null,
+                $userData['Role'] ?? 'user',
+                $userData['Status'] ?? 1,
+                $addressId
+            ]);
+
+            $this->conn->commit();
+
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            error_log("Lỗi thêm người dùng: " . $e->getMessage());
             return false;
         }
     }

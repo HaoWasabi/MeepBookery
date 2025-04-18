@@ -164,7 +164,7 @@ class UserController extends BaseController
         if ($user['role'] === 'admin' && $_SESSION['UserID'] != $userId) {
             $this->responseJson([
                 'success' => false,
-                'message' => 'Không thể khóa tài khoản của quản trị viên khác'
+                'message' => 'Không thể khóa tài khoản của admin khác'
             ]);
             return;
         }
@@ -185,10 +185,6 @@ class UserController extends BaseController
         }
     }
 
-    /**
-     * Mở khóa tài khoản người dùng
-     * Phương thức POST: /api/user/unlock
-     */
     public function unlockUser()
     {
         $this->requirePost();
@@ -238,11 +234,6 @@ class UserController extends BaseController
             ]);
         }
     }
-
-    /**
-     * Lấy danh sách người dùng (chỉ dành cho admin)
-     * Phương thức GET: /api/users
-     */
     public function getUsers()
     {
         // Chỉ admin mới có quyền xem danh sách người dùng
@@ -268,5 +259,149 @@ class UserController extends BaseController
             'success' => true,
             'data' => $users
         ]);
+    }
+
+    public function toggleUserStatus()
+    {
+        $this->requirePost();
+
+        $data = $this->getRequestData();
+        error_log(json_encode($data));
+        $userId = $data['UserID'] ?? null;
+
+        if (!$userId) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ'
+            ]);
+            return;
+        }
+
+        if ($userId == $_SESSION['UserID']) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Không thể khóa tài khoản của chính bạn'
+            ]);
+            return;
+        }
+
+        // Check if this is the only admin
+        $user = $this->userModel->getUserById($userId);
+
+        if ($user['Role'] === 'admin' && $this->userModel->countAdmin() <= 1) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Không thể khóa tài khoản admin duy nhất'
+            ]);
+            return;
+        }
+
+        if ($user['Role'] === 'admin') {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Không thể khóa tài khoản của admin khác'
+            ]);
+            return;
+        }
+
+
+        $result = $this->userModel->toggleUserStatus($userId);
+
+        if ($result) {
+            $this->responseJson([
+                'success' => true,
+                'message' => 'Cập nhật trạng thái người dùng thành công'
+            ]);
+        } else {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Cập nhật trạng thái người dùng thất bại'
+            ]);
+        }
+    }
+
+    public function addUser()
+    {
+        $this->requirePost();
+
+        $userData = $this->getRequestData();
+        // Check if phone already exists
+        if (isset($userData['Phone']) && $userData['Phone'] && $this->userModel->phoneExists($userData['Phone'])) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Số điện thoại đã tồn tại trong hệ thống',
+                'error' => 'phone_exists'
+            ]);
+            return;
+        }
+
+        // Check if email already exists
+        if ($this->userModel->emailExists($userData['Email'])) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Email đã tồn tại trong hệ thống',
+                'error' => 'email_exists'
+            ]);
+            return;
+        }
+
+
+
+        $result = $this->userModel->addUser($userData);
+
+        if ($result) {
+            $this->responseJson([
+                'success' => true,
+                'message' => 'Thêm người dùng thành công',
+                'redirect' => '/admin/users'
+            ]);
+        } else {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Thêm người dùng thất bại. Vui lòng thử lại sau.'
+            ]);
+        }
+    }
+
+    public function updateUser()
+    {
+        $this->requirePost();
+
+        $userData = $this->getRequestData();
+
+        // Check if email already exists for other users
+        if ($this->userModel->emailExistsForOtherUser($userData['Email'], $userData['id'])) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Email đã tồn tại trong hệ thống',
+                'error' => 'email_exists'
+            ]);
+            return;
+        }
+
+        // Check if phone already exists for other users
+        if (isset($userData['Phone']) && $userData['Phone'] && $this->userModel->phoneExistsForOtherUser($userData['Phone'], $userData['id'])) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Số điện thoại đã tồn tại trong hệ thống',
+                'error' => 'phone_exists'
+            ]);
+            return;
+        }
+
+        $result = $this->userModel->updateUser($userData['id'], $userData);
+
+        if ($result) {
+            $this->responseJson([
+                'success' => true,
+                'message' => 'Cập nhật người dùng thành công',
+                'redirect' => '/admin/users'
+            ]);
+        } else {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'Cập nhật người dùng thất bại. Vui lòng thử lại sau.'
+            ]);
+        }
     }
 }

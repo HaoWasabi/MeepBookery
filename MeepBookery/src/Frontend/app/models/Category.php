@@ -9,8 +9,7 @@ class Category
     public function __construct()
     {
         try {
-            $database = new Database();
-            $this->conn = $database->getConnection();
+            $this->conn = Database::getInstance()->getConnection();
         } catch (PDOException $e) {
             error_log("Lỗi kết nối DB: " . $e->getMessage());
             die("Không thể kết nối đến cơ sở dữ liệu.");
@@ -30,7 +29,7 @@ class Category
         }
     }
 
-    public function getById($id)
+    public function getCategoryById($id)
     {
         try {
             $query = "SELECT * FROM " . $this->table . " WHERE CategoryID = ?";
@@ -75,6 +74,68 @@ class Category
             return $stmt->execute([$id]);
         } catch (PDOException $e) {
             error_log("Lỗi khi xóa danh mục: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function addCategory($data)
+    {
+        try {
+            $name = $data['Name'] ?? '';
+            $description = $data['Description'] ?? '';
+
+            if (empty($name)) {
+                return false;
+            }
+
+            return $this->create($name, $description);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi thêm danh mục: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updateCategory($id, $data)
+    {
+        try {
+            $name = $data['Name'] ?? '';
+            $description = $data['Description'] ?? '';
+
+            if (empty($name)) {
+                return false;
+            }
+
+            return $this->update($id, $name, $description);
+        } catch (PDOException $e) {
+            error_log("Lỗi khi cập nhật danh mục: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Check if a category name exists
+    public function categoryExists($name)
+    {
+        try {
+            $query = "SELECT COUNT(*) FROM " . $this->table . " WHERE Name = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$name]);
+            return (int) $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            error_log("Lỗi kiểm tra tên danh mục tồn tại: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Check if a category name exists for other categories (used when updating)
+    public function categoryExistsForOtherCategory($name, $id)
+    {
+        try {
+            $query = "SELECT COUNT(*) FROM " . $this->table . " WHERE Name = ? AND CategoryID != ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$name, $id]);
+            return (int) $stmt->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            error_log("Lỗi kiểm tra tên danh mục tồn tại: " . $e->getMessage());
             return false;
         }
     }

@@ -11,7 +11,7 @@ class AuthController extends BaseController
         $this->authModel = new Auth();
     }
 
-    public function login($context = 'client')
+    public function login()
     {
         $this->requirePost();
 
@@ -20,17 +20,6 @@ class AuthController extends BaseController
         $password = $data['password'] ?? '';
 
         $user = $this->authModel->login($email, $password);
-
-        // Kiểm tra nếu là tài khoản admin
-        if ($context === 'client') {
-            if ($this->authModel->isAdmin($user)) {
-                $this->responseJson([
-                    'success' => false,
-                    'message' => 'Email hoặc mật khẩu không chính xác'
-                ]);
-                return;
-            }
-        }
 
         // Kiểm tra nếu là lỗi
         if (isset($user['error'])) {
@@ -47,15 +36,51 @@ class AuthController extends BaseController
             return;
         }
 
+        $isAdmin = $this->authModel->isAdmin($user);
+
+        if ($_SERVER['REQUEST_URI'] === "/admin/auth/login") {
+            if (!$isAdmin) {
+                $this->responseJson([
+                    'success' => false,
+                    'message' => 'Email hoặc mật khẩu không chính xác'
+                ]);
+            }
+        } else if ($_SERVER['REQUEST_URI'] === "/auth/login") {
+            if ($isAdmin) {
+                $this->responseJson([
+                    'success' => false,
+                    'message' => 'Email hoặc mật khẩu không chính xác'
+                ]);
+                return;
+            }
+        }
+
         // Lưu session nếu đăng nhập thành công
         $_SESSION['UserID'] = $user['UserID'];
         $_SESSION['Name'] = $user['Name'];
+        $_SESSION['Email'] = $user['Email'];
         $_SESSION['Role'] = $user['Role'];
 
-        $this->responseJson([
-            'success' => true,
-            'message' => 'Đăng nhập thành công'
-        ]);
+        // Check for cart cookie and set a flag for client-side to sync
+        if($_SESSION['Role'] == 'user'){
+            $hasCartCookie = false;
+            $cartCookieName = 'user_cart_' . $user['UserID'];
+            if (isset($_COOKIE[$cartCookieName])) {
+                $hasCartCookie = true;
+                $_SESSION['has_cart_cookie'] = true;
+            }
+    
+            $this->responseJson([
+                'success' => true,
+                'message' => 'Đăng nhập thành công',
+                'has_cart_cookie' => $hasCartCookie
+            ]);
+        } else {
+            $this->responseJson([
+                'success' => true,
+                'message' => 'Đăng nhập thành công'
+            ]);
+        }
     }
 
     public function register()
@@ -113,8 +138,41 @@ class AuthController extends BaseController
         }
     }
 
-    public function logout($redirectUrl = '/')
+    public function logout()
     {
+        $redirectUrl = $_SERVER['REQUEST_URI'] === "/admin/logout" ? "/admin/login" : "/";
+        $userId = $_SESSION['UserID'] ?? null;
+
+        // Lưu cart vào cookie trước khi đăng xuất nếu có userID
+        if (isset($_SESSION['Role']) && $_SESSION['Role'] == 'user' && $userId) {
+            // Lưu cart vào cookie
+            $cartCookieName = 'user_cart_' . $userId;
+            // Lấy cart từ session nếu có
+            if (isset($_SESSION['cart'])) {
+                $cartItems = $_SESSION['cart'];
+
+                
+                $transformedCart = [];
+                foreach ($cartItems as $item) {
+                    if (isset($item['product_id']) && isset($item['quantity'])) {
+                        $transformedCart[] = [
+                            'id' => (int) $item['product_id'],
+                            'quantity' => (int) $item['quantity']
+                        ];
+                    } else if (isset($item['id']) && isset($item['quantity'])) {
+                        $transformedCart[] = [
+                            'id' => (int) $item['id'],
+                            'quantity' => (int) $item['quantity']
+                        ];
+                    }
+                }
+
+                $cartData = json_encode($transformedCart);
+                // Cookie hết hạn sau 30 ngày
+                setcookie($cartCookieName, $cartData, time() + (86400 * 30), '/');
+            }
+        }
+
         // Xóa tất cả dữ liệu session
         $_SESSION = array();
 
@@ -137,5 +195,57 @@ class AuthController extends BaseController
 
         // Chuyển hướng về trang chủ
         $this->redirect($redirectUrl);
+    }
+
+    public function getCartFromCookie()
+    {
+        if (!isset($_SESSION['UserID'])) {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'User not logged in'
+            ]);
+            return;
+        }
+
+        $userId = $_SESSION['UserID'];
+        $cartCookieName = 'user_cart_' . $userId;
+
+        if (isset($_COOKIE[$cartCookieName])) {
+            $cartData = $_COOKIE[$cartCookieName];
+
+            // Xóa cookie sau khi đã lấy dữ liệu
+            setcookie($cartCookieName, '', time() - 3600, '/');
+
+            // Chuyển đổi từ chuỗi JSON thành mảng PHP
+            $cartItems = json_decode($cartData, true);
+
+
+            $transformedCart = [];
+            if (is_array($cartItems)) {
+                foreach ($cartItems as $item) {
+                    if (isset($item['product_id'])) {
+                        $transformedCart[] = [
+                            'id' => (int) $item['product_id'],
+                            'quantity' => (int) $item['quantity']
+                        ];
+                    } else if (isset($item['id'])) {
+                        $transformedCart[] = [
+                            'id' => (int) $item['id'],
+                            'quantity' => (int) $item['quantity']
+                        ];
+                    }
+                }
+            }
+
+            $this->responseJson([
+                'success' => true,
+                'cart' => $transformedCart
+            ]);
+        } else {
+            $this->responseJson([
+                'success' => false,
+                'message' => 'No cart cookie found'
+            ]);
+        }
     }
 }

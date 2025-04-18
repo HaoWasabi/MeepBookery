@@ -9,8 +9,7 @@ class PaymentMethod
     public function __construct()
     {
         try {
-            $database = new Database();
-            $this->conn = $database->getConnection();
+            $this->conn = Database::getInstance()->getConnection();
         } catch (PDOException $e) {
             error_log("Lỗi kết nối DB: " . $e->getMessage());
             die("Không thể kết nối đến cơ sở dữ liệu.");
