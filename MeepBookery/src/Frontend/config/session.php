@@ -1,6 +1,6 @@
 <?php
 
-$lifetime = 1800; // set thời gian 30 phút(1800 giây)
+$lifetime = 1800000; // set thời gian 30 phút(1800 giây)
 
 ini_set('session.gc_maxlifetime', $lifetime); // Set thời gian sống của session trên server
 

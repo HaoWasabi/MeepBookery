@@ -42,14 +42,14 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-5">
+                                    <div class="col-6">
                                         <label for="min-price" class="form-label">Từ</label>
                                         <input type="text" class="form-control form-control-sm" id="min-price" min="0">
                                     </div>
-                                    <div class="col-1 d-flex align-items-end justify-content-center">
+                                    <!-- <div class="col-1 d-flex align-items-end justify-content-center">
                                         <span class="mb-1">–</span>
-                                    </div>
-                                    <div class="col-5">
+                                    </div> -->
+                                    <div class="col-6">
                                         <label for="max-price" class="form-label">Đến</label>
                                         <input type="text" class="form-control form-control-sm" id="max-price" min="0">
                                     </div>

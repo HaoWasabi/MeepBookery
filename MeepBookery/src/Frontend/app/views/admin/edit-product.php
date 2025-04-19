@@ -63,8 +63,10 @@
         editBtn.addEventListener('click', function () {
             formFields.forEach(field => {
                 if (field.name !== 'BookID'
-                    && field.name !== 'Name'
-                    && field.name !== 'Price') {
+                    // && field.name !== 'Name'
+                    // && field.name !== 'Price'
+                    ) 
+                    {
                     field.disabled = false;
                 }
             });

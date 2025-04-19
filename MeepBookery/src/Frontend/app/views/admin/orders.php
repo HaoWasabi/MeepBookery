@@ -115,7 +115,7 @@
     <!-- Orders Table -->
     <div class="card mb-4 d-none" id="data-container">
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive"> 
                 <table class="table table-bordered table-hover w-100" id="ordersTable">
                     <thead class="table-light">
                         <tr>
@@ -324,7 +324,7 @@
 
                     // Total amount
                     cell = document.createElement('td');
-                    cell.textContent = new Intl.NumberFormat('vi-VN').format(order.TotalAmount) + ' đ';
+                    cell.textContent = new Intl.NumberFormat('vi-VN').format(order.TotalAmount) + ' ₫';
                     row.appendChild(cell);
 
                     // Shipping address
@@ -656,8 +656,8 @@
                         }
                     },
                     columnDefs: [{
-                        targets: 'no-sort',
-                        orderable: false
+                        orderable: false,
+                        targets: [3, 7]
                     },
                     {
                         targets: [2, 5, 6, 7], // Chỉ định các cột ko thể search(bắt đầu từ 0)

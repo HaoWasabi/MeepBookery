@@ -264,9 +264,9 @@ class User extends BaseModel
                       FROM user u
                       LEFT JOIN address a ON u.AddressID = a.AddressID
                       WHERE 1=1";
-
+    
             $params = [];
-
+    
             if (!empty($search)) {
                 $query .= " AND (u.Name LIKE ? OR u.Email LIKE ? OR u.Phone LIKE ?)";
                 $searchTerm = "%" . $search . "%";
@@ -274,21 +274,20 @@ class User extends BaseModel
                 $params[] = $searchTerm;
                 $params[] = $searchTerm;
             }
-
+    
             if (!empty($role)) {
                 $query .= " AND u.Role = ?";
                 $params[] = $role;
             }
-
+    
             if ($status !== '') {
                 $query .= " AND u.Status = ?";
                 $params[] = (int) $status;
             }
-
-            $query .= " ORDER BY u.UserID DESC LIMIT ?, ?";
-            $params[] = (int) $offset;
-            $params[] = (int) $limit;
-
+    
+            // Truyền trực tiếp offset và limit
+            $query .= " ORDER BY u.UserID DESC LIMIT " . (int) $offset . ", " . (int) $limit;
+    
             $stmt = $this->conn->prepare($query);
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -296,7 +295,7 @@ class User extends BaseModel
             error_log("Lỗi lấy danh sách người dùng: " . $e->getMessage());
             return [];
         }
-    }
+    }    
 
     // Count filtered users (for pagination)
     public function countFilteredUsers($search = '', $role = '', $status = '')

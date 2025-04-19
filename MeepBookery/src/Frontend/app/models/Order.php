@@ -222,75 +222,73 @@ class Order
         }
     }
 
-    public function getTopCustomersWithOrders($startDate, $endDate, $limit = 5)
-    {
-        try {
-            $query = "
-            SELECT 
-                u.UserID, u.Name, u.Email, u.Phone,
-                COUNT(DISTINCT o.OrderID) AS OrderCount,
-                SUM(o.TotalAmount) AS TotalAmount
-            FROM user u
-            JOIN `Order` o ON u.UserID = o.UserID
-            WHERE o.Status = 'delivered_success'
-            ";
-
-            $params = [];
-
-            if (!empty($startDate)) {
-                $query .= " AND o.OrderDate >= ?";
-                $params[] = $startDate;
-            }
-
-            if (!empty($endDate)) {
-                $query .= " AND o.OrderDate <= ?";
-                $params[] = $endDate;
-            }
-
-            $query .= "
-            GROUP BY u.UserID, u.Name, u.Email, u.Phone
-            ORDER BY TotalAmount DESC
-            LIMIT ?";
-
-            $params[] = (int) $limit;
-
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute($params);
-            $topCustomers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Query đơn hàng từng khách
-            foreach ($topCustomers as &$customer) {
-                $orderQuery = "
-                SELECT o.OrderID, o.OrderDate, o.TotalAmount, o.Status
-                FROM `Order` o
-                WHERE o.UserID = ? AND o.Status = 'delivered_success'
-            ";
-
-                $orderParams = [$customer['UserID']];
-
+        public function getTopCustomersWithOrders($startDate, $endDate, $limit = 5)
+        {
+            try {
+                $query = "
+                SELECT 
+                    u.UserID, u.Name, u.Email, u.Phone,
+                    COUNT(DISTINCT o.OrderID) AS OrderCount,
+                    SUM(o.TotalAmount) AS TotalAmount
+                FROM user u
+                JOIN `Order` o ON u.UserID = o.UserID
+                WHERE o.Status = 'delivered_success'
+                ";
+        
+                $params = [];
+        
                 if (!empty($startDate)) {
-                    $orderQuery .= " AND o.OrderDate >= ?";
-                    $orderParams[] = $startDate;
+                    $query .= " AND o.OrderDate >= ?";
+                    $params[] = $startDate;
                 }
-
+        
                 if (!empty($endDate)) {
-                    $orderQuery .= " AND o.OrderDate <= ?";
-                    $orderParams[] = $endDate;
+                    $query .= " AND o.OrderDate <= ?";
+                    $params[] = $endDate;
                 }
-
-                $orderQuery .= " ORDER BY o.OrderDate DESC";
-
-                $orderStmt = $this->conn->prepare($orderQuery);
-                $orderStmt->execute($orderParams);
-                $customer['Orders'] = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
+        
+                $query .= "
+                GROUP BY u.UserID, u.Name, u.Email, u.Phone
+                ORDER BY TotalAmount DESC
+                LIMIT $limit";  // Sửa LIMIT để nối trực tiếp giá trị của $limit vào câu truy vấn
+        
+                $stmt = $this->conn->prepare($query);
+                $stmt->execute($params);
+                $topCustomers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+                // Query đơn hàng từng khách
+                foreach ($topCustomers as &$customer) {
+                    $orderQuery = "
+                    SELECT o.OrderID, o.OrderDate, o.TotalAmount, o.Status
+                    FROM `Order` o
+                    WHERE o.UserID = ? AND o.Status = 'delivered_success'
+                ";
+        
+                    $orderParams = [$customer['UserID']];
+        
+                    if (!empty($startDate)) {
+                        $orderQuery .= " AND o.OrderDate >= ?";
+                        $orderParams[] = $startDate;
+                    }
+        
+                    if (!empty($endDate)) {
+                        $orderQuery .= " AND o.OrderDate <= ?";
+                        $orderParams[] = $endDate;
+                    }
+        
+                    $orderQuery .= " ORDER BY o.OrderDate DESC";
+        
+                    $orderStmt = $this->conn->prepare($orderQuery);
+                    $orderStmt->execute($orderParams);
+                    $customer['Orders'] = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
+                }
+        
+                return $topCustomers;
+            } catch (PDOException $e) {
+                error_log("Lỗi lấy top khách hàng kèm đơn hàng: " . $e->getMessage());
+                return [];
             }
-
-            return $topCustomers;
-        } catch (PDOException $e) {
-            error_log("Lỗi lấy top khách hàng kèm đơn hàng: " . $e->getMessage());
-            return [];
-        }
-    }
+        }    
 
 
     public function getOrderById($orderId, $userId = null)

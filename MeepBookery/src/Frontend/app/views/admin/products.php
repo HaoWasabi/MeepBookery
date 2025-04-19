@@ -62,14 +62,14 @@
                         <tr>
                             <th width="5%">ID</th>
                             <th width="8%">Hình ảnh</th>
-                            <th width="15%">Tên sách</th>
+                            <th width="12%">Tên sách</th>
                             <th width="12%">Tác giả</th>
                             <th width="10%">Nhà xuất bản</th>
                             <th width="10%">Ngày phát hành</th>
                             <th width="10%">Thể loại</th>
                             <th width="8%">Giá</th>
-                            <th width="6%">Trạng thái</th>
-                            <th width="16%">Thao tác</th>
+                            <th width="5%">Trạng thái</th>
+                            <th width="20%">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="products-table-body">
@@ -96,7 +96,8 @@
                                     <td><?= $book['ReleaseDate'] ? date('d/m/Y', strtotime($book['ReleaseDate'])) : 'N/A' ?>
                                     </td>
                                     <td><?= $book['Category'] ?></td>
-                                    <td><?= number_format($book['Price'], 0, ',', '.') ?> ₫</td>
+                                    <td><?= number_format($book['Price'], 0, ',', '.') ?> ₫
+                                </td>
                                     <td>
                                         <?php if ($book['Status'] == 1): ?>
                                             <span class="badge bg-success">Hiển thị</span>
@@ -409,7 +410,7 @@
                     info: true,
                     columnDefs: [{
                         orderable: false,
-                        targets: [1, 9]
+                        targets: [1, 7 ,9]
                     }, // Disable sorting for image and actions columns
                     {
                         searchable: true,
