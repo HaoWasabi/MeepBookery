@@ -16,4 +16,4 @@
 |   2   |3122560070|Huỳnh Thanh Phúc Thạnh|Xây dựng Backend - Nạp dữ liệu vào Database|
 |   3   |3122560042|Lê Thiện Luân|Xây dựng Frontend & Backend|
 |   4   |3122410235|La Hữu Mẫn|Xây dựng Backend - Thiết kế Database|
-|   5   |3122560042|La Hữu Minh|Xây dựng Backend - Thiết kế Database|
+|   5   |3122410238|La Hữu Minh|Xây dựng Backend - Thiết kế Database|
